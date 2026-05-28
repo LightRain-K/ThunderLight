@@ -77,6 +77,17 @@
             opacity: 0;
         }
 
+        @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-10px); }
+}
+        
+
         @keyframes floatUp {
             0% { transform: translateY(100vh) scale(0); opacity: 0; }
             10% { opacity: 1; }
@@ -1005,79 +1016,231 @@
         }
 
         /* Адаптивность */
-        @media (max-width: 1024px) {
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .counter-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .timeline::before {
-                left: 20px;
-            }
-            .timeline-item,
-            .timeline-item:nth-child(even) {
-                flex-direction: row;
-            }
-            .timeline-content {
-                width: calc(100% - 60px);
-                margin-left: 40px;
-            }
-            .timeline-spacer {
-                display: none;
-            }
-            .timeline-dot {
-                left: 20px;
-            }
-        }
+        /* Адаптивность */
+@media (max-width: 1024px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .counter-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+    }
+    .timeline::before {
+        left: 20px;
+    }
+    .timeline-item,
+    .timeline-item:nth-child(even) {
+        flex-direction: row;
+    }
+    .timeline-content {
+        width: calc(100% - 60px);
+        margin-left: 40px;
+    }
+    .timeline-spacer {
+        display: none;
+    }
+    .timeline-dot {
+        left: 20px;
+    }
+}
 
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-            .mobile-menu-btn {
-                display: block;
-            }
-            .hero h1 {
-                font-size: 2.4em;
-            }
-            .section-title {
-                font-size: 2em;
-            }
-            .cards-grid {
-                grid-template-columns: 1fr;
-            }
-            .footer-grid {
-                grid-template-columns: 1fr;
-            }
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-            }
-            .counter-grid {
-                grid-template-columns: 1fr;
-            }
-            .comparison-table {
-                font-size: 0.8em;
-            }
-            .comparison-table th,
-            .comparison-table td {
-                padding: 12px 14px;
-            }
-        }
+@media (max-width: 768px) {
+    /* Навигация */
+    .nav-links {
+        display: none;
+    }
+    .mobile-menu-btn {
+        display: block;
+    }
+    .nav-content {
+        padding: 12px 20px;
+    }
+    
+    /* Hero */
+    .hero {
+        padding: 140px 20px 80px;
+    }
+    .hero h1 {
+        font-size: 2.2em;
+        letter-spacing: -1px;
+    }
+    .hero p {
+        font-size: 1.05em;
+        padding: 0 10px;
+    }
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+    .hero-buttons .btn {
+        width: 100%;
+        max-width: 320px;
+        justify-content: center;
+    }
+    
+    /* Секции */
+    section {
+        padding: 80px 20px;
+    }
+    .section-title {
+        font-size: 2em;
+    }
+    .section-subtitle {
+        font-size: 1em;
+        padding: 0 10px;
+    }
+    .section-header {
+        margin-bottom: 50px;
+    }
+    
+    /* Карточки */
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .card {
+        padding: 24px;
+    }
+    .card h3 {
+        font-size: 1.15em;
+    }
+    .card p {
+        font-size: 0.9em;
+    }
+    
+    /* Счётчики */
+    .counter-section {
+        padding: 40px 20px;
+    }
+    .counter-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .counter-number {
+        font-size: 2.5em;
+    }
+    .counter-label {
+        font-size: 0.85em;
+    }
+    
+    /* Таймлайн */
+    .timeline-content h4 {
+        font-size: 1em;
+    }
+    .timeline-content p {
+        font-size: 0.85em;
+    }
+    
+    /* Таблица */
+    .comparison-table {
+        font-size: 0.8em;
+    }
+    .comparison-table th,
+    .comparison-table td {
+        padding: 12px 10px;
+    }
+    
+    /* CTA */
+    .cta-content h2 {
+        font-size: 1.8em;
+    }
+    .cta-content p {
+        font-size: 1em;
+        padding: 0 10px;
+    }
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+    .cta-buttons .btn {
+        width: 100%;
+        max-width: 320px;
+        justify-content: center;
+    }
+    
+    /* Футер */
+    .footer {
+        padding: 50px 20px 30px;
+    }
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+    .footer-social {
+        justify-content: center;
+    }
+    
+    /* Предзагрузчик */
+    .preloader-logo {
+        font-size: 2em;
+    }
+}
 
-        @media (max-width: 480px) {
-            section {
-                padding: 80px 16px;
-            }
-            .hero h1 {
-                font-size: 1.8em;
-            }
-            .btn-lg {
-                padding: 16px 32px;
-                font-size: 1em;
-            }
-        }
+@media (max-width: 480px) {
+    .hero {
+        padding: 120px 16px 60px;
+    }
+    .hero h1 {
+        font-size: 1.8em;
+    }
+    .hero p {
+        font-size: 0.95em;
+    }
+    .hero-badge {
+        font-size: 0.75em;
+        padding: 6px 14px;
+    }
+    
+    section {
+        padding: 60px 16px;
+    }
+    .section-title {
+        font-size: 1.6em;
+    }
+    .section-subtitle {
+        font-size: 0.9em;
+    }
+    
+    .btn-lg {
+        padding: 14px 24px;
+        font-size: 0.95em;
+        border-radius: 12px;
+    }
+    
+    .counter-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    .counter-number {
+        font-size: 2em;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    .card-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.3em;
+        border-radius: 10px;
+    }
+    
+    .timeline-content {
+        padding: 16px;
+    }
+    
+    .accordion-header {
+        padding: 16px;
+        font-size: 0.95em;
+    }
+}
     </style>
 </head>
 <body>
@@ -1134,7 +1297,7 @@
             <h1>Приватный мессенджер<br><span class="hero-gradient">для безопасного общения</span></h1>
             <p>ThunderLight использует сквозное шифрование, чтобы ваши сообщения оставались конфиденциальными. Открытый исходный код и отсутствие сбора данных — наша философия.</p>
             <div class="hero-buttons">
-                <a href="https://github.com/thunderlight/app/releases/latest" class="btn btn-download btn-lg" target="_blank">
+                <a href="https://github.com/LightRain-K/ThunderLight/releases/" class="btn btn-download btn-lg" target="_blank">
                     <span class="btn-icon-bounce">📥</span> Скачать приложение
                 </a>
                 <a href="#features" class="btn btn-outline btn-lg">Узнать больше</a>
@@ -1512,24 +1675,44 @@
         if (counterSection) counterObserver.observe(counterSection);
 
         // Мобильное меню
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
-        
-        mobileMenuBtn.addEventListener('click', () => {
-            if (navLinks.style.display === 'flex') {
-                navLinks.style.display = 'none';
-            } else {
-                navLinks.style.display = 'flex';
-                navLinks.style.flexDirection = 'column';
-                navLinks.style.position = 'absolute';
-                navLinks.style.top = '100%';
-                navLinks.style.left = '0';
-                navLinks.style.width = '100%';
-                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
-                navLinks.style.padding = '20px 32px';
-                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-            }
-        });
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const navLinks = document.getElementById('navLinks');
+let menuOpen = false;
+
+mobileMenuBtn.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    
+    if (menuOpen) {
+        navLinks.style.display = 'flex';
+        navLinks.style.flexDirection = 'column';
+        navLinks.style.position = 'absolute';
+        navLinks.style.top = '100%';
+        navLinks.style.left = '0';
+        navLinks.style.width = '100%';
+        navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
+        navLinks.style.padding = '20px 32px';
+        navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+        navLinks.style.animation = 'slideDown 0.3s ease';
+        mobileMenuBtn.textContent = '✕';
+    } else {
+        navLinks.style.animation = 'slideUp 0.3s ease';
+        setTimeout(() => {
+            navLinks.style.display = 'none';
+        }, 280);
+        mobileMenuBtn.textContent = '☰';
+    }
+});
+
+// Закрывать меню при клике на ссылку
+navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (menuOpen) {
+            menuOpen = false;
+            navLinks.style.display = 'none';
+            mobileMenuBtn.textContent = '☰';
+        }
+    });
+});
 
         // Анимация появления при скролле
         const observer = new IntersectionObserver((entries) => {
