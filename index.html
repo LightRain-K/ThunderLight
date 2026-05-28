@@ -46,7 +46,20 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Анимированные частицы */
+        /* Курсор-эффект */
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08), transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+
+        /* Частицы */
         .particles-container {
             position: fixed;
             top: 0;
@@ -65,20 +78,10 @@
         }
 
         @keyframes floatUp {
-            0% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateY(-10vh) scale(1);
-                opacity: 0;
-            }
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
 
         /* Предзагрузчик */
@@ -232,24 +235,24 @@
             color: var(--light);
         }
 
-        .nav-cta {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        .nav-download {
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white !important;
             padding: 10px 20px !important;
             border-radius: 10px !important;
             font-weight: 600 !important;
-            animation: ctaPulse 2s infinite;
+            animation: downloadPulse 2s infinite;
         }
 
-        @keyframes ctaPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.4); }
-            50% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+        @keyframes downloadPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
         }
 
-        .nav-cta:hover {
+        .nav-download:hover {
             transform: translateY(-2px);
             animation: none;
-            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
         }
 
         .mobile-menu-btn {
@@ -407,6 +410,7 @@
             animation: fadeInUp 0.8s 0.3s ease both;
         }
 
+        /* Кнопки */
         .btn {
             padding: 16px 36px;
             border-radius: 12px;
@@ -452,6 +456,24 @@
             box-shadow: 0 8px 32px rgba(79, 70, 229, 0.6);
         }
 
+        .btn-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 24px rgba(16, 185, 129, 0.4);
+            animation: downloadBtnGlow 2s infinite;
+        }
+
+        @keyframes downloadBtnGlow {
+            0%, 100% { box-shadow: 0 4px 24px rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 4px 40px rgba(16, 185, 129, 0.8); }
+        }
+
+        .btn-download:hover {
+            transform: translateY(-3px) scale(1.02);
+            animation: none;
+            box-shadow: 0 8px 40px rgba(16, 185, 129, 0.6);
+        }
+
         .btn-outline {
             border: 2px solid rgba(255, 255, 255, 0.15);
             color: var(--light);
@@ -468,6 +490,16 @@
             padding: 20px 48px;
             font-size: 1.1em;
             border-radius: 16px;
+        }
+
+        .btn-icon-bounce {
+            display: inline-block;
+            animation: iconBounce 1s infinite;
+        }
+
+        @keyframes iconBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
         }
 
         /* Секции */
@@ -588,25 +620,133 @@
             line-height: 1.7;
         }
 
-        .card-tags {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 20px;
+        /* Таймлайн */
+        .timeline {
+            max-width: 800px;
+            margin: 60px auto 0;
+            position: relative;
         }
 
-        .tag {
-            padding: 4px 12px;
-            background: rgba(79, 70, 229, 0.1);
-            border-radius: 6px;
-            font-size: 0.8em;
-            color: #a5b4fc;
-            font-family: 'SF Mono', 'Cascadia Code', 'Courier New', monospace;
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--primary), var(--secondary), transparent);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            flex-direction: row;
+        }
+
+        .timeline-item:nth-child(even) {
+            flex-direction: row-reverse;
+        }
+
+        .timeline-content {
+            width: 45%;
+            padding: 24px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             transition: var(--transition);
         }
 
-        .card:hover .tag {
-            background: rgba(79, 70, 229, 0.2);
+        .timeline-content:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: scale(1.02);
+        }
+
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.5);
+            animation: dotPulse 2s infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(79, 70, 229, 0.8); }
+        }
+
+        .timeline-spacer {
+            width: 45%;
+        }
+
+        /* Плавающие иконки */
+        .floating-icons {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .floating-icon {
+            position: absolute;
+            font-size: 2em;
+            opacity: 0.1;
+            animation: floatAround 20s linear infinite;
+        }
+
+        @keyframes floatAround {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(100px, -50px) rotate(90deg); }
+            50% { transform: translate(50px, 50px) rotate(180deg); }
+            75% { transform: translate(-50px, 100px) rotate(270deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* Счётчик */
+        .counter-section {
+            background: rgba(15, 23, 42, 0.4);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 60px 32px;
+        }
+
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .counter-item {
+            text-align: center;
+        }
+
+        .counter-number {
+            font-size: 3.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .counter-label {
+            color: var(--gray-light);
+            font-size: 0.95em;
+            margin-top: 8px;
         }
 
         /* Аккордеон */
@@ -668,42 +808,6 @@
 
         .accordion-item.active .accordion-body {
             max-height: 500px;
-        }
-
-        /* Цифры */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 32px;
-        }
-
-        .stat-card {
-            text-align: center;
-            padding: 32px;
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(79, 70, 229, 0.3);
-        }
-
-        .stat-number {
-            font-size: 3em;
-            font-weight: 900;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1;
-        }
-
-        .stat-label {
-            color: var(--gray-light);
-            font-size: 0.95em;
-            margin-top: 8px;
         }
 
         /* Таблица */
@@ -905,8 +1009,25 @@
             .footer-grid {
                 grid-template-columns: 1fr 1fr;
             }
-            .stats-grid {
+            .counter-grid {
                 grid-template-columns: 1fr 1fr;
+            }
+            .timeline::before {
+                left: 20px;
+            }
+            .timeline-item,
+            .timeline-item:nth-child(even) {
+                flex-direction: row;
+            }
+            .timeline-content {
+                width: calc(100% - 60px);
+                margin-left: 40px;
+            }
+            .timeline-spacer {
+                display: none;
+            }
+            .timeline-dot {
+                left: 20px;
             }
         }
 
@@ -933,7 +1054,7 @@
                 flex-direction: column;
                 text-align: center;
             }
-            .stats-grid {
+            .counter-grid {
                 grid-template-columns: 1fr;
             }
             .comparison-table {
@@ -961,6 +1082,9 @@
 </head>
 <body>
 
+    <!-- Курсор-эффект -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
     <!-- Частицы -->
     <div class="particles-container" id="particles"></div>
 
@@ -982,9 +1106,10 @@
             <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="#features">Возможности</a></li>
+                <li><a href="#roadmap">Развитие</a></li>
                 <li><a href="#compare">Сравнение</a></li>
                 <li><a href="#faq">FAQ</a></li>
-                <li><a href="#contact" class="nav-cta">Связаться</a></li>
+                <li><a href="#download" class="nav-download">Скачать</a></li>
             </ul>
         </div>
     </nav>
@@ -994,40 +1119,47 @@
         <div class="hero-grid-bg"></div>
         <div class="hero-glow hero-glow-1"></div>
         <div class="hero-glow hero-glow-2"></div>
+        <div class="floating-icons">
+            <span class="floating-icon" style="top:10%;left:10%;animation-delay:0s;">🔐</span>
+            <span class="floating-icon" style="top:20%;right:15%;animation-delay:-5s;">⚡</span>
+            <span class="floating-icon" style="bottom:30%;left:20%;animation-delay:-10s;">🛡️</span>
+            <span class="floating-icon" style="bottom:15%;right:10%;animation-delay:-15s;">💬</span>
+            <span class="floating-icon" style="top:50%;left:5%;animation-delay:-7s;">📱</span>
+        </div>
         <div class="hero-content">
             <div class="hero-badge">
                 <span class="hero-badge-dot"></span>
-                Сквозное шифрование E2EE
+                Доступно для скачивания
             </div>
             <h1>Приватный мессенджер<br><span class="hero-gradient">для безопасного общения</span></h1>
             <p>ThunderLight использует сквозное шифрование, чтобы ваши сообщения оставались конфиденциальными. Открытый исходный код и отсутствие сбора данных — наша философия.</p>
             <div class="hero-buttons">
-                <a href="#features" class="btn btn-primary btn-lg">🔐 Возможности</a>
-                <a href="privacy.html" class="btn btn-outline btn-lg">📄 Политика конфиденциальности</a>
+                <a href="https://github.com/thunderlight/app/releases/latest" class="btn btn-download btn-lg" target="_blank">
+                    <span class="btn-icon-bounce">📥</span> Скачать приложение
+                </a>
+                <a href="#features" class="btn btn-outline btn-lg">Узнать больше</a>
             </div>
         </div>
     </section>
 
-    <!-- Статистика -->
-    <section style="padding: 0 32px 80px;">
-        <div class="section-container">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number">E2EE</div>
-                    <div class="stat-label">Сквозное шифрование</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">Open</div>
-                    <div class="stat-label">Открытый исходный код</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Сбора личных данных</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">BLE</div>
-                    <div class="stat-label">Офлайн-сообщения</div>
-                </div>
+    <!-- Счётчики -->
+    <section class="counter-section">
+        <div class="counter-grid">
+            <div class="counter-item">
+                <div class="counter-number" data-target="128">0</div>
+                <div class="counter-label">Активных пользователей</div>
+            </div>
+            <div class="counter-item">
+                <div class="counter-number" data-target="4">0</div>
+                <div class="counter-label">Страны</div>
+            </div>
+            <div class="counter-item">
+                <div class="counter-number" data-target="12">0</div>
+                <div class="counter-label">Обновлений в 2026</div>
+            </div>
+            <div class="counter-item">
+                <div class="counter-number" data-target="100">0</div>
+                <div class="counter-label">% Бесплатно</div>
             </div>
         </div>
     </section>
@@ -1044,17 +1176,17 @@
                 <div class="card">
                     <div class="card-icon">🔐</div>
                     <h3>Сквозное шифрование</h3>
-                    <p>Все сообщения шифруются на устройстве отправителя и расшифровываются только у получателя. Промежуточные серверы не имеют доступа к содержимому переписки.</p>
+                    <p>Все сообщения шифруются на устройстве отправителя и расшифровываются только у получателя. Серверы не имеют доступа к содержимому.</p>
                 </div>
                 <div class="card">
                     <div class="card-icon">📁</div>
                     <h3>Шифрование файлов</h3>
-                    <p>Отправляйте зашифрованные фотографии, видео и документы. Файлы шифруются перед загрузкой и хранятся в Google Drive в защищённом виде.</p>
+                    <p>Отправляйте зашифрованные фотографии, видео и документы. Файлы шифруются перед загрузкой в Google Drive.</p>
                 </div>
                 <div class="card">
                     <div class="card-icon">📡</div>
                     <h3>Офлайн-сообщения</h3>
-                    <p>Обменивайтесь сообщениями без интернета через Bluetooth. Сообщения передаются между ближайшими устройствами и доставляются автоматически.</p>
+                    <p>Обменивайтесь сообщениями без интернета через Bluetooth. Сообщения доставляются автоматически при сближении устройств.</p>
                 </div>
                 <div class="card">
                     <div class="card-icon">🔒</div>
@@ -1063,13 +1195,58 @@
                 </div>
                 <div class="card">
                     <div class="card-icon">💬</div>
-                    <h3>Реакции и стикеры</h3>
-                    <p>Поддерживайте живое общение с помощью реакций на сообщения и встроенных стикеров.</p>
+                    <h3>Реакции и ответы</h3>
+                    <p>Ставьте реакции на сообщения и отвечайте на конкретные сообщения в чате для удобного общения.</p>
                 </div>
                 <div class="card">
                     <div class="card-icon">🔍</div>
-                    <h3>Поиск по сообщениям</h3>
+                    <h3>Поиск по чатам</h3>
                     <p>Быстрый поиск по истории переписки с подсветкой найденного текста.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Дорожная карта -->
+    <section id="roadmap">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">🗺️ Развитие</span>
+                <h2 class="section-title">Что мы планируем</h2>
+                <p class="section-subtitle">Наши планы по развитию ThunderLight на ближайшее время.</p>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>🚀 Q2 2026</h4>
+                        <p style="color:var(--gray-light);">Запуск веб-версии для десктопа</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-spacer"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-spacer"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h4>🎨 Q3 2026</h4>
+                        <p style="color:var(--gray-light);">Кастомизация интерфейса и тёмная тема</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <h4>🌐 Q4 2026</h4>
+                        <p style="color:var(--gray-light);">Локализация на 5 языков</p>
+                    </div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-spacer"></div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-spacer"></div>
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <h4>🎉 Q1 2027</h4>
+                        <p style="color:var(--gray-light);">Публичный релиз в Google Play</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1080,7 +1257,7 @@
         <div class="section-container">
             <div class="section-header">
                 <span class="section-label">📊 Сравнение</span>
-                <h2 class="section-title">ThunderLight vs другие мессенджеры</h2>
+                <h2 class="section-title">ThunderLight vs другие</h2>
                 <p class="section-subtitle">Сравнение ключевых функций популярных мессенджеров.</p>
             </div>
             <div class="table-wrapper">
@@ -1094,56 +1271,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Сквозное шифрование</td>
-                            <td class="highlight-col check">✓ Всегда</td>
-                            <td class="cross">✗ Только секретные чаты</td>
-                            <td class="check">✓</td>
-                        </tr>
-                        <tr>
-                            <td>E2EE в группах</td>
-                            <td class="highlight-col check">✓ Всегда</td>
-                            <td class="cross">✗</td>
-                            <td class="check">✓</td>
-                        </tr>
-                        <tr>
-                            <td>Открытый исходный код</td>
-                            <td class="highlight-col check">✓ Полностью</td>
-                            <td class="partial">⚠ Только клиент</td>
-                            <td class="cross">✗</td>
-                        </tr>
-                        <tr>
-                            <td>Шифрование файлов</td>
-                            <td class="highlight-col check">✓ Встроено</td>
-                            <td class="cross">✗</td>
-                            <td class="cross">✗</td>
-                        </tr>
-                        <tr>
-                            <td>Офлайн-сообщения (BLE)</td>
-                            <td class="highlight-col check">✓</td>
-                            <td class="cross">✗</td>
-                            <td class="cross">✗</td>
-                        </tr>
-                        <tr>
-                            <td>Биометрическая защита</td>
-                            <td class="highlight-col check">✓</td>
-                            <td class="check">✓</td>
-                            <td class="check">✓</td>
-                        </tr>
-                        <tr>
-                            <td>Реакции на сообщения</td>
-                            <td class="highlight-col check">✓</td>
-                            <td class="check">✓</td>
-                            <td class="check">✓</td>
-                        </tr>
-                        <tr>
-                            <td>Самоуничтожающиеся сообщения</td>
-                            <td class="highlight-col check">✓</td>
-                            <td class="check">✓</td>
-                            <td class="check">✓</td>
-                        </tr>
+                        <tr><td>Сквозное шифрование</td><td class="highlight-col check">✓ Всегда</td><td class="cross">✗ Секретные чаты</td><td class="check">✓</td></tr>
+                        <tr><td>E2EE в группах</td><td class="highlight-col check">✓ Всегда</td><td class="cross">✗</td><td class="check">✓</td></tr>
+                        <tr><td>Открытый исходный код</td><td class="highlight-col check">✓ Полностью</td><td class="partial">⚠ Клиент</td><td class="cross">✗</td></tr>
+                        <tr><td>Шифрование файлов</td><td class="highlight-col check">✓ Встроено</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+                        <tr><td>Офлайн (BLE)</td><td class="highlight-col check">✓</td><td class="cross">✗</td><td class="cross">✗</td></tr>
+                        <tr><td>Биозащита</td><td class="highlight-col check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                        <tr><td>Реакции</td><td class="highlight-col check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+                        <tr><td>Бесплатно</td><td class="highlight-col check">✓ Навсегда</td><td class="check">✓</td><td class="check">✓</td></tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Скачать -->
+    <section id="download" style="text-align:center;">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">📥 Скачать</span>
+                <h2 class="section-title">Попробуйте ThunderLight</h2>
+                <p class="section-subtitle">Доступно для Android. Веб-версия и iOS — в разработке.</p>
+            </div>
+            <div class="hero-buttons" style="justify-content:center;">
+                <a href="https://github.com/thunderlight/app/releases/latest" class="btn btn-download btn-lg" target="_blank">
+                    <span class="btn-icon-bounce">📱</span> Скачать для Android
+                </a>
+                <a href="https://github.com/thunderlight/app" class="btn btn-outline btn-lg" target="_blank">
+                    Исходный код на GitHub
+                </a>
             </div>
         </div>
     </section>
@@ -1163,7 +1319,7 @@
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-content">
-                            Сообщения шифруются на вашем устройстве с использованием уникального ключа чата и расшифровываются только на устройстве получателя. Серверы ThunderLight не имеют доступа к содержимому сообщений — они только передают зашифрованные данные.
+                            Сообщения шифруются на вашем устройстве с использованием уникального ключа чата и расшифровываются только на устройстве получателя. Серверы ThunderLight не имеют доступа к содержимому сообщений.
                         </div>
                     </div>
                 </div>
@@ -1174,7 +1330,7 @@
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-content">
-                            Сообщения временно хранятся на сервере до момента доставки получателю. Медиафайлы шифруются и сохраняются в вашем Google Drive. Ключи шифрования хранятся только локально на устройстве.
+                            Сообщения временно хранятся на сервере до доставки. Медиафайлы шифруются и сохраняются в вашем Google Drive. Ключи шифрования — только локально.
                         </div>
                     </div>
                 </div>
@@ -1185,18 +1341,18 @@
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-content">
-                            Да, ThunderLight полностью бесплатный и с открытым исходным кодом. Мы не продаём данные пользователей и не показываем рекламу.
+                            Да, полностью бесплатный и с открытым исходным кодом. Без рекламы и сбора данных.
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header" onclick="toggleAccordion(this)">
-                        Как работает офлайн-режим?
+                        Когда выйдет версия для iOS?
                         <span class="accordion-icon">▼</span>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-content">
-                            При отсутствии интернета ThunderLight автоматически переключается на передачу сообщений через Bluetooth Low Energy (BLE). Сообщения передаются между ближайшими устройствами и доставляются, когда получатель оказывается в зоне действия.
+                            Мы работаем над этим! Планируем запуск в 2027 году. Следите за новостями в Telegram-канале.
                         </div>
                     </div>
                 </div>
@@ -1209,7 +1365,7 @@
         <div class="section-container">
             <div class="cta-content">
                 <h2>Остались вопросы?</h2>
-                <p>Подписывайтесь на наш Telegram-канал, чтобы быть в курсе обновлений, или напишите нам на почту.</p>
+                <p>Подписывайтесь на Telegram-канал или напишите нам на почту.</p>
                 <div class="cta-buttons">
                     <a href="https://t.me/ThunderLight_official" target="_blank" class="btn btn-telegram btn-lg">📱 Telegram-канал</a>
                     <a href="mailto:thunderlight@internet.ru" class="btn btn-outline btn-lg">📧 thunderlight@internet.ru</a>
@@ -1226,14 +1382,15 @@
                     <span class="nav-logo-icon">⚡</span>
                     ThunderLight
                 </a>
-                <p>Приватный мессенджер со сквозным шифрованием. Открытый исходный код, никакого сбора данных.</p>
+                <p>Приватный мессенджер со сквозным шифрованием. Открытый код, никакого сбора данных.</p>
             </div>
             <div class="footer-col">
                 <h4>Продукт</h4>
                 <ul>
                     <li><a href="#features">Возможности</a></li>
+                    <li><a href="#roadmap">Развитие</a></li>
                     <li><a href="#compare">Сравнение</a></li>
-                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#download">Скачать</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -1246,8 +1403,9 @@
             <div class="footer-col">
                 <h4>Контакты</h4>
                 <ul>
-                    <li><a href="https://t.me/ThunderLight_official" target="_blank">Telegram-канал</a></li>
-                    <li><a href="mailto:thunderlight@internet.ru">thunderlight@internet.ru</a></li>
+                    <li><a href="https://t.me/ThunderLight_official" target="_blank">Telegram</a></li>
+                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
+                    <li><a href="https://github.com/thunderlight/app" target="_blank">GitHub</a></li>
                 </ul>
             </div>
         </div>
@@ -1255,8 +1413,8 @@
             <p>&copy; 2026 ThunderLight. Все права защищены.</p>
             <div class="footer-social">
                 <a href="https://t.me/ThunderLight_official" target="_blank" title="Telegram">TG</a>
+                <a href="https://github.com/thunderlight/app" target="_blank" title="GitHub">GH</a>
                 <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
-                <a href="#" title="GitHub">GH</a>
             </div>
         </div>
     </footer>
@@ -1269,7 +1427,14 @@
             }, 800);
         });
 
-        // Анимированные частицы
+        // Курсор-эффект
+        const cursorGlow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        // Частицы
         function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
@@ -1277,7 +1442,6 @@
             for (let i = 0; i < 30; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                
                 const size = Math.random() * 4 + 2;
                 particle.style.width = size + 'px';
                 particle.style.height = size + 'px';
@@ -1285,20 +1449,15 @@
                 particle.style.background = colors[Math.floor(Math.random() * colors.length)];
                 particle.style.animationDuration = (Math.random() * 15 + 10) + 's';
                 particle.style.animationDelay = Math.random() * 10 + 's';
-                
                 container.appendChild(particle);
             }
         }
         createParticles();
 
-        // Скролл для навбара
+        // Скролл навбара
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
         });
 
         // Аккордеон
@@ -1306,21 +1465,51 @@
             const item = header.parentElement;
             const isActive = item.classList.contains('active');
             document.querySelectorAll('.accordion-item').forEach(el => el.classList.remove('active'));
-            if (!isActive) {
-                item.classList.add('active');
-            }
+            if (!isActive) item.classList.add('active');
         }
 
         // Эффект мыши для карточек
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                card.style.setProperty('--mouse-x', x + '%');
-                card.style.setProperty('--mouse-y', y + '%');
+                card.style.setProperty('--mouse-x', ((e.clientX - rect.left) / rect.width) * 100 + '%');
+                card.style.setProperty('--mouse-y', ((e.clientY - rect.top) / rect.height) * 100 + '%');
             });
         });
+
+        // Анимация счётчиков
+        function animateCounters() {
+            document.querySelectorAll('.counter-number').forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 2000;
+                const step = target / (duration / 16);
+                let current = 0;
+                
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                updateCounter();
+            });
+        }
+
+        // Запуск счётчиков при скролле
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const counterSection = document.querySelector('.counter-section');
+        if (counterSection) counterObserver.observe(counterSection);
 
         // Мобильное меню
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
@@ -1343,11 +1532,6 @@
         });
 
         // Анимация появления при скролле
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1355,9 +1539,9 @@
                     entry.target.style.transform = 'translateY(0)';
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.1 });
 
-        document.querySelectorAll('.card, .stat-card, .accordion-item').forEach(el => {
+        document.querySelectorAll('.card, .accordion-item, .timeline-content').forEach(el => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
             el.style.transition = 'all 0.6s ease';
