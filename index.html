@@ -1617,6 +1617,30 @@
         </div>
     </section>
 
+
+    <section class="py-8 bg-slate-950 border-t border-slate-900">
+    <div class="max-w-4xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+            <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </span>
+            <span class="text-sm font-medium text-slate-300">Статус сети ThunderLight: <span class="text-emerald-400 font-bold">Стабильно</span></span>
+        </div>
+        
+        <div class="flex flex-wrap gap-6 text-xs text-slate-400">
+            <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
+                <span class="font-semibold text-slate-300">Сервер 1 (РФ):</span>
+                <span id="ping-srv-1" class="font-mono text-emerald-400">замер...</span>
+            </div>
+            <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
+                <span class="font-semibold text-slate-300">Сервер 2 (Европа):</span>
+                <span id="ping-srv-2" class="font-mono text-emerald-400">замер...</span>
+            </div>
+        </div>
+    </div>
+</section>
+
     <!-- Футер -->
     <footer class="footer">
         <div class="footer-grid">
@@ -1866,6 +1890,48 @@ document.getElementById('sim-send-btn').addEventListener('click', function() {
         sendBtn.classList.remove('opacity-50');
     }, 1500);
 });
+
+
+
+        async function pingServer(url) {
+    const start = performance.now();
+    try {
+        // Добавляем случайный параметр, чтобы браузер не брал ответ из кэша
+        await fetch(url + '?t=' + Math.random(), { method: 'HEAD', mode: 'no-cors' });
+        const duration = Math.round(performance.now() - start);
+        return `${duration} ms`;
+    } catch (error) {
+        return 'offline';
+    }
+}
+
+async function updatePings() {
+    const srv1Element = document.getElementById('ping-srv-1');
+    const srv2Element = document.getElementById('ping-srv-2');
+
+    // Первый сервер — твой текущий домен thuderlight.online
+    const ping1 = await pingServer('https://thuderlight.online/favicon.ico');
+    srv1Element.textContent = ping1;
+    if (ping1 === 'offline') {
+        srv1Element.className = 'font-mono text-red-500';
+    } else {
+        srv1Element.className = 'font-mono text-emerald-400';
+    }
+
+    // Второй сервер — сюда вставь IP или домен своего второго сервера (например, Aeza Германия)
+    // Если на нем тоже настроен Nginx/HTTPS, укажи его адрес
+    const ping2 = await pingServer('https://thuderlight.online/favicon.ico'); // Пока пингуем тот же для теста
+    srv2Element.textContent = ping2;
+    if (ping2 === 'offline') {
+        srv2Element.className = 'font-mono text-red-500';
+    } else {
+        srv2Element.className = 'font-mono text-emerald-400';
+    }
+}
+
+// Запускаем пинг при загрузке и каждые 15 секунд
+updatePings();
+setInterval(updatePings, 15000);
 
 
 
