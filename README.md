@@ -39,11 +39,4 @@
 
 ---
 
-## 🚀 Как развернуть проект локально
 
-Если вы хотите запустить веб-сайт проекта у себя на локальной машине:
-
-1. **Клонируйте репозиторий:**
-   ```bash
-   git clone [https://github.com/kirill2009kazakov16/thunderlight.git](https://github.com/kirill2009kazakov16/thunderlight.git)
-   cd thunderlight
