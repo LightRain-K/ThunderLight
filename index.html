@@ -425,6 +425,17 @@
             animation: fadeInUp 0.8s 0.2s ease both;
         }
 
+
+        /* Эффект Матрицы */
+.matrix-mode {
+    filter: hue-rotate(120deg) brightness(0.8) contrast(1.2) !important;
+    font-family: 'Courier New', Courier, monospace !important;
+}
+.matrix-mode img, .matrix-mode i {
+    filter: hue-rotate(-120deg) !important; /* Чтобы иконки и лого не ломались полностью */
+}
+        
+
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -2016,6 +2027,38 @@ setInterval(updatePings, 15000);
         } catch (err) {
             alert('Не удалось скопировать ссылку: ' + err);
         }
+    }
+});
+
+
+        // Секретная пасхалка
+const secretCode = 'matrix';
+let inputBuffer = '';
+
+document.addEventListener('keydown', (e) => {
+    // Записываем нажатую клавишу в буфер
+    inputBuffer += e.key.toLowerCase();
+    
+    // Ограничиваем размер буфера длиной секретного слова
+    if (inputBuffer.length > secretCode.length) {
+        inputBuffer = inputBuffer.substring(inputBuffer.length - secretCode.length);
+    }
+    
+    // Если ввели слово "matrix"
+    if (inputBuffer === secretCode) {
+        document.documentElement.classList.toggle('matrix-mode');
+        
+        // Звуковой эффект (опционально, просто писк через браузерный синтезатор)
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, ctx.currentTime);
+        osc.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+        
+        console.log('🌌 Matrix has you...');
+        inputBuffer = ''; // Очищаем буфер
     }
 });
 
