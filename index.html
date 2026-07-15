@@ -1318,6 +1318,12 @@
                     <span class="btn-icon-bounce">📥</span> Скачать приложение
                 </a>
                 <a href="#features" class="btn btn-outline btn-lg">Узнать больше</a>
+
+                 <button id="share-btn" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors border border-slate-700">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span>Поделиться проектом</span>
+                    </button>
+                
             </div>
         </div>
     </section>
@@ -1934,6 +1940,42 @@ updatePings();
 setInterval(updatePings, 15000);
 
 
+
+
+        document.getElementById('share-btn').addEventListener('click', async () => {
+    const shareData = {
+        title: 'ThunderLight',
+        text: 'ThunderLight — крутой приватный мессенджер со сквозным шифрованием. Попробуй интерактивный симулятор шифрования прямо на сайте!',
+        url: 'https://thuderlight.online/'
+    };
+
+    // Проверяем, поддерживает ли браузер нативный шеринг (в основном мобильные)
+    if (navigator.share) {
+        try {
+            await navigator.share(shareData);
+        } catch (err) {
+            console.log('Пользователь отменил шеринг или произошла ошибка:', err);
+        }
+    } else {
+        // Альтернативный вариант для ПК: просто копируем ссылку в буфер
+        try {
+            await navigator.clipboard.writeText(shareData.url);
+            
+            // Красивая плашка-уведомление (визуальный фидбек)
+            const btn = document.getElementById('share-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span>Ссылка скопирована!</span>`;
+            btn.classList.add('border-emerald-500/50');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('border-emerald-500/50');
+            }, 2500);
+        } catch (err) {
+            alert('Не удалось скопировать ссылку: ' + err);
+        }
+    }
+});
 
 
 
