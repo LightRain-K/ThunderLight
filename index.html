@@ -1432,6 +1432,69 @@
         </div>
     </section>
 
+<section class="py-20 bg-slate-900 border-t border-b border-slate-800">
+    <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Как работает сквозное шифрование (E2EE)?</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">Попробуйте наш интерактивный симулятор. Напишите сообщение и посмотрите, как оно защищено в процессе передачи от перехвата.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center bg-slate-950 p-8 rounded-2xl border border-slate-800 shadow-2xl">
+            
+            <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 text-center">
+                <div class="w-16 h-16 bg-blue-500/10 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-blue-500/30">
+                    <i class="fa-solid fa-user-astronaut"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-2">Отправитель (Вы)</h3>
+                <p class="text-xs text-slate-400 mb-4">Шифрует сообщение на вашем устройстве перед отправкой</p>
+                <input type="text" id="sim-input" value="Привет, как дела?" placeholder="Введите сообщение..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                <button id="sim-send-btn" class="w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-lg text-sm transition-colors flex items-center justify-center gap-2">
+                    <span>Отправить</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+
+            <div class="flex flex-col items-center justify-center py-6 lg:py-0">
+                <div class="text-center w-full">
+                    <span class="text-xs font-semibold tracking-wider text-slate-500 uppercase">Сеть интернет</span>
+                    
+                    <div class="relative my-6 w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                        <div id="sim-packet" class="absolute top-0 left-0 h-full w-1/4 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-full opacity-0"></div>
+                    </div>
+
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-dashed border-red-500/30 text-left">
+                        <div class="flex items-center gap-2 text-red-400 text-xs font-bold mb-2">
+                            <i class="fa-solid fa-user-secret animate-pulse"></i>
+                            <span>ПЕРЕХВАЧЕННЫЙ ТРАФИК:</span>
+                        </div>
+                        <div id="sim-intercepted" class="font-mono text-xs text-red-300 break-all bg-slate-950 p-3 rounded border border-red-950 min-h-[40px] flex items-center justify-center">
+                            [Ожидание отправки...]
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 p-6 rounded-xl border border-slate-800 text-center">
+                <div class="w-16 h-16 bg-purple-500/10 text-purple-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-purple-500/30">
+                    <i class="fa-solid fa-user-ninja"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white mb-2">Получатель (Друг)</h3>
+                <p class="text-xs text-slate-400 mb-4">Расшифровывает уникальным приватным ключом на своем девайсе</p>
+                <div class="bg-slate-950 border border-slate-800 rounded-lg p-3 text-left min-h-[38px] flex items-center">
+                    <p id="sim-output" class="text-sm text-slate-400 font-medium italic w-full text-center">Тут появится сообщение...</p>
+                </div>
+                <div class="mt-3 flex items-center justify-center gap-2 text-xs text-emerald-400">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Ключи совпали. Связь защищена.</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+    
     <!-- Сравнение -->
     <section id="compare">
         <div class="section-container">
@@ -1747,6 +1810,68 @@ navLinks.querySelectorAll('a').forEach(link => {
             el.style.transition = 'all 0.6s ease';
             observer.observe(el);
         });
+
+document.getElementById('sim-send-btn').addEventListener('click', function() {
+    const input = document.getElementById('sim-input').value.trim();
+    if (!input) return;
+
+    const sendBtn = this;
+    const packet = document.getElementById('sim-packet');
+    const intercepted = document.getElementById('sim-intercepted');
+    const output = document.getElementById('sim-output');
+
+    // Блокируем кнопку на время анимации
+    sendBtn.disabled = true;
+    sendBtn.classList.add('opacity-50');
+
+    // 1. Стадия отправки: Шифруем на клиенте (имитируем AES/E2EE)
+    // Генерируем "зашифрованный" текст (реалистично выглядящий base64/хэш)
+    const encryptedText = btoa(unescape(encodeURIComponent(input)))
+        .split('')
+        .map(c => Math.random() > 0.7 ? c.toUpperCase() : c)
+        .join('')
+        .substring(0, 24) + '...[E2EE]';
+
+    intercepted.textContent = "Шифрование...";
+    intercepted.classList.remove('text-red-300');
+    intercepted.classList.add('text-blue-300');
+    output.textContent = "...";
+
+    // 2. Анимация полета пакета через сеть
+    packet.style.transition = 'none';
+    packet.style.left = '0%';
+    packet.style.opacity = '1';
+    
+    setTimeout(() => {
+        packet.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+        packet.style.left = '75%'; // Летит до конца
+    }, 50);
+
+    // 3. Стадия перехвата (середина пути)
+    setTimeout(() => {
+        intercepted.textContent = encryptedText;
+        intercepted.classList.remove('text-blue-300');
+        intercepted.classList.add('text-red-400');
+    }, 700);
+
+    // 4. Стадия доставки и расшифровки
+    setTimeout(() => {
+        packet.style.opacity = '0';
+        output.textContent = input;
+        output.classList.remove('text-slate-400', 'italic');
+        output.classList.add('text-emerald-400', 'font-bold');
+        
+        // Разблокируем кнопку
+        sendBtn.disabled = false;
+        sendBtn.classList.remove('opacity-50');
+    }, 1500);
+});
+
+
+
+
+
+        
     </script>
 </body>
 </html>
