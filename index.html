@@ -2139,47 +2139,60 @@
 
             // === РАСЧЕТ РЕАЛЬНОГО ВРЕМЕНИ ВЗЛОМА AES-256 ===
             setTimeout(() => {
-                const breakTimes = calculateAES256BreakTime();
-                
-                let timeHtml = `
-                    <div class="mt-3 bg-red-950/20 border border-red-800/30 rounded-lg p-3">
-                        <div class="text-xs font-bold text-red-400 mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                            РЕАЛЬНОЕ ВРЕМЯ ВЗЛОМА AES-256
-                        </div>
-                        <div class="space-y-1.5">
-                `;
+    const breakTimes = calculateAES256BreakTime();
+    
+    let timeHtml = `
+        <div class="mt-3 bg-red-950/20 border border-red-800/30 rounded-lg p-3">
+            <div class="text-xs font-bold text-red-400 mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                РЕАЛЬНОЕ ВРЕМЯ ВЗЛОМА AES-256
+            </div>
+            <div class="space-y-1.5">
+    `;
 
-                breakTimes.forEach((item, index) => {
-                    const isLast = index === breakTimes.length - 1;
-                    timeHtml += `
-                        <div class="flex items-center justify-between text-[10px] p-1.5 rounded ${isLast ? 'bg-purple-950/30 border border-purple-800/30' : 'bg-slate-900/30'}">
-                            <span class="${item.color} font-medium">${item.name}</span>
-                            <span class="font-mono ${isLast ? 'text-pink-400 font-bold' : 'text-slate-400'}">${item.timeStr}</span>
-                        </div>
-                    `;
-                });
+    breakTimes.forEach((item, index) => {
+        const isLast = index === breakTimes.length - 1;
+        timeHtml += `
+            <div class="flex items-center justify-between text-[10px] p-1.5 rounded ${isLast ? 'bg-purple-950/30 border border-purple-800/30' : 'bg-slate-900/30'}">
+                <span class="${item.color} font-medium">${item.name}</span>
+                <span class="font-mono ${isLast ? 'text-pink-400 font-bold' : 'text-slate-400'}">${item.timeStr}</span>
+            </div>
+        `;
+    });
 
-                timeHtml += `
-                        </div>
-                        <div class="mt-2 pt-2 border-t border-slate-800 text-[9px] text-slate-500 flex items-center gap-2 flex-wrap">
-                            <span>🔢 Всего комбинаций: 2^256 ≈ 1.16×10^77</span>
-                            <span class="text-emerald-400">✅ AES-256 считается криптостойким</span>
-                        </div>
-                        <div class="mt-1 text-[9px] text-slate-600">
-                            💡 Даже при скорости 10^16 ключей/сек потребуется ${breakTimes[breakTimes.length-1].timeStr}
-                        </div>
-                        <div class="mt-1 text-[9px] text-slate-600">
-                            🔑 Для сравнения: возраст Вселенной ≈ 13.8 миллиардов лет
-                        </div>
-                    </div>
-                `;
+    timeHtml += `
+            </div>
+            <div class="mt-2 pt-2 border-t border-slate-800 text-[9px] text-slate-500 flex items-center gap-2 flex-wrap">
+                <span>🔢 Всего комбинаций: 2^256 ≈ 1.16×10^77</span>
+                <span class="text-emerald-400">✅ AES-256 считается криптостойким</span>
+            </div>
+            <div class="mt-1 text-[9px] text-slate-600">
+                💡 Даже при скорости 10^16 ключей/сек потребуется ${breakTimes[breakTimes.length-1].timeStr}
+            </div>
+            <div class="mt-1 text-[9px] text-slate-600">
+                🔑 Для сравнения: возраст Вселенной ≈ 13.8 миллиардов лет
+            </div>
+        </div>
+    `;
 
-                const summaryContainer = document.createElement('div');
-                summaryContainer.innerHTML = timeHtml;
-                logEl.appendChild(summaryContainer);
-                logEl.scrollTop = logEl.scrollHeight;
-            }, 300);
+    const summaryContainer = document.createElement('div');
+    summaryContainer.innerHTML = timeHtml;
+    logEl.appendChild(summaryContainer);
+    
+    // !!! ВАЖНО: увеличиваем высоту лога и прокручиваем до конца
+    logEl.style.maxHeight = '300px';
+    logEl.scrollTop = logEl.scrollHeight;
+    
+    // Также делаем плавное появление
+    summaryContainer.style.animation = 'fadeSlideIn 0.5s ease forwards';
+    summaryContainer.style.opacity = '0';
+    summaryContainer.style.transform = 'translateY(10px)';
+    
+    setTimeout(() => {
+        summaryContainer.style.opacity = '1';
+        summaryContainer.style.transform = 'translateY(0)';
+    }, 50);
+}, 400);
         }
 
         if (state.attackCancelled) {
@@ -2575,6 +2588,266 @@
         }
     }
 </style>
+
+
+    <!-- Секция Новости / Обновления - вставьте после E2EE Lab или в удобном месте -->
+<section id="news" class="py-16 bg-slate-900 border-t border-b border-slate-800">
+    <div class="max-w-5xl mx-auto px-4 md:px-6">
+        <!-- Заголовок -->
+        <div class="text-center mb-12">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-sm text-blue-300 font-medium mb-4">
+                📰 Последние обновления
+            </span>
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-3">Новости ThunderLight</h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">Следите за развитием проекта — новые функции, обновления и анонсы</p>
+        </div>
+
+        <!-- Лента новостей -->
+        <div id="news-feed" class="space-y-4 relative">
+            <!-- Вертикальная линия -->
+            <div class="absolute left-[19px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500/20 via-purple-500/20 to-transparent hidden md:block"></div>
+            
+            <!-- Новости будут загружены через JS -->
+        </div>
+
+        <!-- Кнопка подписки -->
+        <div class="text-center mt-10">
+            <div class="inline-flex items-center gap-4 bg-slate-800/50 rounded-full px-1 py-1 border border-slate-700">
+                <span class="text-sm text-slate-400 px-3">📬 Будьте в курсе:</span>
+                <a href="https://t.me/ThunderLight_official" target="_blank" class="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white font-medium px-5 py-2 rounded-full transition-all text-sm flex items-center gap-2 shadow-lg shadow-blue-500/25">
+                    <i class="fa-brands fa-telegram"></i> Подписаться
+                </a>
+                <a href="mailto:thunderlight@internet.ru" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium px-4 py-2 rounded-full transition-all text-sm flex items-center gap-2">
+                    <i class="fa-regular fa-envelope"></i> Email
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// ============================================================
+// НОВОСТНАЯ ЛЕНТА THUNDERLIGHT
+// ============================================================
+
+(function() {
+    'use strict';
+
+    const newsFeed = document.getElementById('news-feed');
+
+    // === ДАННЫЕ НОВОСТЕЙ ===
+    // Добавляйте новые новости в начало массива (последние сверху)
+    const newsData = [
+        {
+            id: 1,
+            date: '18 августа 2026',
+            icon: '🚀',
+            iconBg: 'bg-emerald-500/20',
+            iconColor: 'text-emerald-400',
+            badge: 'Обновление',
+            badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+            title: 'E2EE Lab — интерактивная демонстрация шифрования',
+            description: 'Добавлена интерактивная лаборатория, где можно наглядно увидеть, как работает сквозное шифрование. Теперь каждый может проверить, как сообщение шифруется и передается безопасно.',
+            link: '#e2ee-lab',
+            linkText: 'Попробовать →',
+            tags: ['Новая функция', 'E2EE'],
+        },
+        {
+            id: 2,
+            date: '15 августа 2026',
+            icon: '📱',
+            iconBg: 'bg-purple-500/20',
+            iconColor: 'text-purple-400',
+            badge: 'Релиз',
+            badgeColor: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+            title: 'Пред-релиз Android версии 0.8.0',
+            description: 'Вышла новая версия ThunderLight для Android с улучшенной производительностью и исправлением критических багов. Обновитесь через GitHub.',
+            link: 'https://github.com/LightRain-K/ThunderLight/releases/',
+            linkText: 'Скачать →',
+            tags: ['Android', 'Обновление'],
+        },
+        {
+            id: 3,
+            date: '10 августа 2026',
+            icon: '🔐',
+            iconBg: 'bg-cyan-500/20',
+            iconColor: 'text-cyan-400',
+            badge: 'Безопасность',
+            badgeColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+            title: 'Усиление криптографической защиты',
+            description: 'Мы обновили протокол шифрования до AES-256-GCM для всех сообщений. Теперь ваши данные защищены еще надежнее. Подробнее в техническом блоге.',
+            link: '#',
+            linkText: 'Читать →',
+            tags: ['Безопасность', 'Шифрование'],
+        },
+        {
+            id: 4,
+            date: '5 августа 2026',
+            icon: '🎨',
+            iconBg: 'bg-pink-500/20',
+            iconColor: 'text-pink-400',
+            badge: 'Дизайн',
+            badgeColor: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
+            title: 'Новый дизайн сайта и 8 тем персонализации',
+            description: 'Мы полностью переработали дизайн сайта и добавили 8 новых тем для интерфейса. Теперь ThunderLight выглядит стильно и современно!',
+            link: '#features',
+            linkText: 'Смотреть →',
+            tags: ['Дизайн', 'Интерфейс'],
+        },
+        {
+            id: 5,
+            date: '1 августа 2026',
+            icon: '📡',
+            iconBg: 'bg-orange-500/20',
+            iconColor: 'text-orange-400',
+            badge: 'Функция',
+            badgeColor: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+            title: 'Офлайн-сообщения через Bluetooth (BLE)',
+            description: 'Теперь можно обмениваться сообщениями без интернета через Bluetooth. Сообщения доставляются автоматически при сближении устройств.',
+            link: '#features',
+            linkText: 'Узнать больше →',
+            tags: ['BLE', 'Офлайн'],
+        },
+        {
+            id: 6,
+            date: '25 июля 2026',
+            icon: '🔓',
+            iconBg: 'bg-green-500/20',
+            iconColor: 'text-green-400',
+            badge: 'Открыто',
+            badgeColor: 'bg-green-500/20 text-green-400 border-green-500/30',
+            title: 'Исходный код полностью открыт',
+            description: 'Мы сделали исходный код ThunderLight полностью открытым. Теперь каждый может проверить безопасность и внести свой вклад в развитие проекта.',
+            link: 'https://github.com/LightRain-K/ThunderLight/',
+            linkText: 'GitHub →',
+            tags: ['Open Source', 'Прозрачность'],
+        },
+    ];
+
+    // === ФУНКЦИЯ РЕНДЕРИНГА ===
+    function renderNews() {
+        let html = '';
+
+        newsData.forEach((item, index) => {
+            const isEven = index % 2 === 0;
+            const delay = index * 150;
+
+            html += `
+                <div class="news-item opacity-0 translate-y-4 transition-all duration-500" style="transition-delay: ${delay}ms;">
+                    <div class="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
+                        <!-- Иконка слева -->
+                        <div class="flex-shrink-0 hidden md:flex">
+                            <div class="w-10 h-10 rounded-full ${item.iconBg} flex items-center justify-center text-xl ${item.iconColor} border border-slate-700/50">
+                                ${item.icon}
+                            </div>
+                        </div>
+
+                        <!-- Основной контент -->
+                        <div class="flex-1 bg-slate-800/30 hover:bg-slate-800/50 rounded-2xl p-5 md:p-6 border border-slate-700/50 transition-all group">
+                            <div class="flex flex-wrap items-start gap-2 mb-2">
+                                <!-- Дата -->
+                                <span class="text-xs text-slate-500 font-mono">${item.date}</span>
+                                
+                                <!-- Бейдж -->
+                                <span class="text-[10px] px-2 py-0.5 rounded-full ${item.badgeColor} border font-medium">
+                                    ${item.badge}
+                                </span>
+
+                                <!-- Теги -->
+                                ${item.tags.map(tag => `
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/30 text-slate-400 border border-slate-600/30 font-medium">
+                                        #${tag}
+                                    </span>
+                                `).join('')}
+                            </div>
+
+                            <h3 class="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                                ${item.title}
+                            </h3>
+
+                            <p class="text-sm text-slate-400 leading-relaxed mb-3">
+                                ${item.description}
+                            </p>
+
+                            ${item.link ? `
+                                <a href="${item.link}" class="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors group-hover:gap-3">
+                                    ${item.linkText || 'Подробнее →'}
+                                    <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+                                </a>
+                            ` : ''}
+                        </div>
+
+                        <!-- Маленькая иконка для мобильных -->
+                        <div class="flex-shrink-0 md:hidden">
+                            <div class="w-8 h-8 rounded-full ${item.iconBg} flex items-center justify-center text-base ${item.iconColor} border border-slate-700/50">
+                                ${item.icon}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        newsFeed.innerHTML = html;
+
+        // Анимация появления
+        setTimeout(() => {
+            document.querySelectorAll('.news-item').forEach((el, i) => {
+                setTimeout(() => {
+                    el.classList.remove('opacity-0', 'translate-y-4');
+                    el.classList.add('opacity-100', 'translate-y-0');
+                }, i * 100 + 100);
+            });
+        }, 300);
+    }
+
+    // === ЗАГРУЗКА НОВОСТЕЙ ===
+    renderNews();
+
+})();
+</script>
+
+<!-- Дополнительные стили для новостей -->
+<style>
+    .news-item {
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .news-item:hover .border-slate-700\/50 {
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+    .news-item .group-hover\:gap-3 {
+        transition: gap 0.3s ease;
+    }
+    /* Анимация пульсации для бейджей */
+    .news-item .bg-emerald-500\/20,
+    .news-item .bg-purple-500\/20,
+    .news-item .bg-cyan-500\/20,
+    .news-item .bg-pink-500\/20,
+    .news-item .bg-orange-500\/20,
+    .news-item .bg-green-500\/20 {
+        animation: badgePulse 3s ease-in-out infinite;
+    }
+    @keyframes badgePulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    /* Адаптация для мобильных */
+    @media (max-width: 640px) {
+        .news-item .flex {
+            gap: 12px;
+        }
+        .news-item .rounded-2xl {
+            padding: 16px;
+        }
+        .news-item h3 {
+            font-size: 16px;
+        }
+        .news-item p {
+            font-size: 13px;
+        }
+    }
+</style>
+    
     
     <!-- Сравнение -->
     <section id="compare">
