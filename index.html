@@ -2583,35 +2583,54 @@
 </style>
 
 
-    <!-- Секция Новости / Обновления - вставьте после E2EE Lab или в удобном месте -->
-<section id="news" class="py-16 bg-slate-900 border-t border-b border-slate-800">
-    <div class="max-w-5xl mx-auto px-4 md:px-6">
-        <!-- Заголовок -->
+    <!-- Секция Новости / Обновления - улучшенная версия -->
+<section id="news" class="py-16 bg-slate-900 border-t border-b border-slate-800 relative overflow-hidden">
+    <!-- Фоновый эффект -->
+    <div class="absolute inset-0 opacity-30">
+        <div class="absolute top-0 left-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 md:px-6 relative z-10">
+        <!-- Заголовок с анимированной иконкой -->
         <div class="text-center mb-12">
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-sm text-blue-300 font-medium mb-4">
-                📰 Последние обновления
-            </span>
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-3">Новости ThunderLight</h2>
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full text-sm text-blue-300 font-medium mb-4 animate-pulse">
+                <span class="inline-block animate-bounce">📰</span>
+                Последние обновления
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-400 animate-ping"></span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Новости ThunderLight
+            </h2>
             <p class="text-slate-400 max-w-2xl mx-auto">Следите за развитием проекта — новые функции, обновления и анонсы</p>
         </div>
 
-        <!-- Лента новостей -->
+        <!-- Лента новостей с улучшенными анимациями -->
         <div id="news-feed" class="space-y-4 relative">
-            <!-- Вертикальная линия -->
-            <div class="absolute left-[19px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500/20 via-purple-500/20 to-transparent hidden md:block"></div>
+            <!-- Вертикальная линия с анимацией -->
+            <div class="absolute left-[19px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500/40 via-purple-500/40 to-transparent hidden md:block">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-2 bg-purple-400 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
+            </div>
             
             <!-- Новости будут загружены через JS -->
         </div>
 
-        <!-- Кнопка подписки -->
+        <!-- Кнопка подписки с улучшенной анимацией -->
         <div class="text-center mt-10">
-            <div class="inline-flex items-center gap-4 bg-slate-800/50 rounded-full px-1 py-1 border border-slate-700">
-                <span class="text-sm text-slate-400 px-3">📬 Будьте в курсе:</span>
-                <a href="https://t.me/ThunderLight_official" target="_blank" class="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white font-medium px-5 py-2 rounded-full transition-all text-sm flex items-center gap-2 shadow-lg shadow-blue-500/25">
-                    <i class="fa-brands fa-telegram"></i> Подписаться
+            <div class="inline-flex flex-wrap items-center justify-center gap-3 bg-slate-800/50 rounded-full px-2 py-2 border border-slate-700 shadow-xl shadow-blue-500/5 hover:shadow-blue-500/10 transition-all duration-500">
+                <span class="text-sm text-slate-400 px-3 flex items-center gap-2">
+                    <span class="inline-block animate-pulse">📬</span>
+                    Будьте в курсе:
+                </span>
+                <a href="https://t.me/ThunderLight_official" target="_blank" class="group bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white font-medium px-5 py-2 rounded-full transition-all text-sm flex items-center gap-2 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-105 duration-300">
+                    <i class="fa-brands fa-telegram group-hover:rotate-12 transition-transform duration-300"></i> 
+                    Подписаться
+                    <span class="inline-block group-hover:translate-x-1 transition-transform duration-300">→</span>
                 </a>
-                <a href="mailto:thunderlight@internet.ru" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium px-4 py-2 rounded-full transition-all text-sm flex items-center gap-2">
-                    <i class="fa-regular fa-envelope"></i> Email
+                <a href="mailto:thunderlight@internet.ru" class="group bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium px-4 py-2 rounded-full transition-all text-sm flex items-center gap-2 hover:scale-105 duration-300">
+                    <i class="fa-regular fa-envelope group-hover:scale-110 transition-transform duration-300"></i> 
+                    Email
                 </a>
             </div>
         </div>
@@ -2620,7 +2639,7 @@
 
 <script>
 // ============================================================
-// НОВОСТНАЯ ЛЕНТА THUNDERLIGHT
+// УЛУЧШЕННАЯ НОВОСТНАЯ ЛЕНТА THUNDERLIGHT
 // ============================================================
 
 (function() {
@@ -2629,7 +2648,6 @@
     const newsFeed = document.getElementById('news-feed');
 
     // === ДАННЫЕ НОВОСТЕЙ ===
-    // Добавляйте новые новости в начало массива (последние сверху)
     const newsData = [
         {
             id: 1,
@@ -2644,8 +2662,8 @@
             link: '#e2ee-lab',
             linkText: 'Попробовать →',
             tags: ['Новая функция', 'E2EE'],
+            highlight: true, // подсветка важной новости
         },
-        
         {
             id: 3,
             date: '10 августа 2026',
@@ -2655,7 +2673,7 @@
             badge: 'Безопасность',
             badgeColor: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
             title: 'Усиление криптографической защиты',
-            description: 'Мы обновили протокол шифрования до AES-256-GCM для всех сообщений. Теперь ваши данные защищены еще надежнее. Подробнее в техническом блоге.',
+            description: 'Мы обновили протокол шифрования до AES-256-GCM для всех сообщений. Теперь ваши данные защищены еще надежнее.',
             link: '#',
             linkText: 'Читать →',
             tags: ['Безопасность', 'Шифрование'],
@@ -2704,62 +2722,67 @@
         },
     ];
 
-    // === ФУНКЦИЯ РЕНДЕРИНГА ===
+    // === ФУНКЦИЯ РЕНДЕРИНГА С УЛУЧШЕННЫМИ АНИМАЦИЯМИ ===
     function renderNews() {
         let html = '';
 
         newsData.forEach((item, index) => {
-            const isEven = index % 2 === 0;
             const delay = index * 150;
+            const isHighlight = item.highlight || false;
 
             html += `
-                <div class="news-item opacity-0 translate-y-4 transition-all duration-500" style="transition-delay: ${delay}ms;">
+                <div class="news-item opacity-0 translate-y-6 transition-all duration-700 hover:translate-x-1" style="transition-delay: ${delay}ms;">
                     <div class="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
-                        <!-- Иконка слева -->
+                        <!-- Иконка с вращением при наведении -->
                         <div class="flex-shrink-0 hidden md:flex">
-                            <div class="w-10 h-10 rounded-full ${item.iconBg} flex items-center justify-center text-xl ${item.iconColor} border border-slate-700/50">
+                            <div class="w-12 h-12 rounded-full ${item.iconBg} flex items-center justify-center text-2xl ${item.iconColor} border border-slate-700/50 transition-all duration-500 hover:rotate-12 hover:scale-110 hover:border-${item.iconColor.replace('text-', '')}/50">
                                 ${item.icon}
                             </div>
                         </div>
 
                         <!-- Основной контент -->
-                        <div class="flex-1 bg-slate-800/30 hover:bg-slate-800/50 rounded-2xl p-5 md:p-6 border border-slate-700/50 transition-all group">
-                            <div class="flex flex-wrap items-start gap-2 mb-2">
-                                <!-- Дата -->
-                                <span class="text-xs text-slate-500 font-mono">${item.date}</span>
+                        <div class="flex-1 bg-slate-800/30 hover:bg-slate-800/50 rounded-2xl p-5 md:p-6 border border-slate-700/50 transition-all duration-500 group hover:border-blue-500/30 hover:shadow-lg hover:shadow-blue-500/5 ${isHighlight ? 'border-emerald-500/20 bg-emerald-950/10' : ''}">
+                            <!-- Бейджи и дата -->
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span class="text-xs text-slate-500 font-mono flex items-center gap-1">
+                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-500 animate-pulse"></span>
+                                    ${item.date}
+                                </span>
                                 
-                                <!-- Бейдж -->
-                                <span class="text-[10px] px-2 py-0.5 rounded-full ${item.badgeColor} border font-medium">
+                                <span class="text-[10px] px-2.5 py-0.5 rounded-full ${item.badgeColor} border font-medium transition-all duration-300 hover:scale-105">
                                     ${item.badge}
                                 </span>
 
-                                <!-- Теги -->
                                 ${item.tags.map(tag => `
-                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/30 text-slate-400 border border-slate-600/30 font-medium">
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-700/30 text-slate-400 border border-slate-600/30 font-medium transition-all duration-300 hover:bg-slate-600/30 hover:text-slate-300">
                                         #${tag}
                                     </span>
                                 `).join('')}
                             </div>
 
-                            <h3 class="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                            <!-- Заголовок с анимацией -->
+                            <h3 class="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors duration-300 flex items-center gap-2">
                                 ${item.title}
+                                ${isHighlight ? '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full animate-pulse">NEW</span>' : ''}
                             </h3>
 
-                            <p class="text-sm text-slate-400 leading-relaxed mb-3">
+                            <!-- Описание -->
+                            <p class="text-sm text-slate-400 leading-relaxed mb-3 group-hover:text-slate-300 transition-colors duration-300">
                                 ${item.description}
                             </p>
 
+                            <!-- Ссылка с улучшенной анимацией -->
                             ${item.link ? `
-                                <a href="${item.link}" class="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors group-hover:gap-3">
+                                <a href="${item.link}" class="inline-flex items-center gap-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-all duration-300 group-hover:gap-3">
                                     ${item.linkText || 'Подробнее →'}
-                                    <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+                                    <i class="fa-solid fa-arrow-right text-xs transition-all duration-300 group-hover:translate-x-1 group-hover:scale-110"></i>
                                 </a>
                             ` : ''}
                         </div>
 
                         <!-- Маленькая иконка для мобильных -->
                         <div class="flex-shrink-0 md:hidden">
-                            <div class="w-8 h-8 rounded-full ${item.iconBg} flex items-center justify-center text-base ${item.iconColor} border border-slate-700/50">
+                            <div class="w-10 h-10 rounded-full ${item.iconBg} flex items-center justify-center text-xl ${item.iconColor} border border-slate-700/50 transition-all duration-300 hover:rotate-12 hover:scale-110">
                                 ${item.icon}
                             </div>
                         </div>
@@ -2770,15 +2793,35 @@
 
         newsFeed.innerHTML = html;
 
-        // Анимация появления
+        // Анимация появления с эффектом "волны"
         setTimeout(() => {
             document.querySelectorAll('.news-item').forEach((el, i) => {
                 setTimeout(() => {
-                    el.classList.remove('opacity-0', 'translate-y-4');
+                    el.classList.remove('opacity-0', 'translate-y-6');
                     el.classList.add('opacity-100', 'translate-y-0');
+                    // Добавляем эффект "пульса" для подсвеченной новости
+                    if (el.querySelector('.bg-emerald-950/10')) {
+                        el.classList.add('animate-pulse-slow');
+                    }
                 }, i * 100 + 100);
             });
         }, 300);
+
+        // Добавляем обработчик для динамического отслеживания видимости (ленивая анимация)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-6');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.news-item').forEach(el => {
+            if (!el.classList.contains('opacity-100')) {
+                observer.observe(el);
+            }
+        });
     }
 
     // === ЗАГРУЗКА НОВОСТЕЙ ===
@@ -2790,7 +2833,7 @@
 <!-- Дополнительные стили для новостей -->
 <style>
     .news-item {
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .news-item:hover .border-slate-700\/50 {
         border-color: rgba(99, 102, 241, 0.3);
@@ -2798,6 +2841,7 @@
     .news-item .group-hover\:gap-3 {
         transition: gap 0.3s ease;
     }
+    
     /* Анимация пульсации для бейджей */
     .news-item .bg-emerald-500\/20,
     .news-item .bg-purple-500\/20,
@@ -2807,10 +2851,50 @@
     .news-item .bg-green-500\/20 {
         animation: badgePulse 3s ease-in-out infinite;
     }
+    
     @keyframes badgePulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(0.95); }
     }
+
+    /* Медленная пульсация для подсвеченных новостей */
+    @keyframes pulse-slow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.1); }
+        50% { box-shadow: 0 0 20px 4px rgba(16, 185, 129, 0.05); }
+    }
+    .animate-pulse-slow {
+        animation: pulse-slow 3s ease-in-out infinite;
+    }
+
+    /* Анимация для иконок при наведении */
+    .news-item .rounded-full {
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .news-item:hover .rounded-full {
+        transform: rotate(8deg) scale(1.05);
+    }
+
+    /* Вертикальная линия с движущимся огоньком */
+    .absolute.left-\[19px\] .w-0\.5 {
+        position: relative;
+    }
+    .absolute.left-\[19px\] .w-0\.5::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 30%;
+        background: linear-gradient(to bottom, rgba(59, 130, 246, 0.6), transparent);
+        animation: scanLine 4s ease-in-out infinite;
+    }
+    @keyframes scanLine {
+        0% { top: 0%; opacity: 1; }
+        50% { top: 70%; opacity: 0.8; }
+        100% { top: 0%; opacity: 1; }
+    }
+
     /* Адаптация для мобильных */
     @media (max-width: 640px) {
         .news-item .flex {
@@ -2825,6 +2909,17 @@
         .news-item p {
             font-size: 13px;
         }
+        .inline-flex.flex-wrap {
+            gap: 8px;
+        }
+        .inline-flex.flex-wrap .px-3 {
+            padding: 0 12px;
+        }
+    }
+
+    /* Плавное появление при скролле */
+    .news-item {
+        will-change: transform, opacity;
     }
 </style>
     
