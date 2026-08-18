@@ -1596,6 +1596,11 @@
         return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
     }
 
+    function arrayBufferToHexCompact(buffer) {
+        const bytes = new Uint8Array(buffer);
+        return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
     function arrayBufferToBase64(buffer) {
         const bytes = new Uint8Array(buffer);
         let binary = '';
@@ -1623,8 +1628,7 @@
 
     async function exportKeyHex(key) {
         const raw = await crypto.subtle.exportKey('raw', key);
-        const bytes = new Uint8Array(raw);
-        return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
+        return arrayBufferToHexCompact(raw);
     }
 
     async function encryptMessage(plaintext, key, iv) {
@@ -1661,11 +1665,8 @@
 
     // === РАСЧЕТ ВРЕМЕНИ ВЗЛОМА AES-256 ===
     function calculateAES256BreakTime() {
-        // Количество возможных комбинаций: 2^256
         const totalCombinations = Math.pow(2, 256);
         
-        // Скорость перебора (ключей в секунду) - современные суперкомпьютеры
-        // Берем средние значения для реалистичности
         const speeds = [
             { name: 'Обычный ПК', keysPerSecond: 1000000, color: 'text-slate-400' },
             { name: 'Игровой ПК (RTX 4090)', keysPerSecond: 100000000, color: 'text-cyan-400' },
@@ -1686,18 +1687,13 @@
             return `${(seconds/31536000000000000000).toFixed(1)} триллионов лет`;
         }
 
-        const results = speeds.map(speed => {
-            const seconds = totalCombinations / speed.keysPerSecond;
-            return {
-                name: speed.name,
-                color: speed.color,
-                seconds: seconds,
-                timeStr: formatTime(seconds),
-                keysPerSecond: speed.keysPerSecond
-            };
-        });
-
-        return results;
+        return speeds.map(speed => ({
+            name: speed.name,
+            color: speed.color,
+            seconds: totalCombinations / speed.keysPerSecond,
+            timeStr: formatTime(totalCombinations / speed.keysPerSecond),
+            keysPerSecond: speed.keysPerSecond
+        }));
     }
 
     // === ОТРИСОВКА ВСЕХ ЭТАПОВ ===
@@ -1731,21 +1727,17 @@
             const isPast = idx < activeIdx;
 
             let statusClass = '';
-            let iconClass = '';
             let messageContent = '';
             let statusBadge = '';
 
             if (isPast) {
                 statusClass = 'opacity-90 border-emerald-500/20 bg-emerald-950/10';
-                iconClass = 'text-emerald-400';
                 statusBadge = `<span class="text-[10px] text-emerald-400 ml-2"><i class="fa-solid fa-check-circle"></i></span>`;
             } else if (isCurrent) {
                 statusClass = 'border-indigo-500/50 bg-indigo-500/10 shadow-lg shadow-indigo-500/20';
-                iconClass = 'text-indigo-400';
                 statusBadge = `<span class="flex-shrink-0 w-2 h-2 rounded-full bg-indigo-400 animate-pulse ml-2"></span>`;
             } else {
                 statusClass = 'opacity-30 border-slate-800/50';
-                iconClass = 'text-slate-600';
                 statusBadge = `<span class="text-[10px] text-slate-600 ml-2"><i class="fa-regular fa-circle"></i></span>`;
             }
 
@@ -1895,7 +1887,6 @@
 
         vizEl.innerHTML = html;
 
-        // Обработчики для показа полного ключа
         document.querySelectorAll('.e2ee-toggle-key').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -1930,7 +1921,7 @@
         }
     }
 
-    // === БРУТФОРС С РАСЧЕТОМ РЕАЛЬНОГО ВРЕМЕНИ ===
+    // === БРУТФОРС С ВИДИМЫМИ ДАННЫМИ ===
     async function runBruteforceAttack() {
         if (state.isProcessing) return;
         if (!state.ciphertext) {
@@ -1946,6 +1937,7 @@
         const ciphertext = state.ciphertext;
         const iv = state.iv;
         const originalPlaintext = state.plaintext;
+        const originalKeyHex = state.keyHex;
 
         // Создаем контейнер для атаки
         const attackContainer = document.createElement('div');
@@ -1958,6 +1950,23 @@
                 <span>БРУТФОРС АТАКА</span>
                 <span class="text-xs text-slate-500 font-normal ml-auto" id="attack-timer">⏱ 00:00</span>
             </div>
+            
+            <!-- Данные для атаки -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mb-3">
+                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/50">
+                    <div class="text-slate-500">Целевой шифртекст</div>
+                    <div class="font-mono text-purple-300 text-[8px] break-all max-h-12 overflow-y-auto">${state.ciphertextHex.substring(0, 100)}${state.ciphertextHex.length > 100 ? '...' : ''}</div>
+                </div>
+                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/50">
+                    <div class="text-slate-500">IV / Nonce</div>
+                    <div class="font-mono text-cyan-300 text-[8px] break-all">${state.ivHex}</div>
+                </div>
+                <div class="bg-slate-900/50 rounded-lg p-2 border border-slate-800/50">
+                    <div class="text-slate-500">Настоящий ключ (неизвестен)</div>
+                    <div class="font-mono text-red-400/50 text-[8px] break-all">${'█'.repeat(64)}</div>
+                </div>
+            </div>
+
             <div class="space-y-3">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
                     <div class="bg-slate-900/50 rounded-lg p-3 border border-slate-800/50 text-center">
@@ -1977,6 +1986,16 @@
                         <div class="text-sm font-medium text-yellow-400" id="attack-status">🔍 Подбор...</div>
                     </div>
                 </div>
+
+                <!-- Текущий проверяемый ключ -->
+                <div class="bg-slate-950 rounded-lg p-2 border border-slate-800/50">
+                    <div class="flex justify-between text-[10px] text-slate-500">
+                        <span>Проверяемый ключ</span>
+                        <span id="attack-current-key-label">#0</span>
+                    </div>
+                    <div class="font-mono text-slate-300 text-[9px] break-all" id="attack-current-key">Ожидание...</div>
+                </div>
+
                 <div class="bg-slate-950 rounded-lg p-3 border border-slate-800/50">
                     <div class="flex justify-between text-[10px] text-slate-500 mb-1">
                         <span>Прогресс атаки</span>
@@ -1986,9 +2005,12 @@
                         <div id="attack-progress-bar" class="h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-300" style="width: 0%;"></div>
                     </div>
                 </div>
+
                 <div id="attack-log" class="bg-slate-950 rounded-lg p-3 border border-slate-800/50 max-h-40 overflow-y-auto font-mono text-[10px] space-y-0.5">
                     <div class="text-slate-500">[${new Date().toLocaleTimeString()}] 🚀 Начало атаки...</div>
+                    <div class="text-slate-500">[${new Date().toLocaleTimeString()}] 📊 Цель: подобрать 256-битный ключ</div>
                 </div>
+
                 <button id="attack-cancel-btn" class="w-full bg-red-950/50 hover:bg-red-900/50 text-red-400 border border-red-800/50 font-medium py-2 rounded-lg transition-all text-sm">
                     <i class="fa-solid fa-stop"></i> Остановить атаку
                 </button>
@@ -2008,6 +2030,8 @@
         const timerEl = document.getElementById('attack-timer');
         const cancelBtn = document.getElementById('attack-cancel-btn');
         const foundEl = document.getElementById('attack-found');
+        const currentKeyEl = document.getElementById('attack-current-key');
+        const currentKeyLabel = document.getElementById('attack-current-key-label');
 
         let attempts = 0;
         let foundKeys = 0;
@@ -2049,7 +2073,7 @@
             }
         }
 
-        const totalAttempts = 100;
+        const totalAttempts = 50;
         let found = false;
 
         addLog('🔑 Начинаем подбор ключей...', 'text-yellow-400');
@@ -2068,28 +2092,33 @@
 
             attemptsEl.textContent = attempts;
 
-            const progress = (i / totalAttempts) * 100;
-            progressBar.style.width = progress + '%';
-            progressText.textContent = Math.round(progress) + '%';
+            // Обновляем прогресс правильно
+            const progress = ((i + 1) / totalAttempts) * 100;
+            progressBar.style.width = Math.min(progress, 100) + '%';
+            progressText.textContent = Math.round(Math.min(progress, 100)) + '%';
 
             const testKey = await generateRandomKey();
+            const testKeyHex = await exportKeyHex(testKey);
+            
+            // Показываем текущий проверяемый ключ
+            currentKeyLabel.textContent = `#${attempts}`;
+            currentKeyEl.textContent = testKeyHex;
+            
             const success = await tryKey(testKey);
 
             if (success) {
                 foundKeys++;
                 foundEl.textContent = foundKeys;
-                addLog(`⚠️ Найден рабочий ключ #${foundKeys}, но это случайное совпадение!`, 'text-yellow-400');
+                addLog(`⚠️ Найден рабочий ключ #${foundKeys}: ${testKeyHex.substring(0, 16)}... (случайное совпадение!)`, 'text-yellow-400');
             }
 
-            if (i % 10 === 0 && i > 0) {
+            // Логируем каждые 5 попыток
+            if (i % 5 === 0 && i > 0) {
                 addLog(`❌ Попытка #${attempts} — неверный ключ`, 'text-red-400/70');
             }
 
-            await sleep(25 + Math.random() * 15);
-
-            if (i % 17 === 0 && i > 0) {
-                addLog(`⚠️ Кандидат #${attempts} — частичное совпадение`, 'text-yellow-400/70');
-            }
+            // Небольшая задержка
+            await sleep(20);
         }
 
         clearInterval(timerInterval);
@@ -2099,6 +2128,7 @@
             statusEl.className = 'text-sm font-medium text-red-400';
             progressBar.style.width = '100%';
             progressText.textContent = '100%';
+            currentKeyEl.textContent = '— Атака завершена —';
             
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             addLog(`⏱ Время атаки: ${elapsed} секунд`, 'text-slate-400');
@@ -2126,20 +2156,21 @@
                         <div class="flex items-center justify-between text-[10px] p-1.5 rounded ${isLast ? 'bg-purple-950/30 border border-purple-800/30' : 'bg-slate-900/30'}">
                             <span class="${item.color} font-medium">${item.name}</span>
                             <span class="font-mono ${isLast ? 'text-pink-400 font-bold' : 'text-slate-400'}">${item.timeStr}</span>
-                            <span class="text-slate-600 text-[8px]">${item.keysPerSecond >= 10000000000000000 ? '⚡' : ''}</span>
                         </div>
                     `;
                 });
 
-                const totalCombinations = Math.pow(2, 256);
                 timeHtml += `
                         </div>
                         <div class="mt-2 pt-2 border-t border-slate-800 text-[9px] text-slate-500 flex items-center gap-2 flex-wrap">
-                            <span>🔢 Всего комбинаций: 2^256 ≈ ${totalCombinations.toExponential(2)}</span>
+                            <span>🔢 Всего комбинаций: 2^256 ≈ 1.16×10^77</span>
                             <span class="text-emerald-400">✅ AES-256 считается криптостойким</span>
                         </div>
                         <div class="mt-1 text-[9px] text-slate-600">
                             💡 Даже при скорости 10^16 ключей/сек потребуется ${breakTimes[breakTimes.length-1].timeStr}
+                        </div>
+                        <div class="mt-1 text-[9px] text-slate-600">
+                            🔑 Для сравнения: возраст Вселенной ≈ 13.8 миллиардов лет
                         </div>
                     </div>
                 `;
@@ -2148,11 +2179,11 @@
                 summaryContainer.innerHTML = timeHtml;
                 logEl.appendChild(summaryContainer);
                 logEl.scrollTop = logEl.scrollHeight;
-            }, 500);
+            }, 300);
         }
 
         if (state.attackCancelled) {
-            addLog('⛔ Атака прервана', 'text-yellow-400');
+            addLog('⛔ Атака прервана пользователем', 'text-yellow-400');
         }
 
         state.isProcessing = false;
@@ -2170,10 +2201,10 @@
 
         try {
             renderAllStages('userA', displayData);
-            await sleep(600);
+            await sleep(500);
 
             renderAllStages('plaintext', displayData);
-            await sleep(1000);
+            await sleep(800);
 
             const iv = generateIV();
             const key = await generateKey();
@@ -2184,7 +2215,7 @@
             displayData.fullKey = keyHex;
 
             renderAllStages('encryption', displayData);
-            await sleep(1200);
+            await sleep(1000);
 
             const ciphertext = await encryptMessage(plaintext, key, iv);
             const ciphertextHex = arrayBufferToHex(ciphertext);
@@ -2199,24 +2230,24 @@
             state.ciphertextHex = ciphertextHex;
 
             renderAllStages('ciphertext', displayData);
-            await sleep(1000);
+            await sleep(800);
 
             renderAllStages('network1', displayData);
-            await sleep(1000);
+            await sleep(800);
 
             displayData.serverPayload = ciphertextHex.substring(0, 60) + (ciphertextHex.length > 60 ? '...' : '');
             renderAllStages('server', displayData);
-            await sleep(1400);
+            await sleep(1200);
 
             renderAllStages('network2', displayData);
-            await sleep(1000);
+            await sleep(800);
 
             renderAllStages('ciphertext2', displayData);
-            await sleep(800);
+            await sleep(600);
 
             displayData.decryptStatus = '⏳ Расшифровка...';
             renderAllStages('decryption', displayData);
-            await sleep(1000);
+            await sleep(800);
 
             let decryptedText;
             let decryptSuccess = true;
@@ -2229,7 +2260,7 @@
                     ciphertextToDecrypt = modified.buffer;
                     displayData.ciphertextHex = arrayBufferToHex(ciphertextToDecrypt);
                     renderAllStages('ciphertext2', displayData);
-                    await sleep(800);
+                    await sleep(600);
                 }
 
                 decryptedText = await decryptMessage(ciphertextToDecrypt, key, iv);
@@ -2243,9 +2274,9 @@
 
             if (decryptSuccess) {
                 renderAllStages('plaintext2', displayData);
-                await sleep(1000);
+                await sleep(800);
                 renderAllStages('userB', displayData);
-                await sleep(600);
+                await sleep(500);
 
                 state.history.push({
                     plaintext,
@@ -2256,7 +2287,7 @@
                 state.completed = true;
             } else {
                 renderAllStages('decryption', displayData);
-                await sleep(1200);
+                await sleep(1000);
                 renderAllStages('userB', { ...displayData, error: true });
                 state.completed = false;
             }
@@ -2292,12 +2323,12 @@
             inputEl.value = msgs[i];
             await runE2EEDemo(msgs[i]);
             if (i < msgs.length - 1) {
-                await sleep(2500);
+                await sleep(2000);
                 const oldContainer = document.getElementById('e2ee-attack-container');
                 if (oldContainer) oldContainer.remove();
                 const msg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
                 renderAllStages('userA', { plaintext: msg });
-                await sleep(400);
+                await sleep(300);
                 renderAllStages('plaintext', { plaintext: msg });
                 updateProgress(0);
             }
@@ -2313,7 +2344,7 @@
         renderAllStages('userA', { plaintext: initialMsg });
         setTimeout(() => {
             renderAllStages('plaintext', { plaintext: initialMsg });
-        }, 400);
+        }, 300);
         updateProgress(0);
 
         encryptBtn.addEventListener('click', async () => {
@@ -2351,7 +2382,7 @@
             renderAllStages('userA', { plaintext: msg });
             setTimeout(() => {
                 renderAllStages('plaintext', { plaintext: msg });
-            }, 400);
+            }, 300);
             updateProgress(0);
         });
 
@@ -2456,9 +2487,9 @@
         border-radius: 10px;
     }
     .e2ee-step {
-        animation: fadeSlideIn 0.5s ease forwards;
+        animation: fadeSlideIn 0.4s ease forwards;
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(10px);
     }
     .e2ee-step:nth-child(1) { animation-delay: 0.05s; }
     .e2ee-step:nth-child(2) { animation-delay: 0.10s; }
@@ -2511,29 +2542,36 @@
     .e2ee-toggle-key:hover {
         text-decoration: underline;
     }
+    #attack-current-key {
+        transition: all 0.2s ease;
+        word-break: break-all;
+    }
     @media (max-width: 640px) {
         .e2ee-step {
-            padding: 12px !important;
+            padding: 10px !important;
         }
         .e2ee-step .flex {
-            gap: 8px;
+            gap: 6px;
         }
         .e2ee-step .w-10 {
-            width: 32px;
-            height: 32px;
-            font-size: 12px;
+            width: 28px;
+            height: 28px;
+            font-size: 11px;
         }
         .e2ee-step .text-sm {
-            font-size: 12px;
+            font-size: 11px;
         }
         .e2ee-step .text-xs {
-            font-size: 10px;
+            font-size: 9px;
         }
         .e2ee-step .grid-cols-2 {
             grid-template-columns: 1fr;
         }
         #e2ee-attack-container .grid-cols-1.md\\:grid-cols-4 {
             grid-template-columns: 1fr 1fr;
+        }
+        #e2ee-attack-container .grid-cols-1.md\\:grid-cols-3 {
+            grid-template-columns: 1fr;
         }
     }
 </style>
