@@ -3307,6 +3307,24 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+
+        window.addEventListener('load', function() {
+    // Прокручиваем наверх с небольшой задержкой
+    setTimeout(function() {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'auto' // 'smooth' если хотите плавно
+        });
+    }, 100); // 100ms задержки
+});
+
+// Также срабатываем при первом движении мыши (если load не сработал)
+document.addEventListener('mousemove', function firstMove() {
+    window.scrollTo(0, 0);
+    document.removeEventListener('mousemove', firstMove);
+}, { once: true });
+
         // Убираем якорь из URL при загрузке
 if (window.location.hash) {
     // Прокручиваем наверх
