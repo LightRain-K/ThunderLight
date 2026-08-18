@@ -3307,6 +3307,14 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+        // Убираем якорь из URL при загрузке
+if (window.location.hash) {
+    // Прокручиваем наверх
+    window.scrollTo(0, 0);
+    // Убираем хеш из URL без перезагрузки
+    history.pushState("", document.title, window.location.pathname + window.location.search);
+}
+
 
 
         
