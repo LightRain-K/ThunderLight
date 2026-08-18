@@ -1911,14 +1911,7 @@
         const total = stages.length;
         updateProgress(((activeIdx + 1) / total) * 100);
 
-        if (activeIdx >= 0) {
-            const items = vizEl.querySelectorAll('.e2ee-step');
-            if (items[activeIdx]) {
-                setTimeout(() => {
-                    items[activeIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 200);
-            }
-        }
+        
     }
 
     // === БРУТФОРС С ВИДИМЫМИ ДАННЫМИ ===
