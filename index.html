@@ -1501,7 +1501,7 @@
                 🔬 Интерактивная лаборатория
             </span>
             <h2 class="text-3xl md:text-4xl font-bold text-white mb-3">ThunderLight E2EE Lab</h2>
-            <p class="text-slate-400 max-w-2xl mx-auto">Наблюдайте, как сообщение путешествует от отправителя к получателю в полной безопасности</p>
+            <p class="text-slate-400 max-w-2xl mx-auto">Наблюдайте полный путь сообщения — от отправителя до получателя</p>
         </div>
 
         <!-- Ввод сообщения -->
@@ -1526,9 +1526,9 @@
                 <div id="e2ee-progress" class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-700" style="width: 0%;"></div>
             </div>
 
-            <!-- Основная визуализация -->
+            <!-- Основная визуализация - ВСЕ ЭТАПЫ ВИДИМЫ -->
             <div id="e2ee-visualization" class="relative min-h-[500px]">
-                <!-- Здесь будет динамический контент -->
+                <!-- Все этапы отображаются постоянно -->
             </div>
 
             <!-- Кнопки управления -->
@@ -1558,7 +1558,7 @@
 
 <script>
 // ============================================================
-// THUNDERLIGHT E2EE LAB — Визуальная демонстрация
+// THUNDERLIGHT E2EE LAB — Все этапы всегда видны
 // ============================================================
 
 (function() {
@@ -1585,6 +1585,7 @@
         history: [],
         autoRunning: false,
         currentStep: 0,
+        completed: false,
     };
 
     // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
@@ -1649,133 +1650,57 @@
         progressBar.style.width = Math.min(percent, 100) + '%';
     }
 
-    // === ОТРИСОВКА ВИЗУАЛИЗАЦИИ ===
-    function renderVisualization(stage, data) {
-        const stages = {
-            userA: {
-                icon: 'fa-user',
-                label: 'Отправитель',
-                color: 'text-blue-400',
-                bg: 'bg-blue-500/10',
-                border: 'border-blue-500/30',
-                desc: 'Сообщение создано на вашем устройстве'
-            },
-            plaintext: {
-                icon: 'fa-file-lines',
-                label: 'Исходное сообщение',
-                color: 'text-green-400',
-                bg: 'bg-green-500/10',
-                border: 'border-green-500/30',
-                desc: 'Существует только у отправителя'
-            },
-            encryption: {
-                icon: 'fa-lock',
-                label: 'Шифрование',
-                color: 'text-yellow-400',
-                bg: 'bg-yellow-500/10',
-                border: 'border-yellow-500/30',
-                desc: 'AES-256-GCM на устройстве'
-            },
-            ciphertext: {
-                icon: 'fa-shield-halved',
-                label: 'Зашифрованные данные',
-                color: 'text-purple-400',
-                bg: 'bg-purple-500/10',
-                border: 'border-purple-500/30',
-                desc: '🔒 Без ключа — бессмысленный шум'
-            },
-            network1: {
-                icon: 'fa-wifi',
-                label: 'Передача по сети',
-                color: 'text-cyan-400',
-                bg: 'bg-cyan-500/10',
-                border: 'border-cyan-500/30',
-                desc: 'Данные идут к серверу'
-            },
-            server: {
-                icon: 'fa-server',
-                label: 'Сервер',
-                color: 'text-orange-400',
-                bg: 'bg-orange-500/10',
-                border: 'border-orange-500/30',
-                desc: '🚫 Не видит содержимое!'
-            },
-            network2: {
-                icon: 'fa-wifi',
-                label: 'Передача по сети',
-                color: 'text-cyan-400',
-                bg: 'bg-cyan-500/10',
-                border: 'border-cyan-500/30',
-                desc: 'Данные идут к получателю'
-            },
-            ciphertext2: {
-                icon: 'fa-shield-halved',
-                label: 'Зашифрованные данные',
-                color: 'text-purple-400',
-                bg: 'bg-purple-500/10',
-                border: 'border-purple-500/30',
-                desc: '🔒 Данные получены'
-            },
-            decryption: {
-                icon: 'fa-unlock',
-                label: 'Расшифровка',
-                color: 'text-yellow-400',
-                bg: 'bg-yellow-500/10',
-                border: 'border-yellow-500/30',
-                desc: 'Восстановление сообщения'
-            },
-            plaintext2: {
-                icon: 'fa-file-lines',
-                label: 'Восстановленное сообщение',
-                color: 'text-emerald-400',
-                bg: 'bg-emerald-500/10',
-                border: 'border-emerald-500/30',
-                desc: '✅ Исходный текст восстановлен'
-            },
-            userB: {
-                icon: 'fa-user',
-                label: 'Получатель',
-                color: 'text-pink-400',
-                bg: 'bg-pink-500/10',
-                border: 'border-pink-500/30',
-                desc: '🎉 Сообщение доставлено безопасно'
-            }
-        };
+    // === ОТРИСОВКА ВСЕХ ЭТАПОВ (всегда видны) ===
+    function renderAllStages(activeStage, data) {
+        const stages = [
+            { id: 'userA', icon: 'fa-user', label: 'Отправитель', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', desc: 'Сообщение создано на устройстве' },
+            { id: 'plaintext', icon: 'fa-file-lines', label: 'Исходное сообщение', color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/30', desc: 'Только у отправителя' },
+            { id: 'encryption', icon: 'fa-lock', label: 'Шифрование', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', desc: 'AES-256-GCM на устройстве' },
+            { id: 'ciphertext', icon: 'fa-shield-halved', label: 'Зашифрованные данные', color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', desc: '🔒 Без ключа — шум' },
+            { id: 'network1', icon: 'fa-wifi', label: 'Передача по сети →', color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', desc: 'К серверу' },
+            { id: 'server', icon: 'fa-server', label: 'Сервер', color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/30', desc: '🚫 Не видит содержимое!' },
+            { id: 'network2', icon: 'fa-wifi', label: '← Передача по сети', color: 'text-cyan-400', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30', desc: 'К получателю' },
+            { id: 'ciphertext2', icon: 'fa-shield-halved', label: 'Зашифрованные данные', color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30', desc: '🔒 Получены' },
+            { id: 'decryption', icon: 'fa-unlock', label: 'Расшифровка', color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30', desc: 'Восстановление' },
+            { id: 'plaintext2', icon: 'fa-file-lines', label: 'Восстановленное сообщение', color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', desc: '✅ Исходный текст' },
+            { id: 'userB', icon: 'fa-user', label: 'Получатель', color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30', desc: '🎉 Сообщение доставлено' }
+        ];
 
-        const order = ['userA', 'plaintext', 'encryption', 'ciphertext', 'network1', 'server', 'network2', 'ciphertext2', 'decryption', 'plaintext2', 'userB'];
-        const currentIdx = order.indexOf(stage);
-        state.currentStep = currentIdx;
+        const order = stages.map(s => s.id);
+        const activeIdx = order.indexOf(activeStage);
+        state.currentStep = activeIdx;
 
-        // Строим визуализацию
         let html = `
             <div class="relative">
-                <!-- Основная схема -->
-                <div class="space-y-3">
+                <div class="space-y-2">
         `;
 
-        order.forEach((key, idx) => {
-            const s = stages[key];
-            const isActive = idx <= currentIdx;
-            const isCurrent = idx === currentIdx;
-            const isPast = idx < currentIdx;
+        stages.forEach((s, idx) => {
+            const isActive = idx <= activeIdx;
+            const isCurrent = idx === activeIdx;
+            const isPast = idx < activeIdx;
 
             let statusClass = '';
             let iconClass = '';
             let messageContent = '';
+            let statusBadge = '';
 
             if (isPast) {
-                statusClass = 'opacity-80';
+                statusClass = 'opacity-90 border-emerald-500/20 bg-emerald-950/10';
                 iconClass = 'text-emerald-400';
+                statusBadge = `<span class="text-[10px] text-emerald-400 ml-2"><i class="fa-solid fa-check-circle"></i></span>`;
             } else if (isCurrent) {
                 statusClass = 'border-indigo-500/50 bg-indigo-500/10 shadow-lg shadow-indigo-500/20';
                 iconClass = 'text-indigo-400';
+                statusBadge = `<span class="flex-shrink-0 w-2 h-2 rounded-full bg-indigo-400 animate-pulse ml-2"></span>`;
             } else {
-                statusClass = 'opacity-30';
+                statusClass = 'opacity-30 border-slate-800/50';
                 iconClass = 'text-slate-600';
+                statusBadge = `<span class="text-[10px] text-slate-600 ml-2"><i class="fa-regular fa-circle"></i></span>`;
             }
 
-            // Контент сообщения для разных этапов
-            if (key === 'plaintext' && data?.plaintext) {
+            // Контент для разных этапов (всегда видим, если уже пройден или активен)
+            if (s.id === 'plaintext' && data?.plaintext && isActive) {
                 messageContent = `
                     <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-green-500/20">
                         <div class="text-green-300 font-mono text-sm break-all">"${data.plaintext}"</div>
@@ -1787,7 +1712,7 @@
                 `;
             }
 
-            if (key === 'plaintext2' && data?.decryptedText) {
+            if (s.id === 'plaintext2' && data?.decryptedText && isActive) {
                 messageContent = `
                     <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-emerald-500/20">
                         <div class="text-emerald-300 font-mono text-sm break-all">"${data.decryptedText}"</div>
@@ -1799,7 +1724,7 @@
                 `;
             }
 
-            if (key === 'encryption' && data?.algorithm) {
+            if (s.id === 'encryption' && data?.algorithm && isActive) {
                 messageContent = `
                     <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-yellow-500/20 space-y-1">
                         <div class="flex items-center gap-2 text-xs">
@@ -1822,20 +1747,20 @@
                 `;
             }
 
-            if ((key === 'ciphertext' || key === 'ciphertext2') && data?.ciphertextHex) {
+            if ((s.id === 'ciphertext' || s.id === 'ciphertext2') && data?.ciphertextHex && isActive) {
                 const display = data.ciphertextHex.length > 80 ? data.ciphertextHex.substring(0, 80) + '...' : data.ciphertextHex;
                 messageContent = `
                     <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-purple-500/20">
                         <div class="text-purple-300 font-mono text-[10px] break-all">${display}</div>
                         <div class="flex items-center gap-2 mt-1 text-[10px] text-purple-400/60">
                             <i class="fa-solid fa-lock"></i>
-                            <span>${key === 'ciphertext' ? 'Данные зашифрованы перед отправкой' : 'Данные получены в зашифрованном виде'}</span>
+                            <span>${s.id === 'ciphertext' ? 'Данные зашифрованы перед отправкой' : 'Данные получены в зашифрованном виде'}</span>
                         </div>
                     </div>
                 `;
             }
 
-            if (key === 'server' && data?.serverPayload) {
+            if (s.id === 'server' && data?.serverPayload && isActive) {
                 messageContent = `
                     <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-orange-500/20">
                         <div class="flex items-center gap-2 text-xs text-orange-300/70">
@@ -1845,11 +1770,11 @@
                         <div class="text-purple-300/50 font-mono text-[10px] break-all mt-1">${data.serverPayload}</div>
                         <div class="grid grid-cols-2 gap-2 mt-2 text-[10px]">
                             <div class="bg-red-950/30 rounded p-2 border border-red-800/30">
-                                <div class="text-red-400 font-bold">🚫 НЕТ ДОСТУПА</div>
-                                <div class="text-red-400/50">Plaintext: ████████████████</div>
+                                <div class="text-red-400 font-bold text-xs">🚫 НЕТ ДОСТУПА</div>
+                                <div class="text-red-400/50 text-[10px]">Plaintext: ████████████████</div>
                             </div>
                             <div class="bg-red-950/30 rounded p-2 border border-red-800/30">
-                                <div class="text-red-400/70">Ключ:</div>
+                                <div class="text-red-400/70 text-[10px]">Ключ:</div>
                                 <div class="text-red-400/50 font-mono text-[8px]">████████████████████</div>
                             </div>
                         </div>
@@ -1861,7 +1786,7 @@
                 `;
             }
 
-            if (key === 'decryption' && data?.decryptStatus) {
+            if (s.id === 'decryption' && data?.decryptStatus && isActive) {
                 const isError = data.decryptStatus.includes('❌') || data.decryptStatus.includes('ошибка');
                 messageContent = `
                     <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border ${isError ? 'border-red-500/20' : 'border-emerald-500/20'}">
@@ -1872,9 +1797,9 @@
                 `;
             }
 
-            // Стрелка
-            const arrow = idx < order.length - 1 ? `
-                <div class="flex justify-center py-1 ${isCurrent ? 'text-indigo-400' : isPast ? 'text-emerald-400/30' : 'text-slate-700'}">
+            // Стрелка (всегда видна между этапами)
+            const arrow = idx < stages.length - 1 ? `
+                <div class="flex justify-center py-1 ${isActive ? 'text-indigo-400' : 'text-slate-700'}">
                     <div class="relative">
                         <i class="fa-solid fa-arrow-down text-sm ${isCurrent ? 'animate-bounce' : ''}"></i>
                         ${isCurrent ? '<div class="absolute -inset-2 bg-indigo-500/10 rounded-full blur-sm"></div>' : ''}
@@ -1883,19 +1808,21 @@
             ` : '';
 
             html += `
-                <div class="e2ee-step ${statusClass} transition-all duration-500">
-                    <div class="flex items-start gap-4 bg-slate-950/40 rounded-xl p-4 border ${isCurrent ? s.border : 'border-slate-800/50'} hover:border-slate-700/50 transition-all">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full ${isCurrent ? s.bg : 'bg-slate-800'} flex items-center justify-center text-sm ${isCurrent ? s.color : 'text-slate-600'} transition-all">
+                <div class="e2ee-step ${statusClass} transition-all duration-500 rounded-xl border p-4 bg-slate-950/30">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full ${isActive && !isPast ? s.bg : 'bg-slate-800'} flex items-center justify-center text-sm ${isActive ? s.color : 'text-slate-600'} transition-all">
                             <i class="fa-solid ${s.icon}"></i>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span class="text-sm font-bold ${isCurrent ? s.color : isPast ? 'text-slate-300' : 'text-slate-600'}">${s.label}</span>
+                                <span class="text-sm font-bold ${isActive ? s.color : 'text-slate-600'}">${s.label}</span>
                                 <span class="text-[10px] text-slate-500">${s.desc}</span>
-                                ${isCurrent ? '<span class="flex-shrink-0 w-2 h-2 rounded-full bg-indigo-400 animate-pulse ml-auto"></span>' : ''}
-                                ${isPast ? '<span class="flex-shrink-0 text-emerald-400 text-xs ml-auto"><i class="fa-solid fa-check-circle"></i></span>' : ''}
+                                ${statusBadge}
                             </div>
                             ${messageContent}
+                            ${!isActive && !messageContent ? `
+                                <div class="mt-1 text-[10px] text-slate-600 italic">Ожидание...</div>
+                            ` : ''}
                         </div>
                     </div>
                     ${arrow}
@@ -1918,15 +1845,17 @@
         vizEl.innerHTML = html;
 
         // Обновляем прогресс
-        const total = order.length;
-        updateProgress(((currentIdx + 1) / total) * 100);
+        const total = stages.length;
+        updateProgress(((activeIdx + 1) / total) * 100);
 
         // Прокрутка к текущему шагу
-        const currentEl = vizEl.querySelector('.e2ee-step .border-indigo-500\\/50');
-        if (currentEl) {
-            setTimeout(() => {
-                currentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 150);
+        if (activeIdx >= 0) {
+            const items = vizEl.querySelectorAll('.e2ee-step');
+            if (items[activeIdx]) {
+                setTimeout(() => {
+                    items[activeIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 200);
+            }
         }
     }
 
@@ -1935,34 +1864,36 @@
         if (state.isProcessing) return;
         state.isProcessing = true;
         encryptBtn.disabled = true;
+        state.completed = false;
+
+        // Сохраняем данные для отображения на всех этапах
+        const displayData = { plaintext };
 
         try {
             // 1. USER A
-            renderVisualization('userA', {});
-            await sleep(800);
+            renderAllStages('userA', displayData);
+            await sleep(600);
 
             // 2. PLAINTEXT
-            renderVisualization('plaintext', { plaintext });
-            await sleep(1200);
+            renderAllStages('plaintext', displayData);
+            await sleep(1000);
 
             // 3. Генерация ключей
             const iv = generateIV();
             const key = await generateKey();
             const keyHex = await exportKeyHex(key);
             const ivHex = arrayBufferToHex(iv.buffer);
+            displayData.keyHex = keyHex;
+            displayData.ivHex = ivHex;
 
             // 4. ENCRYPTION
-            renderVisualization('encryption', {
-                algorithm: 'AES-256-GCM',
-                keyHex,
-                ivHex,
-            });
-            await sleep(1500);
+            renderAllStages('encryption', displayData);
+            await sleep(1200);
 
             // Реальное шифрование
             const ciphertext = await encryptMessage(plaintext, key, iv);
             const ciphertextHex = arrayBufferToHex(ciphertext);
-            const ciphertextBase64 = arrayBufferToBase64(ciphertext);
+            displayData.ciphertextHex = ciphertextHex;
 
             state.plaintext = plaintext;
             state.ciphertext = ciphertext;
@@ -1972,34 +1903,33 @@
             state.ivHex = ivHex;
 
             // 5. CIPHERTEXT
-            renderVisualization('ciphertext', { ciphertextHex });
-            await sleep(1200);
-
-            // 6. NETWORK 1
-            renderVisualization('network1', {});
-            await sleep(1200);
-
-            // 7. SERVER
-            renderVisualization('server', {
-                serverPayload: ciphertextHex.substring(0, 60) + (ciphertextHex.length > 60 ? '...' : ''),
-            });
-            await sleep(1800);
-
-            // 8. NETWORK 2
-            renderVisualization('network2', {});
-            await sleep(1200);
-
-            // 9. CIPHERTEXT 2
-            renderVisualization('ciphertext2', { ciphertextHex });
+            renderAllStages('ciphertext', displayData);
             await sleep(1000);
 
+            // 6. NETWORK 1
+            renderAllStages('network1', displayData);
+            await sleep(1000);
+
+            // 7. SERVER
+            displayData.serverPayload = ciphertextHex.substring(0, 60) + (ciphertextHex.length > 60 ? '...' : '');
+            renderAllStages('server', displayData);
+            await sleep(1400);
+
+            // 8. NETWORK 2
+            renderAllStages('network2', displayData);
+            await sleep(1000);
+
+            // 9. CIPHERTEXT 2
+            renderAllStages('ciphertext2', displayData);
+            await sleep(800);
+
             // 10. DECRYPTION
-            renderVisualization('decryption', { decryptStatus: '⏳ Расшифровка...' });
-            await sleep(1200);
+            displayData.decryptStatus = '⏳ Расшифровка...';
+            renderAllStages('decryption', displayData);
+            await sleep(1000);
 
             let decryptedText;
             let decryptSuccess = true;
-            let decryptStatus = '✅ Сообщение успешно расшифровано';
 
             try {
                 let ciphertextToDecrypt = ciphertext;
@@ -2007,27 +1937,28 @@
                     const modified = new Uint8Array(ciphertext);
                     modified[0] = modified[0] ^ 0xFF;
                     ciphertextToDecrypt = modified.buffer;
-                    renderVisualization('ciphertext2', {
-                        ciphertextHex: arrayBufferToHex(ciphertextToDecrypt)
-                    });
+                    displayData.ciphertextHex = arrayBufferToHex(ciphertextToDecrypt);
+                    renderAllStages('ciphertext2', displayData);
                     await sleep(800);
                 }
 
                 decryptedText = await decryptMessage(ciphertextToDecrypt, key, iv);
+                displayData.decryptedText = decryptedText;
+                displayData.decryptStatus = '✅ Сообщение успешно расшифровано';
             } catch (e) {
                 decryptSuccess = false;
-                decryptStatus = '❌ Ошибка аутентификации — пакет повреждён';
+                displayData.decryptStatus = '❌ Ошибка аутентификации — пакет повреждён';
                 decryptedText = '';
             }
 
             // 11. PLAINTEXT 2
             if (decryptSuccess) {
-                renderVisualization('plaintext2', { decryptedText });
-                await sleep(1200);
+                renderAllStages('plaintext2', displayData);
+                await sleep(1000);
 
                 // 12. USER B
-                renderVisualization('userB', {});
-                await sleep(800);
+                renderAllStages('userB', displayData);
+                await sleep(600);
 
                 state.history.push({
                     plaintext,
@@ -2035,21 +1966,13 @@
                     ivHex,
                     timestamp: Date.now()
                 });
+                state.completed = true;
             } else {
-                renderVisualization('decryption', { decryptStatus });
-                await sleep(1500);
-                // Добавляем сообщение об ошибке после USER B
-                setTimeout(() => {
-                    const userBEl = vizEl.querySelector('.e2ee-step:last-child .flex-1');
-                    if (userBEl) {
-                        userBEl.innerHTML += `
-                            <div class="mt-2 bg-red-950/30 rounded-lg p-3 border border-red-800/30">
-                                <div class="text-red-400 text-sm">❌ Сообщение отклонено</div>
-                                <div class="text-red-400/60 text-[10px]">Проверка целостности не пройдена</div>
-                            </div>
-                        `;
-                    }
-                }, 100);
+                renderAllStages('decryption', displayData);
+                await sleep(1200);
+                // Показываем ошибку на USER B
+                renderAllStages('userB', { ...displayData, error: true });
+                state.completed = false;
             }
 
         } catch (error) {
@@ -2080,12 +2003,12 @@
 
         try {
             const steps = [
-                { icon: '🔍', label: 'Перехват пакета', desc: 'Злоумышленник получил зашифрованные данные', delay: 1000 },
-                { icon: '🔑', label: 'Попытка подбора ключа', desc: 'Без ключа расшифровка невозможна', delay: 1200 },
-                { icon: '❌', label: 'Попытка #1', desc: 'Неверный ключ — данные не читаются', delay: 900 },
-                { icon: '❌', label: 'Попытка #2', desc: 'Неверный ключ — данные не читаются', delay: 900 },
-                { icon: '❌', label: 'Попытка #3', desc: 'Неверный ключ — данные не читаются', delay: 900 },
-                { icon: '⛔', label: 'Доступ закрыт', desc: 'Получение трафика без ключа бесполезно', delay: 1200 },
+                { icon: '🔍', label: 'Перехват пакета', desc: 'Злоумышленник получил зашифрованные данные', delay: 800 },
+                { icon: '🔑', label: 'Попытка подбора ключа', desc: 'Без ключа расшифровка невозможна', delay: 1000 },
+                { icon: '❌', label: 'Попытка #1', desc: 'Неверный ключ — данные не читаются', delay: 800 },
+                { icon: '❌', label: 'Попытка #2', desc: 'Неверный ключ — данные не читаются', delay: 800 },
+                { icon: '❌', label: 'Попытка #3', desc: 'Неверный ключ — данные не читаются', delay: 800 },
+                { icon: '⛔', label: 'Доступ закрыт', desc: 'Получение трафика без ключа бесполезно', delay: 1000 },
             ];
 
             let html = `
@@ -2164,9 +2087,10 @@
                 const oldResult = document.getElementById('e2ee-attack-result');
                 if (oldResult) oldResult.remove();
                 const msg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
-                renderVisualization('userA', {});
-                renderVisualization('plaintext', { plaintext: msg });
-                await sleep(1000);
+                renderAllStages('userA', { plaintext: msg });
+                await sleep(400);
+                renderAllStages('plaintext', { plaintext: msg });
+                updateProgress(0);
             }
         }
 
@@ -2177,9 +2101,9 @@
     // === ИНИЦИАЛИЗАЦИЯ ===
     function initDemo() {
         const initialMsg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
-        renderVisualization('userA', {});
+        renderAllStages('userA', { plaintext: initialMsg });
         setTimeout(() => {
-            renderVisualization('plaintext', { plaintext: initialMsg });
+            renderAllStages('plaintext', { plaintext: initialMsg });
         }, 400);
         updateProgress(0);
 
@@ -2208,13 +2132,14 @@
                 history: state.history || [],
                 autoRunning: false,
                 currentStep: 0,
+                completed: false,
             };
             const oldResult = document.getElementById('e2ee-attack-result');
             if (oldResult) oldResult.remove();
             const msg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
-            renderVisualization('userA', {});
+            renderAllStages('userA', { plaintext: msg });
             setTimeout(() => {
-                renderVisualization('plaintext', { plaintext: msg });
+                renderAllStages('plaintext', { plaintext: msg });
             }, 400);
             updateProgress(0);
         });
@@ -2302,7 +2227,7 @@
         box-shadow: 0 0 40px rgba(99, 102, 241, 0.1);
     }
     #e2ee-visualization {
-        max-height: 650px;
+        max-height: 700px;
         overflow-y: auto;
         scroll-behavior: smooth;
         scrollbar-width: thin;
@@ -2345,9 +2270,38 @@
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(6px); }
     }
-    /* Безопасный индикатор в углу */
-    .e2ee-step .fa-shield-halved {
-        filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
+    /* Стили для завершенных этапов */
+    .e2ee-step.opacity-90 {
+        border-left: 3px solid #10b981;
+    }
+    .e2ee-step .border-emerald-500\/20 {
+        border-left: 3px solid #10b981;
+    }
+    .e2ee-step .border-indigo-500\/50 {
+        border-left: 3px solid #6366f1;
+    }
+    /* Адаптация для мобильных */
+    @media (max-width: 640px) {
+        .e2ee-step {
+            padding: 12px !important;
+        }
+        .e2ee-step .flex {
+            gap: 8px;
+        }
+        .e2ee-step .w-10 {
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+        }
+        .e2ee-step .text-sm {
+            font-size: 12px;
+        }
+        .e2ee-step .text-xs {
+            font-size: 10px;
+        }
+        .e2ee-step .grid-cols-2 {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
     
