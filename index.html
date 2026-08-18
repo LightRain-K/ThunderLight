@@ -1526,7 +1526,7 @@
                 <div id="e2ee-progress" class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-700" style="width: 0%;"></div>
             </div>
 
-            <!-- Основная визуализация - ВСЕ ЭТАПЫ ВИДИМЫ -->
+            <!-- Основная визуализация -->
             <div id="e2ee-visualization" class="relative min-h-[500px]">
                 <!-- Все этапы отображаются постоянно -->
             </div>
@@ -1534,7 +1534,7 @@
             <!-- Кнопки управления -->
             <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-slate-800">
                 <button id="e2ee-attack-btn" class="bg-red-950/50 hover:bg-red-900/50 text-red-400 border border-red-800/50 font-medium px-5 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-user-secret"></i> Попробовать взломать
+                    <i class="fa-solid fa-user-secret"></i> Атака брутфорсом
                 </button>
                 <button id="e2ee-encrypt-again-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium px-5 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
                     <i class="fa-solid fa-repeat"></i> Показать разницу
@@ -1558,7 +1558,7 @@
 
 <script>
 // ============================================================
-// THUNDERLIGHT E2EE LAB — Все этапы всегда видны
+// THUNDERLIGHT E2EE LAB — С реалистичной симуляцией брутфорса
 // ============================================================
 
 (function() {
@@ -1586,6 +1586,7 @@
         autoRunning: false,
         currentStep: 0,
         completed: false,
+        attackCancelled: false,
     };
 
     // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
@@ -1650,7 +1651,16 @@
         progressBar.style.width = Math.min(percent, 100) + '%';
     }
 
-    // === ОТРИСОВКА ВСЕХ ЭТАПОВ (всегда видны) ===
+    // Генерация случайного ключа для брутфорса
+    async function generateRandomKey() {
+        return await crypto.subtle.generateKey(
+            { name: 'AES-GCM', length: 256 },
+            true,
+            ['decrypt']
+        );
+    }
+
+    // === ОТРИСОВКА ВСЕХ ЭТАПОВ ===
     function renderAllStages(activeStage, data) {
         const stages = [
             { id: 'userA', icon: 'fa-user', label: 'Отправитель', color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30', desc: 'Сообщение создано на устройстве' },
@@ -1699,7 +1709,7 @@
                 statusBadge = `<span class="text-[10px] text-slate-600 ml-2"><i class="fa-regular fa-circle"></i></span>`;
             }
 
-            // Контент для разных этапов (всегда видим, если уже пройден или активен)
+            // Контент для разных этапов
             if (s.id === 'plaintext' && data?.plaintext && isActive) {
                 messageContent = `
                     <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-green-500/20">
@@ -1797,7 +1807,7 @@
                 `;
             }
 
-            // Стрелка (всегда видна между этапами)
+            // Стрелка
             const arrow = idx < stages.length - 1 ? `
                 <div class="flex justify-center py-1 ${isActive ? 'text-indigo-400' : 'text-slate-700'}">
                     <div class="relative">
@@ -1832,7 +1842,6 @@
 
         html += `
                 </div>
-                <!-- Индикатор безопасности -->
                 <div class="absolute top-0 right-0 mt-2 mr-2">
                     <div class="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-950/50 rounded-full border border-emerald-800/30 text-[10px] text-emerald-400">
                         <i class="fa-solid fa-shield-halved"></i>
@@ -1844,11 +1853,9 @@
 
         vizEl.innerHTML = html;
 
-        // Обновляем прогресс
         const total = stages.length;
         updateProgress(((activeIdx + 1) / total) * 100);
 
-        // Прокрутка к текущему шагу
         if (activeIdx >= 0) {
             const items = vizEl.querySelectorAll('.e2ee-step');
             if (items[activeIdx]) {
@@ -1859,6 +1866,245 @@
         }
     }
 
+    // === РЕАЛИСТИЧНАЯ СИМУЛЯЦИЯ БРУТФОРСА ===
+    async function runBruteforceAttack() {
+        if (state.isProcessing) return;
+        if (!state.ciphertext) {
+            const msg = inputEl.value.trim() || 'Секретное сообщение для атаки';
+            await runE2EEDemo(msg);
+            if (!state.ciphertext) return;
+        }
+
+        state.isProcessing = true;
+        attackBtn.disabled = true;
+        state.attackCancelled = false;
+
+        // Сохраняем данные
+        const ciphertext = state.ciphertext;
+        const iv = state.iv;
+        const originalPlaintext = state.plaintext;
+
+        // Создаем контейнер для атаки
+        const attackContainer = document.createElement('div');
+        attackContainer.id = 'e2ee-attack-container';
+        attackContainer.className = 'mt-4 bg-slate-950/80 border border-red-800/30 rounded-xl p-5';
+
+        // Начальный HTML
+        attackContainer.innerHTML = `
+            <div class="flex items-center gap-3 text-red-400 font-medium text-sm mb-4">
+                <i class="fa-solid fa-bolt text-lg animate-pulse"></i>
+                <span>БРУТФОРС АТАКА</span>
+                <span class="text-xs text-slate-500 font-normal ml-auto" id="attack-timer">⏱ 00:00</span>
+            </div>
+            <div class="space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                    <div class="bg-slate-900/50 rounded-lg p-3 border border-slate-800/50 text-center">
+                        <div class="text-slate-500">Попыток</div>
+                        <div class="text-xl font-mono text-yellow-400" id="attack-attempts">0</div>
+                    </div>
+                    <div class="bg-slate-900/50 rounded-lg p-3 border border-slate-800/50 text-center">
+                        <div class="text-slate-500">Скорость</div>
+                        <div class="text-xl font-mono text-cyan-400" id="attack-speed">0/сек</div>
+                    </div>
+                    <div class="bg-slate-900/50 rounded-lg p-3 border border-slate-800/50 text-center">
+                        <div class="text-slate-500">Статус</div>
+                        <div class="text-sm font-medium text-yellow-400" id="attack-status">🔍 Подбор...</div>
+                    </div>
+                </div>
+                <div class="bg-slate-950 rounded-lg p-3 border border-slate-800/50">
+                    <div class="flex justify-between text-[10px] text-slate-500 mb-1">
+                        <span>Прогресс атаки</span>
+                        <span id="attack-progress-text">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-800/50 rounded-full h-2 overflow-hidden">
+                        <div id="attack-progress-bar" class="h-full bg-gradient-to-r from-red-500 to-orange-500 transition-all duration-300" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div id="attack-log" class="bg-slate-950 rounded-lg p-3 border border-slate-800/50 max-h-40 overflow-y-auto font-mono text-[10px] space-y-0.5">
+                    <div class="text-slate-500">[${new Date().toLocaleTimeString()}] 🚀 Начало атаки...</div>
+                </div>
+                <button id="attack-cancel-btn" class="w-full bg-red-950/50 hover:bg-red-900/50 text-red-400 border border-red-800/50 font-medium py-2 rounded-lg transition-all text-sm">
+                    <i class="fa-solid fa-stop"></i> Остановить атаку
+                </button>
+            </div>
+        `;
+
+        // Удаляем старый контейнер атаки
+        const oldContainer = document.getElementById('e2ee-attack-container');
+        if (oldContainer) oldContainer.remove();
+        vizEl.appendChild(attackContainer);
+
+        // Получаем элементы
+        const attemptsEl = document.getElementById('attack-attempts');
+        const speedEl = document.getElementById('attack-speed');
+        const statusEl = document.getElementById('attack-status');
+        const progressBar = document.getElementById('attack-progress-bar');
+        const progressText = document.getElementById('attack-progress-text');
+        const logEl = document.getElementById('attack-log');
+        const timerEl = document.getElementById('attack-timer');
+        const cancelBtn = document.getElementById('attack-cancel-btn');
+
+        let attempts = 0;
+        let startTime = Date.now();
+        let lastSpeedUpdate = Date.now();
+        let speedCounter = 0;
+        let isRunning = true;
+        let timerInterval;
+
+        // Таймер
+        timerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
+            const secs = String(elapsed % 60).padStart(2, '0');
+            timerEl.textContent = `⏱ ${mins}:${secs}`;
+        }, 1000);
+
+        // Отмена атаки
+        cancelBtn.addEventListener('click', () => {
+            isRunning = false;
+            state.attackCancelled = true;
+            statusEl.textContent = '⛔ Остановлена';
+            statusEl.className = 'text-sm font-medium text-red-400';
+            cancelBtn.disabled = true;
+            cancelBtn.textContent = '⛔ Остановлено';
+            clearInterval(timerInterval);
+            logEl.innerHTML += `<div class="text-red-400">[${new Date().toLocaleTimeString()}] ⛔ Атака остановлена пользователем</div>`;
+        });
+
+        // Функция логирования
+        function addLog(message, color = 'text-slate-400') {
+            logEl.innerHTML += `<div class="${color}">[${new Date().toLocaleTimeString()}] ${message}</div>`;
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        // Функция проверки ключа
+        async function tryKey(key) {
+            try {
+                await decryptMessage(ciphertext, key, iv);
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        // Симуляция брутфорса - 100 попыток с визуализацией
+        const totalAttempts = 100;
+        let found = false;
+
+        addLog('🔑 Начинаем подбор ключей...', 'text-yellow-400');
+        addLog(`📊 Всего попыток: ${totalAttempts}`, 'text-cyan-400');
+
+        for (let i = 0; i < totalAttempts && isRunning; i++) {
+            attempts++;
+            speedCounter++;
+
+            // Обновляем скорость каждую секунду
+            if (Date.now() - lastSpeedUpdate >= 1000) {
+                const speed = speedCounter;
+                speedEl.textContent = `${speed}/сек`;
+                speedCounter = 0;
+                lastSpeedUpdate = Date.now();
+            }
+
+            // Обновляем счетчик попыток
+            attemptsEl.textContent = attempts;
+
+            // Обновляем прогресс
+            const progress = (i / totalAttempts) * 100;
+            progressBar.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '%';
+
+            // Генерируем случайный ключ
+            const testKey = await generateRandomKey();
+
+            // Пытаемся расшифровать
+            const success = await tryKey(testKey);
+
+            if (success) {
+                found = true;
+                isRunning = false;
+                statusEl.textContent = '✅ НАЙДЕН!';
+                statusEl.className = 'text-sm font-medium text-emerald-400';
+                addLog('🎯 КЛЮЧ НАЙДЕН!', 'text-emerald-400 font-bold');
+                addLog(`🔑 Ключ: ${await exportKeyHex(testKey)}`, 'text-emerald-300');
+                addLog('❌ Но этот ключ не подходит к реальному шифрованию!', 'text-red-400');
+                break;
+            }
+
+            // Логируем каждые 10 попыток
+            if (i % 10 === 0 && i > 0) {
+                addLog(`❌ Попытка #${attempts} — неверный ключ`, 'text-red-400/70');
+            }
+
+            // Небольшая задержка для реализма
+            await sleep(30 + Math.random() * 20);
+
+            // Редко показываем "почти успех"
+            if (i % 17 === 0 && i > 0) {
+                addLog(`⚠️ Кандидат #${attempts} — частичное совпадение, но не тот ключ`, 'text-yellow-400/70');
+            }
+        }
+
+        // Итог
+        clearInterval(timerInterval);
+
+        if (!isRunning && !found && !state.attackCancelled) {
+            // Завершили все попытки
+            statusEl.textContent = '✗ НЕ НАЙДЕН';
+            statusEl.className = 'text-sm font-medium text-red-400';
+            progressBar.style.width = '100%';
+            progressText.textContent = '100%';
+            
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            addLog(`⏱ Время атаки: ${elapsed} секунд`, 'text-slate-400');
+            addLog(`📊 Всего проверено: ${attempts} ключей`, 'text-slate-400');
+            addLog('🔒 Ключ не найден — атака безуспешна!', 'text-emerald-400 font-bold');
+            addLog('💡 Получение зашифрованного трафика без ключа бесполезно', 'text-cyan-400');
+            
+            // Показываем реалистичный вывод
+            setTimeout(() => {
+                const summaryHtml = `
+                    <div class="mt-3 bg-red-950/20 border border-red-800/30 rounded-lg p-3">
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <div class="text-slate-500">Попыток:</div>
+                                <div class="text-yellow-400 font-mono">${attempts}</div>
+                            </div>
+                            <div>
+                                <div class="text-slate-500">Времени:</div>
+                                <div class="text-cyan-400 font-mono">${Math.floor((Date.now() - startTime) / 1000)} сек</div>
+                            </div>
+                            <div>
+                                <div class="text-slate-500">Ключей в секунду:</div>
+                                <div class="text-purple-400 font-mono">~${Math.round(attempts / ((Date.now() - startTime) / 1000))}</div>
+                            </div>
+                            <div>
+                                <div class="text-slate-500">Результат:</div>
+                                <div class="text-emerald-400 font-bold">🔒 Защищено</div>
+                            </div>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-slate-800 text-[10px] text-slate-500 flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                            <span>AES-256-GCM устойчив к брутфорсу — 2^256 комбинаций</span>
+                        </div>
+                    </div>
+                `;
+                // Добавляем summary в конец лога
+                const summaryContainer = document.createElement('div');
+                summaryContainer.innerHTML = summaryHtml;
+                logEl.appendChild(summaryContainer);
+                logEl.scrollTop = logEl.scrollHeight;
+            }, 500);
+        }
+
+        if (state.attackCancelled) {
+            addLog('⛔ Атака прервана', 'text-yellow-400');
+        }
+
+        state.isProcessing = false;
+        attackBtn.disabled = false;
+    }
+
     // === ОСНОВНАЯ ЛОГИКА ===
     async function runE2EEDemo(plaintext, isModify = false) {
         if (state.isProcessing) return;
@@ -1866,19 +2112,15 @@
         encryptBtn.disabled = true;
         state.completed = false;
 
-        // Сохраняем данные для отображения на всех этапах
         const displayData = { plaintext };
 
         try {
-            // 1. USER A
             renderAllStages('userA', displayData);
             await sleep(600);
 
-            // 2. PLAINTEXT
             renderAllStages('plaintext', displayData);
             await sleep(1000);
 
-            // 3. Генерация ключей
             const iv = generateIV();
             const key = await generateKey();
             const keyHex = await exportKeyHex(key);
@@ -1886,11 +2128,9 @@
             displayData.keyHex = keyHex;
             displayData.ivHex = ivHex;
 
-            // 4. ENCRYPTION
             renderAllStages('encryption', displayData);
             await sleep(1200);
 
-            // Реальное шифрование
             const ciphertext = await encryptMessage(plaintext, key, iv);
             const ciphertextHex = arrayBufferToHex(ciphertext);
             displayData.ciphertextHex = ciphertextHex;
@@ -1902,28 +2142,22 @@
             state.keyHex = keyHex;
             state.ivHex = ivHex;
 
-            // 5. CIPHERTEXT
             renderAllStages('ciphertext', displayData);
             await sleep(1000);
 
-            // 6. NETWORK 1
             renderAllStages('network1', displayData);
             await sleep(1000);
 
-            // 7. SERVER
             displayData.serverPayload = ciphertextHex.substring(0, 60) + (ciphertextHex.length > 60 ? '...' : '');
             renderAllStages('server', displayData);
             await sleep(1400);
 
-            // 8. NETWORK 2
             renderAllStages('network2', displayData);
             await sleep(1000);
 
-            // 9. CIPHERTEXT 2
             renderAllStages('ciphertext2', displayData);
             await sleep(800);
 
-            // 10. DECRYPTION
             displayData.decryptStatus = '⏳ Расшифровка...';
             renderAllStages('decryption', displayData);
             await sleep(1000);
@@ -1951,12 +2185,9 @@
                 decryptedText = '';
             }
 
-            // 11. PLAINTEXT 2
             if (decryptSuccess) {
                 renderAllStages('plaintext2', displayData);
                 await sleep(1000);
-
-                // 12. USER B
                 renderAllStages('userB', displayData);
                 await sleep(600);
 
@@ -1970,7 +2201,6 @@
             } else {
                 renderAllStages('decryption', displayData);
                 await sleep(1200);
-                // Показываем ошибку на USER B
                 renderAllStages('userB', { ...displayData, error: true });
                 state.completed = false;
             }
@@ -1986,83 +2216,6 @@
         } finally {
             state.isProcessing = false;
             encryptBtn.disabled = false;
-        }
-    }
-
-    // === АТАКА ===
-    async function runAttackSimulation() {
-        if (state.isProcessing) return;
-        if (!state.ciphertext) {
-            const msg = inputEl.value.trim() || 'Секретное сообщение для атаки';
-            await runE2EEDemo(msg);
-            if (!state.ciphertext) return;
-        }
-
-        state.isProcessing = true;
-        attackBtn.disabled = true;
-
-        try {
-            const steps = [
-                { icon: '🔍', label: 'Перехват пакета', desc: 'Злоумышленник получил зашифрованные данные', delay: 800 },
-                { icon: '🔑', label: 'Попытка подбора ключа', desc: 'Без ключа расшифровка невозможна', delay: 1000 },
-                { icon: '❌', label: 'Попытка #1', desc: 'Неверный ключ — данные не читаются', delay: 800 },
-                { icon: '❌', label: 'Попытка #2', desc: 'Неверный ключ — данные не читаются', delay: 800 },
-                { icon: '❌', label: 'Попытка #3', desc: 'Неверный ключ — данные не читаются', delay: 800 },
-                { icon: '⛔', label: 'Доступ закрыт', desc: 'Получение трафика без ключа бесполезно', delay: 1000 },
-            ];
-
-            let html = `
-                <div class="mt-4 bg-slate-950/80 border border-red-800/30 rounded-xl p-5">
-                    <div class="flex items-center gap-3 text-red-400 font-medium text-sm mb-4">
-                        <i class="fa-solid fa-user-secret text-lg"></i>
-                        <span>ATTACK SIMULATION</span>
-                        <span class="text-xs text-slate-500 font-normal ml-auto">🔒 Безуспешно</span>
-                    </div>
-                    <div class="space-y-2 max-h-80 overflow-y-auto pr-2">
-            `;
-
-            for (let i = 0; i < steps.length; i++) {
-                const step = steps[i];
-                const isLast = i === steps.length - 1;
-                html += `
-                    <div class="flex items-start gap-3 bg-slate-900/50 rounded-lg p-3 border ${isLast ? 'border-red-800/50 bg-red-950/20' : 'border-slate-800/50'} transition-all">
-                        <span class="text-lg">${step.icon}</span>
-                        <div>
-                            <div class="text-xs font-medium ${isLast ? 'text-red-400' : 'text-slate-300'}">${step.label}</div>
-                            <div class="text-xs text-slate-500">${step.desc}</div>
-                        </div>
-                        ${!isLast ? '<div class="ml-auto text-slate-600 text-xs">⏳</div>' : '<div class="ml-auto text-red-400 text-xs">✗</div>'}
-                    </div>
-                `;
-                if (!isLast) {
-                    await sleep(step.delay);
-                }
-            }
-
-            html += `
-                    </div>
-                    <div class="mt-3 pt-3 border-t border-slate-800 text-xs text-slate-500 flex items-center gap-2">
-                        <i class="fa-solid fa-shield-halved text-emerald-500"></i>
-                        <span>Ключ шифрования остаётся только у отправителя и получателя</span>
-                    </div>
-                </div>
-            `;
-
-            const container = document.createElement('div');
-            container.id = 'e2ee-attack-result';
-            container.innerHTML = html;
-
-            const oldResult = document.getElementById('e2ee-attack-result');
-            if (oldResult) oldResult.remove();
-
-            vizEl.appendChild(container);
-            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-        } catch (error) {
-            console.error('Attack error:', error);
-        } finally {
-            state.isProcessing = false;
-            attackBtn.disabled = false;
         }
     }
 
@@ -2084,8 +2237,8 @@
             await runE2EEDemo(msgs[i]);
             if (i < msgs.length - 1) {
                 await sleep(2500);
-                const oldResult = document.getElementById('e2ee-attack-result');
-                if (oldResult) oldResult.remove();
+                const oldContainer = document.getElementById('e2ee-attack-container');
+                if (oldContainer) oldContainer.remove();
                 const msg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
                 renderAllStages('userA', { plaintext: msg });
                 await sleep(400);
@@ -2115,8 +2268,8 @@
                 setTimeout(() => inputEl.style.borderColor = '', 2000);
                 return;
             }
-            const oldResult = document.getElementById('e2ee-attack-result');
-            if (oldResult) oldResult.remove();
+            const oldContainer = document.getElementById('e2ee-attack-container');
+            if (oldContainer) oldContainer.remove();
             await runE2EEDemo(msg);
         });
 
@@ -2133,9 +2286,10 @@
                 autoRunning: false,
                 currentStep: 0,
                 completed: false,
+                attackCancelled: false,
             };
-            const oldResult = document.getElementById('e2ee-attack-result');
-            if (oldResult) oldResult.remove();
+            const oldContainer = document.getElementById('e2ee-attack-container');
+            if (oldContainer) oldContainer.remove();
             const msg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
             renderAllStages('userA', { plaintext: msg });
             setTimeout(() => {
@@ -2144,12 +2298,12 @@
             updateProgress(0);
         });
 
-        attackBtn.addEventListener('click', runAttackSimulation);
+        attackBtn.addEventListener('click', runBruteforceAttack);
 
         encryptAgainBtn.addEventListener('click', async () => {
             const msg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
-            const oldResult = document.getElementById('e2ee-attack-result');
-            if (oldResult) oldResult.remove();
+            const oldContainer = document.getElementById('e2ee-attack-container');
+            if (oldContainer) oldContainer.remove();
 
             await runE2EEDemo(msg);
 
@@ -2194,8 +2348,8 @@
                 await runE2EEDemo(msg);
                 if (!state.ciphertext) return;
             }
-            const oldResult = document.getElementById('e2ee-attack-result');
-            if (oldResult) oldResult.remove();
+            const oldContainer = document.getElementById('e2ee-attack-container');
+            if (oldContainer) oldContainer.remove();
             const msg = state.plaintext || inputEl.value.trim() || 'Сообщение для теста';
             await runE2EEDemo(msg, true);
         });
@@ -2270,7 +2424,6 @@
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(6px); }
     }
-    /* Стили для завершенных этапов */
     .e2ee-step.opacity-90 {
         border-left: 3px solid #10b981;
     }
@@ -2280,7 +2433,20 @@
     .e2ee-step .border-indigo-500\/50 {
         border-left: 3px solid #6366f1;
     }
-    /* Адаптация для мобильных */
+    #attack-log {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(79, 70, 229, 0.2) transparent;
+    }
+    #attack-log::-webkit-scrollbar {
+        width: 3px;
+    }
+    #attack-log::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    #attack-log::-webkit-scrollbar-thumb {
+        background: rgba(79, 70, 229, 0.2);
+        border-radius: 10px;
+    }
     @media (max-width: 640px) {
         .e2ee-step {
             padding: 12px !important;
@@ -2301,6 +2467,9 @@
         }
         .e2ee-step .grid-cols-2 {
             grid-template-columns: 1fr;
+        }
+        #e2ee-attack-container .grid-cols-1.md\\:grid-cols-3 {
+            grid-template-columns: 1fr 1fr;
         }
     }
 </style>
