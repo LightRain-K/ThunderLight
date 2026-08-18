@@ -3176,61 +3176,6 @@ navLinks.querySelectorAll('a').forEach(link => {
             observer.observe(el);
         });
 
-document.getElementById('sim-send-btn').addEventListener('click', function() {
-    const input = document.getElementById('sim-input').value.trim();
-    if (!input) return;
-
-    const sendBtn = this;
-    const packet = document.getElementById('sim-packet');
-    const intercepted = document.getElementById('sim-intercepted');
-    const output = document.getElementById('sim-output');
-
-    // Блокируем кнопку на время анимации
-    sendBtn.disabled = true;
-    sendBtn.classList.add('opacity-50');
-
-    // 1. Стадия отправки: Шифруем на клиенте (имитируем AES/E2EE)
-    // Генерируем "зашифрованный" текст (реалистично выглядящий base64/хэш)
-    const encryptedText = btoa(unescape(encodeURIComponent(input)))
-        .split('')
-        .map(c => Math.random() > 0.7 ? c.toUpperCase() : c)
-        .join('')
-        .substring(0, 24) + '...[E2EE]';
-
-    intercepted.textContent = "Шифрование...";
-    intercepted.classList.remove('text-red-300');
-    intercepted.classList.add('text-blue-300');
-    output.textContent = "...";
-
-    // 2. Анимация полета пакета через сеть
-    packet.style.transition = 'none';
-    packet.style.left = '0%';
-    packet.style.opacity = '1';
-    
-    setTimeout(() => {
-        packet.style.transition = 'all 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
-        packet.style.left = '75%'; // Летит до конца
-    }, 50);
-
-    // 3. Стадия перехвата (середина пути)
-    setTimeout(() => {
-        intercepted.textContent = encryptedText;
-        intercepted.classList.remove('text-blue-300');
-        intercepted.classList.add('text-red-400');
-    }, 700);
-
-    // 4. Стадия доставки и расшифровки
-    setTimeout(() => {
-        packet.style.opacity = '0';
-        output.textContent = input;
-        output.classList.remove('text-slate-400', 'italic');
-        output.classList.add('text-emerald-400', 'font-bold');
-        
-        // Разблокируем кнопку
-        sendBtn.disabled = false;
-        sendBtn.classList.remove('opacity-50');
-    }, 1500);
-});
 
 
 
