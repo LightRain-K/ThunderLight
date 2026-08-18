@@ -1501,26 +1501,19 @@
                 🔬 Интерактивная лаборатория
             </span>
             <h2 class="text-3xl md:text-4xl font-bold text-white mb-3">ThunderLight E2EE Lab</h2>
-            <p class="text-slate-400 max-w-2xl mx-auto">Посмотрите, что происходит с сообщением между отправителем и получателем. <br class="hidden sm:block">Все операции выполняются локально в вашем браузере.</p>
+            <p class="text-slate-400 max-w-2xl mx-auto">Наблюдайте, как сообщение путешествует от отправителя к получателю в полной безопасности</p>
         </div>
 
-        <!-- Индикатор прогресса -->
-        <div class="mb-6 bg-slate-800/50 rounded-full h-1.5 overflow-hidden">
-            <div id="e2ee-progress" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500" style="width: 0%;"></div>
-        </div>
-
-        <!-- Основной блок -->
+        <!-- Ввод сообщения -->
         <div class="bg-slate-900/60 rounded-2xl border border-slate-800 p-6 md:p-8 shadow-2xl">
-            
-            <!-- Ввод сообщения -->
-            <div class="flex flex-col md:flex-row gap-4 items-start md:items-end mb-8">
+            <div class="flex flex-col md:flex-row gap-4 items-start md:items-end mb-6">
                 <div class="flex-1 w-full">
-                    <label for="e2ee-input" class="text-sm font-medium text-slate-300 mb-2 block">Сообщение</label>
-                    <textarea id="e2ee-input" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors resize-none" placeholder="Введите секретное сообщение...">Привет! Это секретное сообщение для демонстрации E2EE.</textarea>
+                    <label for="e2ee-input" class="text-sm font-medium text-slate-300 mb-2 block">✏️ Введите сообщение</label>
+                    <textarea id="e2ee-input" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-indigo-500 transition-colors resize-none" placeholder="Напишите что-нибудь секретное...">Привет! Это секретное сообщение для демонстрации E2EE.</textarea>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                     <button id="e2ee-encrypt-btn" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 flex items-center justify-center gap-2 text-sm">
-                        <i class="fa-solid fa-lock"></i> Зашифровать
+                        <i class="fa-solid fa-paper-plane"></i> Отправить
                     </button>
                     <button id="e2ee-reset-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium px-5 py-3 rounded-xl transition-all border border-slate-700 text-sm flex items-center justify-center gap-2">
                         <i class="fa-solid fa-rotate"></i> Сброс
@@ -1528,53 +1521,36 @@
                 </div>
             </div>
 
-            <!-- Pipeline визуализации -->
-            <div id="e2ee-pipeline" class="space-y-3">
-                <!-- Каждый этап динамически генерируется через JS -->
+            <!-- Progress Bar -->
+            <div class="mb-6 bg-slate-800/50 rounded-full h-2 overflow-hidden">
+                <div id="e2ee-progress" class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-700" style="width: 0%;"></div>
             </div>
 
-            <!-- Дополнительные кнопки -->
+            <!-- Основная визуализация -->
+            <div id="e2ee-visualization" class="relative min-h-[500px]">
+                <!-- Здесь будет динамический контент -->
+            </div>
+
+            <!-- Кнопки управления -->
             <div class="flex flex-wrap gap-3 mt-6 pt-6 border-t border-slate-800">
                 <button id="e2ee-attack-btn" class="bg-red-950/50 hover:bg-red-900/50 text-red-400 border border-red-800/50 font-medium px-5 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
                     <i class="fa-solid fa-user-secret"></i> Попробовать взломать
                 </button>
                 <button id="e2ee-encrypt-again-btn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-medium px-5 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-repeat"></i> Зашифровать ещё раз
+                    <i class="fa-solid fa-repeat"></i> Показать разницу
                 </button>
                 <button id="e2ee-modify-btn" class="bg-amber-950/50 hover:bg-amber-900/50 text-amber-400 border border-amber-800/50 font-medium px-5 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
                     <i class="fa-solid fa-pen"></i> Изменить пакет
                 </button>
                 <button id="e2ee-auto-btn" class="bg-teal-950/50 hover:bg-teal-900/50 text-teal-400 border border-teal-800/50 font-medium px-5 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-play"></i> Авто-демонстрация
+                    <i class="fa-solid fa-play"></i> Авто-демо
                 </button>
             </div>
 
-            <!-- Техническая информация -->
-            <details class="mt-6 pt-6 border-t border-slate-800 group">
-                <summary class="text-sm font-medium text-slate-400 cursor-pointer hover:text-slate-300 transition-colors flex items-center gap-2">
-                    <i class="fa-solid fa-code"></i> Что происходит технически?
-                    <span class="text-xs text-slate-500 ml-auto">▼</span>
-                </summary>
-                <div class="mt-4 text-sm text-slate-400 space-y-2 bg-slate-950/50 p-4 rounded-xl border border-slate-800">
-                    <p>1. Plaintext преобразуется в UTF-8 байты.</p>
-                    <p>2. Генерируется случайный 96-битный IV / nonce.</p>
-                    <p>3. Генерируется 256-битный AES-256 ключ.</p>
-                    <p>4. Web Crypto API выполняет AES-GCM шифрование.</p>
-                    <p>5. Полученный ciphertext можно безопасно передавать через недоверенную сеть.</p>
-                    <p>6. Получатель использует ключ и IV для расшифровки.</p>
-                    <p>7. После расшифровки восстанавливается исходный plaintext.</p>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-800 text-xs">
-                        <div><span class="text-slate-500">Алгоритм:</span> <span class="text-emerald-400 font-mono">AES-256-GCM</span></div>
-                        <div><span class="text-slate-500">Ключ:</span> <span class="text-emerald-400 font-mono">256 bit</span></div>
-                        <div><span class="text-slate-500">IV:</span> <span class="text-emerald-400 font-mono">96 bit</span></div>
-                        <div><span class="text-slate-500">API:</span> <span class="text-emerald-400 font-mono">Web Crypto API</span></div>
-                    </div>
-                </div>
-            </details>
-
             <!-- Security Disclaimer -->
-            <div class="mt-4 text-xs text-slate-500 border-t border-slate-800 pt-4">
-                ⚠️ Это интерактивная демонстрация принципов E2EE. Она показывает работу AES-GCM в браузере и не является полным доказательством безопасности протокола ThunderLight.
+            <div class="mt-4 text-xs text-slate-500 border-t border-slate-800 pt-4 flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                <span>Интерактивная демонстрация принципов E2EE. Все операции выполняются локально в вашем браузере.</span>
             </div>
         </div>
     </div>
@@ -1582,14 +1558,13 @@
 
 <script>
 // ============================================================
-// THUNDERLIGHT E2EE LAB — полноценная реализация
+// THUNDERLIGHT E2EE LAB — Визуальная демонстрация
 // ============================================================
 
 (function() {
     'use strict';
 
-    // --- DOM ссылки ---
-    const pipelineEl = document.getElementById('e2ee-pipeline');
+    const vizEl = document.getElementById('e2ee-visualization');
     const inputEl = document.getElementById('e2ee-input');
     const encryptBtn = document.getElementById('e2ee-encrypt-btn');
     const resetBtn = document.getElementById('e2ee-reset-btn');
@@ -1599,9 +1574,7 @@
     const autoBtn = document.getElementById('e2ee-auto-btn');
     const progressBar = document.getElementById('e2ee-progress');
 
-    // --- Состояние ---
     let state = {
-        step: 'idle',
         plaintext: '',
         ciphertext: null,
         iv: null,
@@ -1609,27 +1582,12 @@
         keyHex: '',
         ivHex: '',
         isProcessing: false,
-        lastCiphertextHex: '',
         history: [],
         autoRunning: false,
+        currentStep: 0,
     };
 
-    // --- Задержки для чтения (в миллисекундах) ---
-    const DELAYS = {
-        userA: 800,
-        plaintext: 1200,
-        encryption: 2000,
-        ciphertext: 1500,
-        network1: 1500,
-        server: 2000,
-        network2: 1500,
-        ciphertext2: 1500,
-        decryption: 2000,
-        plaintext2: 1500,
-        userB: 1000,
-    };
-
-    // --- Вспомогательные функции ---
+    // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
     function arrayBufferToHex(buffer) {
         const bytes = new Uint8Array(buffer);
         return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
@@ -1687,132 +1645,257 @@
         return decoder.decode(plaintext);
     }
 
-    function updateProgress(percentage) {
-        progressBar.style.width = Math.min(percentage, 100) + '%';
+    function updateProgress(percent) {
+        progressBar.style.width = Math.min(percent, 100) + '%';
     }
 
-    // --- Рендеринг pipeline ---
-    function renderPipeline(stage, data) {
+    // === ОТРИСОВКА ВИЗУАЛИЗАЦИИ ===
+    function renderVisualization(stage, data) {
         const stages = {
-            userA: { icon: 'fa-user', label: 'USER A', color: 'text-blue-400', desc: 'Отправитель' },
-            plaintext: { icon: 'fa-message', label: 'PLAINTEXT', color: 'text-green-400', desc: 'Исходное сообщение' },
-            encryption: { icon: 'fa-lock', label: 'ENCRYPTION', color: 'text-yellow-400', desc: 'Шифрование AES-256-GCM' },
-            ciphertext: { icon: 'fa-shield', label: 'CIPHERTEXT', color: 'text-purple-400', desc: 'Зашифрованные данные' },
-            network1: { icon: 'fa-wifi', label: 'NETWORK', color: 'text-cyan-400', desc: 'Передача по сети' },
-            server: { icon: 'fa-server', label: 'SERVER', color: 'text-orange-400', desc: 'Промежуточный узел' },
-            network2: { icon: 'fa-wifi', label: 'NETWORK', color: 'text-cyan-400', desc: 'Передача по сети' },
-            ciphertext2: { icon: 'fa-shield', label: 'CIPHERTEXT', color: 'text-purple-400', desc: 'Зашифрованные данные' },
-            decryption: { icon: 'fa-unlock', label: 'DECRYPTION', color: 'text-yellow-400', desc: 'Расшифровка' },
-            plaintext2: { icon: 'fa-message', label: 'PLAINTEXT', color: 'text-green-400', desc: 'Восстановленное сообщение' },
-            userB: { icon: 'fa-user', label: 'USER B', color: 'text-pink-400', desc: 'Получатель' },
+            userA: {
+                icon: 'fa-user',
+                label: 'Отправитель',
+                color: 'text-blue-400',
+                bg: 'bg-blue-500/10',
+                border: 'border-blue-500/30',
+                desc: 'Сообщение создано на вашем устройстве'
+            },
+            plaintext: {
+                icon: 'fa-file-lines',
+                label: 'Исходное сообщение',
+                color: 'text-green-400',
+                bg: 'bg-green-500/10',
+                border: 'border-green-500/30',
+                desc: 'Существует только у отправителя'
+            },
+            encryption: {
+                icon: 'fa-lock',
+                label: 'Шифрование',
+                color: 'text-yellow-400',
+                bg: 'bg-yellow-500/10',
+                border: 'border-yellow-500/30',
+                desc: 'AES-256-GCM на устройстве'
+            },
+            ciphertext: {
+                icon: 'fa-shield-halved',
+                label: 'Зашифрованные данные',
+                color: 'text-purple-400',
+                bg: 'bg-purple-500/10',
+                border: 'border-purple-500/30',
+                desc: '🔒 Без ключа — бессмысленный шум'
+            },
+            network1: {
+                icon: 'fa-wifi',
+                label: 'Передача по сети',
+                color: 'text-cyan-400',
+                bg: 'bg-cyan-500/10',
+                border: 'border-cyan-500/30',
+                desc: 'Данные идут к серверу'
+            },
+            server: {
+                icon: 'fa-server',
+                label: 'Сервер',
+                color: 'text-orange-400',
+                bg: 'bg-orange-500/10',
+                border: 'border-orange-500/30',
+                desc: '🚫 Не видит содержимое!'
+            },
+            network2: {
+                icon: 'fa-wifi',
+                label: 'Передача по сети',
+                color: 'text-cyan-400',
+                bg: 'bg-cyan-500/10',
+                border: 'border-cyan-500/30',
+                desc: 'Данные идут к получателю'
+            },
+            ciphertext2: {
+                icon: 'fa-shield-halved',
+                label: 'Зашифрованные данные',
+                color: 'text-purple-400',
+                bg: 'bg-purple-500/10',
+                border: 'border-purple-500/30',
+                desc: '🔒 Данные получены'
+            },
+            decryption: {
+                icon: 'fa-unlock',
+                label: 'Расшифровка',
+                color: 'text-yellow-400',
+                bg: 'bg-yellow-500/10',
+                border: 'border-yellow-500/30',
+                desc: 'Восстановление сообщения'
+            },
+            plaintext2: {
+                icon: 'fa-file-lines',
+                label: 'Восстановленное сообщение',
+                color: 'text-emerald-400',
+                bg: 'bg-emerald-500/10',
+                border: 'border-emerald-500/30',
+                desc: '✅ Исходный текст восстановлен'
+            },
+            userB: {
+                icon: 'fa-user',
+                label: 'Получатель',
+                color: 'text-pink-400',
+                bg: 'bg-pink-500/10',
+                border: 'border-pink-500/30',
+                desc: '🎉 Сообщение доставлено безопасно'
+            }
         };
 
         const order = ['userA', 'plaintext', 'encryption', 'ciphertext', 'network1', 'server', 'network2', 'ciphertext2', 'decryption', 'plaintext2', 'userB'];
-        const activeIndex = order.indexOf(stage);
+        const currentIdx = order.indexOf(stage);
+        state.currentStep = currentIdx;
 
-        let html = '';
-        let completed = 0;
-        const total = order.length;
+        // Строим визуализацию
+        let html = `
+            <div class="relative">
+                <!-- Основная схема -->
+                <div class="space-y-3">
+        `;
 
         order.forEach((key, idx) => {
             const s = stages[key];
-            const isActive = idx <= activeIndex;
-            const isCurrent = idx === activeIndex;
-            const isPast = idx < activeIndex;
-            const isFuture = idx > activeIndex;
+            const isActive = idx <= currentIdx;
+            const isCurrent = idx === currentIdx;
+            const isPast = idx < currentIdx;
 
-            if (isPast || isCurrent) completed++;
-
-            let statusIcon = '';
             let statusClass = '';
-            let content = '';
+            let iconClass = '';
+            let messageContent = '';
 
             if (isPast) {
-                statusIcon = '<i class="fa-solid fa-check-circle text-emerald-400 text-xs"></i>';
-                statusClass = 'opacity-70';
+                statusClass = 'opacity-80';
+                iconClass = 'text-emerald-400';
             } else if (isCurrent) {
-                statusIcon = '<i class="fa-solid fa-spinner fa-spin text-yellow-400 text-xs"></i>';
-                statusClass = 'border-indigo-500/50 bg-indigo-500/10 shadow-lg shadow-indigo-500/10';
+                statusClass = 'border-indigo-500/50 bg-indigo-500/10 shadow-lg shadow-indigo-500/20';
+                iconClass = 'text-indigo-400';
             } else {
-                statusIcon = '<i class="fa-solid fa-circle text-slate-700 text-xs"></i>';
-                statusClass = 'opacity-25';
+                statusClass = 'opacity-30';
+                iconClass = 'text-slate-600';
             }
 
-            let extraContent = '';
+            // Контент сообщения для разных этапов
             if (key === 'plaintext' && data?.plaintext) {
-                extraContent = `
-                    <div class="text-xs text-green-300 font-mono mt-1 break-all bg-slate-950/50 p-2 rounded border border-green-900/30">"${data.plaintext}"</div>
-                    <div class="text-[10px] text-slate-500 mt-1">🔓 Сообщение существует в открытом виде только на устройстве отправителя</div>
+                messageContent = `
+                    <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-green-500/20">
+                        <div class="text-green-300 font-mono text-sm break-all">"${data.plaintext}"</div>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1 text-[10px] text-green-400/60">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Сообщение существует в открытом виде только на устройстве отправителя</span>
+                    </div>
                 `;
             }
+
             if (key === 'plaintext2' && data?.decryptedText) {
-                extraContent = `
-                    <div class="text-xs text-green-300 font-mono mt-1 break-all bg-slate-950/50 p-2 rounded border border-green-900/30">"${data.decryptedText}"</div>
-                    <div class="text-[10px] text-emerald-400/70 mt-1">✅ Сообщение успешно восстановлено</div>
+                messageContent = `
+                    <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-emerald-500/20">
+                        <div class="text-emerald-300 font-mono text-sm break-all">"${data.decryptedText}"</div>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1 text-[10px] text-emerald-400/60">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Сообщение успешно восстановлено на устройстве получателя</span>
+                    </div>
                 `;
             }
+
             if (key === 'encryption' && data?.algorithm) {
-                extraContent = `
-                    <div class="text-xs text-slate-400 mt-1 space-y-1 bg-slate-950/50 p-2 rounded border border-yellow-900/30">
-                        <div class="flex items-center gap-2"><span class="text-slate-500">Алгоритм:</span> <span class="text-emerald-400 font-mono">AES-256-GCM</span></div>
-                        <div class="flex items-center gap-2"><span class="text-slate-500">Ключ:</span> <span class="text-emerald-400 font-mono">${data.keyHex || '...'}</span></div>
-                        <div class="flex items-center gap-2"><span class="text-slate-500">IV / Nonce:</span> <span class="text-emerald-400 font-mono">${data.ivHex || '...'}</span></div>
-                        <div class="text-yellow-400/70 text-[10px] mt-1">⚡ Шифрование выполняется на устройстве отправителя</div>
+                messageContent = `
+                    <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-yellow-500/20 space-y-1">
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="text-slate-400">Алгоритм:</span>
+                            <span class="text-emerald-400 font-mono">AES-256-GCM</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="text-slate-400">Ключ:</span>
+                            <span class="text-emerald-400 font-mono text-[10px]">${data.keyHex}</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="text-slate-400">IV:</span>
+                            <span class="text-emerald-400 font-mono text-[10px]">${data.ivHex}</span>
+                        </div>
+                        <div class="text-yellow-400/60 text-[10px] mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-microchip"></i>
+                            <span>Шифрование выполняется на вашем устройстве</span>
+                        </div>
                     </div>
                 `;
             }
+
             if ((key === 'ciphertext' || key === 'ciphertext2') && data?.ciphertextHex) {
-                const showFull = key === 'ciphertext2' && data.showFull;
-                const hexDisplay = showFull ? data.ciphertextHex : data.ciphertextHex.substring(0, 60) + (data.ciphertextHex.length > 60 ? '...' : '');
-                extraContent = `
-                    <div class="text-xs text-purple-300 font-mono mt-1 break-all bg-slate-950/50 p-2 rounded border border-purple-900/30 max-h-20 overflow-y-auto">${hexDisplay}</div>
-                    <div class="text-[10px] text-slate-500 mt-1">🔐 Данные зашифрованы — содержимое скрыто</div>
-                    ${data.ciphertextBase64 ? `<div class="text-[10px] text-slate-600 mt-0.5">Base64: ${data.ciphertextBase64.substring(0, 30)}...</div>` : ''}
-                    ${key === 'ciphertext2' ? `<button class="e2ee-toggle-full text-[10px] text-indigo-400 hover:text-indigo-300 mt-1 transition-colors">${data.showFull ? 'Скрыть' : 'Показать полный payload'}</button>` : ''}
-                `;
-            }
-            if (key === 'server' && data?.serverPayload) {
-                extraContent = `
-                    <div class="text-xs text-slate-400 mt-1 space-y-1 bg-slate-950/50 p-2 rounded border border-orange-900/30">
-                        <div class="text-orange-300/70">📦 Packet received</div>
-                        <div class="font-mono text-purple-300/70 text-[10px] break-all">${data.serverPayload}</div>
-                        <div class="text-red-400 font-bold text-xs">🚫 SERVER CANNOT READ MESSAGE</div>
-                        <div class="text-red-400/50 text-[10px]">Plaintext: ████████████████████████</div>
-                        <div class="text-red-400/50 text-[10px]">Encryption key: ████████████████</div>
-                        <div class="text-[10px] text-slate-500 mt-1">🔒 Сервер хранит только зашифрованные данные</div>
+                const display = data.ciphertextHex.length > 80 ? data.ciphertextHex.substring(0, 80) + '...' : data.ciphertextHex;
+                messageContent = `
+                    <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-purple-500/20">
+                        <div class="text-purple-300 font-mono text-[10px] break-all">${display}</div>
+                        <div class="flex items-center gap-2 mt-1 text-[10px] text-purple-400/60">
+                            <i class="fa-solid fa-lock"></i>
+                            <span>${key === 'ciphertext' ? 'Данные зашифрованы перед отправкой' : 'Данные получены в зашифрованном виде'}</span>
+                        </div>
                     </div>
                 `;
             }
+
+            if (key === 'server' && data?.serverPayload) {
+                messageContent = `
+                    <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border border-orange-500/20">
+                        <div class="flex items-center gap-2 text-xs text-orange-300/70">
+                            <i class="fa-solid fa-inbox"></i>
+                            <span>Пакет получен</span>
+                        </div>
+                        <div class="text-purple-300/50 font-mono text-[10px] break-all mt-1">${data.serverPayload}</div>
+                        <div class="grid grid-cols-2 gap-2 mt-2 text-[10px]">
+                            <div class="bg-red-950/30 rounded p-2 border border-red-800/30">
+                                <div class="text-red-400 font-bold">🚫 НЕТ ДОСТУПА</div>
+                                <div class="text-red-400/50">Plaintext: ████████████████</div>
+                            </div>
+                            <div class="bg-red-950/30 rounded p-2 border border-red-800/30">
+                                <div class="text-red-400/70">Ключ:</div>
+                                <div class="text-red-400/50 font-mono text-[8px]">████████████████████</div>
+                            </div>
+                        </div>
+                        <div class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                            <i class="fa-solid fa-shield text-emerald-500"></i>
+                            <span>Сервер хранит только зашифрованные данные</span>
+                        </div>
+                    </div>
+                `;
+            }
+
             if (key === 'decryption' && data?.decryptStatus) {
                 const isError = data.decryptStatus.includes('❌') || data.decryptStatus.includes('ошибка');
-                extraContent = `
-                    <div class="text-xs mt-1 ${isError ? 'text-red-400' : 'text-emerald-400'} bg-slate-950/50 p-2 rounded border ${isError ? 'border-red-900/30' : 'border-emerald-900/30'}">
-                        ${data.decryptStatus}
+                messageContent = `
+                    <div class="mt-2 bg-slate-950/70 rounded-lg p-3 border ${isError ? 'border-red-500/20' : 'border-emerald-500/20'}">
+                        <div class="${isError ? 'text-red-400' : 'text-emerald-400'} text-sm">
+                            ${data.decryptStatus}
+                        </div>
                     </div>
                 `;
             }
 
-            // Стрелка между этапами с анимацией
+            // Стрелка
             const arrow = idx < order.length - 1 ? `
-                <div class="flex justify-center py-0.5 text-slate-600 ${isFuture ? 'opacity-20' : ''}">
-                    <i class="fa-solid fa-arrow-down text-[10px] ${isCurrent ? 'text-indigo-400 animate-bounce' : ''}"></i>
+                <div class="flex justify-center py-1 ${isCurrent ? 'text-indigo-400' : isPast ? 'text-emerald-400/30' : 'text-slate-700'}">
+                    <div class="relative">
+                        <i class="fa-solid fa-arrow-down text-sm ${isCurrent ? 'animate-bounce' : ''}"></i>
+                        ${isCurrent ? '<div class="absolute -inset-2 bg-indigo-500/10 rounded-full blur-sm"></div>' : ''}
+                    </div>
                 </div>
             ` : '';
 
             html += `
                 <div class="e2ee-step ${statusClass} transition-all duration-500">
-                    <div class="flex items-start gap-3 bg-slate-950/40 rounded-xl p-3 border ${isCurrent ? 'border-indigo-500/50' : 'border-slate-800/50'} hover:border-slate-700/50 transition-colors">
-                        <div class="flex-shrink-0 w-9 h-9 rounded-full ${isPast ? 'bg-emerald-500/20' : isCurrent ? 'bg-indigo-500/20' : 'bg-slate-800'} flex items-center justify-center text-sm ${s.color} ${isFuture ? 'text-slate-600' : ''}">
+                    <div class="flex items-start gap-4 bg-slate-950/40 rounded-xl p-4 border ${isCurrent ? s.border : 'border-slate-800/50'} hover:border-slate-700/50 transition-all">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full ${isCurrent ? s.bg : 'bg-slate-800'} flex items-center justify-center text-sm ${isCurrent ? s.color : 'text-slate-600'} transition-all">
                             <i class="fa-solid ${s.icon}"></i>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span class="text-xs font-bold ${isFuture ? 'text-slate-600' : s.color}">${s.label}</span>
-                                <span class="text-[10px] text-slate-500">${statusIcon}</span>
-                                ${s.desc ? `<span class="text-[10px] text-slate-500 ml-1">— ${s.desc}</span>` : ''}
+                                <span class="text-sm font-bold ${isCurrent ? s.color : isPast ? 'text-slate-300' : 'text-slate-600'}">${s.label}</span>
+                                <span class="text-[10px] text-slate-500">${s.desc}</span>
                                 ${isCurrent ? '<span class="flex-shrink-0 w-2 h-2 rounded-full bg-indigo-400 animate-pulse ml-auto"></span>' : ''}
+                                ${isPast ? '<span class="flex-shrink-0 text-emerald-400 text-xs ml-auto"><i class="fa-solid fa-check-circle"></i></span>' : ''}
                             </div>
-                            ${extraContent}
+                            ${messageContent}
                         </div>
                     </div>
                     ${arrow}
@@ -1820,68 +1903,61 @@
             `;
         });
 
-        pipelineEl.innerHTML = html;
+        html += `
+                </div>
+                <!-- Индикатор безопасности -->
+                <div class="absolute top-0 right-0 mt-2 mr-2">
+                    <div class="flex items-center gap-1.5 px-2.5 py-1 bg-emerald-950/50 rounded-full border border-emerald-800/30 text-[10px] text-emerald-400">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>E2EE</span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        vizEl.innerHTML = html;
 
         // Обновляем прогресс
-        updateProgress((completed / total) * 100);
+        const total = order.length;
+        updateProgress(((currentIdx + 1) / total) * 100);
 
-        // Обработчики для кнопок "Показать полный payload"
-        document.querySelectorAll('.e2ee-toggle-full').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const parent = this.closest('.e2ee-step');
-                const currentData = state._lastRenderData || {};
-                currentData.showFull = !currentData.showFull;
-                // Перерендерим с новым параметром
-                const stage = state._lastStage || 'ciphertext2';
-                renderPipeline(stage, { ...currentData, showFull: currentData.showFull });
-            });
-        });
-
-        // Прокрутка к текущему этапу
-        const currentEl = pipelineEl.querySelector('.e2ee-step .border-indigo-500\\/50');
+        // Прокрутка к текущему шагу
+        const currentEl = vizEl.querySelector('.e2ee-step .border-indigo-500\\/50');
         if (currentEl) {
             setTimeout(() => {
                 currentEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
+            }, 150);
         }
     }
 
-    // --- Основная логика с задержками ---
-    async function runE2EEDemo(plaintext, isAttack = false, isModify = false) {
+    // === ОСНОВНАЯ ЛОГИКА ===
+    async function runE2EEDemo(plaintext, isModify = false) {
         if (state.isProcessing) return;
         state.isProcessing = true;
         encryptBtn.disabled = true;
-        state._lastRenderData = {};
-        state._lastStage = '';
 
         try {
             // 1. USER A
-            renderPipeline('userA', {});
-            state._lastStage = 'userA';
-            await sleep(DELAYS.userA);
+            renderVisualization('userA', {});
+            await sleep(800);
 
             // 2. PLAINTEXT
-            renderPipeline('plaintext', { plaintext });
-            state._lastStage = 'plaintext';
-            state._lastRenderData = { plaintext };
-            await sleep(DELAYS.plaintext);
+            renderVisualization('plaintext', { plaintext });
+            await sleep(1200);
 
-            // 3. Генерация ключа и IV
+            // 3. Генерация ключей
             const iv = generateIV();
             const key = await generateKey();
             const keyHex = await exportKeyHex(key);
             const ivHex = arrayBufferToHex(iv.buffer);
 
             // 4. ENCRYPTION
-            renderPipeline('encryption', {
+            renderVisualization('encryption', {
                 algorithm: 'AES-256-GCM',
                 keyHex,
                 ivHex,
             });
-            state._lastStage = 'encryption';
-            state._lastRenderData = { algorithm: 'AES-256-GCM', keyHex, ivHex };
-            await sleep(DELAYS.encryption);
+            await sleep(1500);
 
             // Реальное шифрование
             const ciphertext = await encryptMessage(plaintext, key, iv);
@@ -1894,51 +1970,32 @@
             state.key = key;
             state.keyHex = keyHex;
             state.ivHex = ivHex;
-            state.lastCiphertextHex = ciphertextHex;
 
             // 5. CIPHERTEXT
-            renderPipeline('ciphertext', {
-                ciphertextHex,
-                ciphertextBase64,
-                showFull: false,
-            });
-            state._lastStage = 'ciphertext';
-            state._lastRenderData = { ciphertextHex, ciphertextBase64, showFull: false };
-            await sleep(DELAYS.ciphertext);
+            renderVisualization('ciphertext', { ciphertextHex });
+            await sleep(1200);
 
             // 6. NETWORK 1
-            renderPipeline('network1', {});
-            state._lastStage = 'network1';
-            await sleep(DELAYS.network1);
+            renderVisualization('network1', {});
+            await sleep(1200);
 
             // 7. SERVER
-            renderPipeline('server', {
+            renderVisualization('server', {
                 serverPayload: ciphertextHex.substring(0, 60) + (ciphertextHex.length > 60 ? '...' : ''),
             });
-            state._lastStage = 'server';
-            state._lastRenderData = { serverPayload: ciphertextHex.substring(0, 60) + (ciphertextHex.length > 60 ? '...' : '') };
-            await sleep(DELAYS.server);
+            await sleep(1800);
 
             // 8. NETWORK 2
-            renderPipeline('network2', {});
-            state._lastStage = 'network2';
-            await sleep(DELAYS.network2);
+            renderVisualization('network2', {});
+            await sleep(1200);
 
             // 9. CIPHERTEXT 2
-            renderPipeline('ciphertext2', {
-                ciphertextHex,
-                ciphertextBase64,
-                showFull: false,
-            });
-            state._lastStage = 'ciphertext2';
-            state._lastRenderData = { ciphertextHex, ciphertextBase64, showFull: false };
-            await sleep(DELAYS.ciphertext2);
+            renderVisualization('ciphertext2', { ciphertextHex });
+            await sleep(1000);
 
             // 10. DECRYPTION
-            renderPipeline('decryption', { decryptStatus: '⏳ Расшифровка...' });
-            state._lastStage = 'decryption';
-            state._lastRenderData = { decryptStatus: '⏳ Расшифровка...' };
-            await sleep(DELAYS.decryption);
+            renderVisualization('decryption', { decryptStatus: '⏳ Расшифровка...' });
+            await sleep(1200);
 
             let decryptedText;
             let decryptSuccess = true;
@@ -1950,68 +2007,54 @@
                     const modified = new Uint8Array(ciphertext);
                     modified[0] = modified[0] ^ 0xFF;
                     ciphertextToDecrypt = modified.buffer;
-                    state.modifiedHex = arrayBufferToHex(ciphertextToDecrypt);
-                    renderPipeline('ciphertext2', {
-                        ciphertextHex: state.modifiedHex,
-                        ciphertextBase64: arrayBufferToBase64(ciphertextToDecrypt),
-                        showFull: false,
+                    renderVisualization('ciphertext2', {
+                        ciphertextHex: arrayBufferToHex(ciphertextToDecrypt)
                     });
-                    state._lastStage = 'ciphertext2';
-                    state._lastRenderData = { ciphertextHex: state.modifiedHex, ciphertextBase64: arrayBufferToBase64(ciphertextToDecrypt), showFull: false };
                     await sleep(800);
                 }
 
                 decryptedText = await decryptMessage(ciphertextToDecrypt, key, iv);
             } catch (e) {
                 decryptSuccess = false;
-                decryptStatus = '❌ Ошибка аутентификации — сообщение отклонено';
+                decryptStatus = '❌ Ошибка аутентификации — пакет повреждён';
                 decryptedText = '';
             }
 
-            // 11. PLAINTEXT 2 / Ошибка
+            // 11. PLAINTEXT 2
             if (decryptSuccess) {
-                renderPipeline('plaintext2', { decryptedText });
-                state._lastStage = 'plaintext2';
-                state._lastRenderData = { decryptedText };
-                await sleep(DELAYS.plaintext2);
+                renderVisualization('plaintext2', { decryptedText });
+                await sleep(1200);
 
                 // 12. USER B
-                renderPipeline('userB', {});
-                state._lastStage = 'userB';
-                await sleep(DELAYS.userB);
+                renderVisualization('userB', {});
+                await sleep(800);
 
-                state.step = 'decrypted';
-            } else {
-                renderPipeline('decryption', { decryptStatus });
-                state._lastStage = 'decryption';
-                state._lastRenderData = { decryptStatus };
-                await sleep(1500);
-
-                renderPipeline('userB', {});
-                state._lastStage = 'userB';
-                const userBEl = pipelineEl.querySelector('.e2ee-step:last-child .flex-1');
-                if (userBEl) {
-                    userBEl.innerHTML += `
-                        <div class="text-xs text-red-400 mt-2 font-medium bg-red-950/30 p-2 rounded border border-red-800/30">
-                            ❌ Сообщение отклонено — проверка целостности не пройдена
-                        </div>
-                    `;
-                }
-                state.step = 'error';
-            }
-
-            if (!isAttack && !isModify && decryptSuccess) {
                 state.history.push({
                     plaintext,
                     ciphertextHex,
                     ivHex,
                     timestamp: Date.now()
                 });
+            } else {
+                renderVisualization('decryption', { decryptStatus });
+                await sleep(1500);
+                // Добавляем сообщение об ошибке после USER B
+                setTimeout(() => {
+                    const userBEl = vizEl.querySelector('.e2ee-step:last-child .flex-1');
+                    if (userBEl) {
+                        userBEl.innerHTML += `
+                            <div class="mt-2 bg-red-950/30 rounded-lg p-3 border border-red-800/30">
+                                <div class="text-red-400 text-sm">❌ Сообщение отклонено</div>
+                                <div class="text-red-400/60 text-[10px]">Проверка целостности не пройдена</div>
+                            </div>
+                        `;
+                    }
+                }, 100);
             }
 
         } catch (error) {
             console.error('E2EE Lab error:', error);
-            pipelineEl.innerHTML = `
+            vizEl.innerHTML = `
                 <div class="bg-red-950/30 border border-red-800/50 rounded-xl p-4 text-red-400 text-sm">
                     <i class="fa-solid fa-circle-exclamation mr-2"></i>
                     Ошибка: ${error.message || 'Неизвестная ошибка'}
@@ -2023,7 +2066,7 @@
         }
     }
 
-    // --- Атака симуляция ---
+    // === АТАКА ===
     async function runAttackSimulation() {
         if (state.isProcessing) return;
         if (!state.ciphertext) {
@@ -2037,34 +2080,35 @@
 
         try {
             const steps = [
-                { label: '🔍 Перехват пакета', desc: 'Злоумышленник получил зашифрованные данные', delay: 1000 },
-                { label: '🔑 Попытка подбора ключа', desc: 'Без ключа расшифровка невозможна...', delay: 1200 },
-                { label: '❌ Попытка #1', desc: 'Неверный ключ — данные не читаются', delay: 900 },
-                { label: '❌ Попытка #2', desc: 'Неверный ключ — данные не читаются', delay: 900 },
-                { label: '❌ Попытка #3', desc: 'Неверный ключ — данные не читаются', delay: 900 },
-                { label: '⛔ Доступ закрыт', desc: 'Получение зашифрованного трафика само по себе не даёт злоумышленнику ключ расшифровки.', delay: 1500 },
+                { icon: '🔍', label: 'Перехват пакета', desc: 'Злоумышленник получил зашифрованные данные', delay: 1000 },
+                { icon: '🔑', label: 'Попытка подбора ключа', desc: 'Без ключа расшифровка невозможна', delay: 1200 },
+                { icon: '❌', label: 'Попытка #1', desc: 'Неверный ключ — данные не читаются', delay: 900 },
+                { icon: '❌', label: 'Попытка #2', desc: 'Неверный ключ — данные не читаются', delay: 900 },
+                { icon: '❌', label: 'Попытка #3', desc: 'Неверный ключ — данные не читаются', delay: 900 },
+                { icon: '⛔', label: 'Доступ закрыт', desc: 'Получение трафика без ключа бесполезно', delay: 1200 },
             ];
 
             let html = `
-                <div class="mt-3 bg-slate-950/60 border border-red-800/30 rounded-xl p-4 space-y-3">
-                    <div class="flex items-center gap-2 text-red-400 font-medium text-sm">
-                        <i class="fa-solid fa-user-secret"></i>
+                <div class="mt-4 bg-slate-950/80 border border-red-800/30 rounded-xl p-5">
+                    <div class="flex items-center gap-3 text-red-400 font-medium text-sm mb-4">
+                        <i class="fa-solid fa-user-secret text-lg"></i>
                         <span>ATTACK SIMULATION</span>
+                        <span class="text-xs text-slate-500 font-normal ml-auto">🔒 Безуспешно</span>
                     </div>
-                    <div class="space-y-2 text-sm">
+                    <div class="space-y-2 max-h-80 overflow-y-auto pr-2">
             `;
 
             for (let i = 0; i < steps.length; i++) {
                 const step = steps[i];
                 const isLast = i === steps.length - 1;
                 html += `
-                    <div class="flex items-start gap-3 bg-slate-900/50 rounded-lg p-3 border ${isLast ? 'border-red-800/50' : 'border-slate-800/50'} transition-all">
-                        <span class="text-sm ${isLast ? 'text-red-400' : 'text-yellow-400'}">${i < steps.length - 1 ? '⏳' : '✗'}</span>
+                    <div class="flex items-start gap-3 bg-slate-900/50 rounded-lg p-3 border ${isLast ? 'border-red-800/50 bg-red-950/20' : 'border-slate-800/50'} transition-all">
+                        <span class="text-lg">${step.icon}</span>
                         <div>
                             <div class="text-xs font-medium ${isLast ? 'text-red-400' : 'text-slate-300'}">${step.label}</div>
                             <div class="text-xs text-slate-500">${step.desc}</div>
-                            ${!isLast ? '<div class="w-full h-0.5 bg-slate-800/50 mt-2"></div>' : ''}
                         </div>
+                        ${!isLast ? '<div class="ml-auto text-slate-600 text-xs">⏳</div>' : '<div class="ml-auto text-red-400 text-xs">✗</div>'}
                     </div>
                 `;
                 if (!isLast) {
@@ -2074,8 +2118,9 @@
 
             html += `
                     </div>
-                    <div class="text-xs text-slate-500 mt-2 pt-2 border-t border-slate-800">
-                        🔒 Ключ шифрования остаётся только у отправителя и получателя.
+                    <div class="mt-3 pt-3 border-t border-slate-800 text-xs text-slate-500 flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                        <span>Ключ шифрования остаётся только у отправителя и получателя</span>
                     </div>
                 </div>
             `;
@@ -2087,18 +2132,18 @@
             const oldResult = document.getElementById('e2ee-attack-result');
             if (oldResult) oldResult.remove();
 
-            pipelineEl.appendChild(container);
+            vizEl.appendChild(container);
             container.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         } catch (error) {
-            console.error('Attack simulation error:', error);
+            console.error('Attack error:', error);
         } finally {
             state.isProcessing = false;
             attackBtn.disabled = false;
         }
     }
 
-    // --- Авто-демонстрация ---
+    // === АВТО-ДЕМО ===
     async function runAutoDemo() {
         if (state.isProcessing || state.autoRunning) return;
         state.autoRunning = true;
@@ -2107,7 +2152,7 @@
         const msgs = [
             'Привет! Это тестовое сообщение.',
             'Как работает E2EE шифрование?',
-            'Сообщение защищено от перехвата!'
+            'Ваши данные в безопасности!'
         ];
 
         for (let i = 0; i < msgs.length; i++) {
@@ -2115,13 +2160,12 @@
             inputEl.value = msgs[i];
             await runE2EEDemo(msgs[i]);
             if (i < msgs.length - 1) {
-                await sleep(2000);
-                // Сброс перед следующим
+                await sleep(2500);
                 const oldResult = document.getElementById('e2ee-attack-result');
                 if (oldResult) oldResult.remove();
                 const msg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
-                renderPipeline('userA', {});
-                renderPipeline('plaintext', { plaintext: msg });
+                renderVisualization('userA', {});
+                renderVisualization('plaintext', { plaintext: msg });
                 await sleep(1000);
             }
         }
@@ -2130,11 +2174,13 @@
         autoBtn.disabled = false;
     }
 
-    // --- Инициализация ---
+    // === ИНИЦИАЛИЗАЦИЯ ===
     function initDemo() {
-        renderPipeline('userA', {});
         const initialMsg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
-        renderPipeline('plaintext', { plaintext: initialMsg });
+        renderVisualization('userA', {});
+        setTimeout(() => {
+            renderVisualization('plaintext', { plaintext: initialMsg });
+        }, 400);
         updateProgress(0);
 
         encryptBtn.addEventListener('click', async () => {
@@ -2152,7 +2198,6 @@
 
         resetBtn.addEventListener('click', () => {
             state = {
-                step: 'idle',
                 plaintext: '',
                 ciphertext: null,
                 iv: null,
@@ -2160,15 +2205,17 @@
                 keyHex: '',
                 ivHex: '',
                 isProcessing: false,
-                lastCiphertextHex: '',
                 history: state.history || [],
                 autoRunning: false,
+                currentStep: 0,
             };
             const oldResult = document.getElementById('e2ee-attack-result');
             if (oldResult) oldResult.remove();
             const msg = inputEl.value.trim() || 'Привет! Это секретное сообщение для демонстрации E2EE.';
-            renderPipeline('userA', {});
-            renderPipeline('plaintext', { plaintext: msg });
+            renderVisualization('userA', {});
+            setTimeout(() => {
+                renderVisualization('plaintext', { plaintext: msg });
+            }, 400);
             updateProgress(0);
         });
 
@@ -2186,24 +2233,23 @@
                 const prev = state.history[state.history.length - 2];
                 if (last && prev) {
                     const compareHtml = `
-                        <div class="mt-3 bg-slate-950/60 border border-indigo-800/30 rounded-xl p-4">
-                            <div class="text-xs font-medium text-indigo-400 mb-3">🔄 Сравнение шифрований</div>
+                        <div class="mt-4 bg-slate-950/80 border border-indigo-800/30 rounded-xl p-5">
+                            <div class="text-xs font-medium text-indigo-400 mb-3">🔄 Одинаковый текст → разный шифр</div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                 <div class="bg-slate-900/50 rounded-lg p-3 border border-slate-800/50">
-                                    <div class="text-slate-500">Шифрование #${state.history.length - 1}</div>
-                                    <div class="font-mono text-purple-300 break-all text-[10px] mt-1">${prev.ciphertextHex.substring(0, 50)}...</div>
+                                    <div class="text-slate-500 mb-1">Шифрование #${state.history.length - 1}</div>
+                                    <div class="font-mono text-purple-300 break-all text-[10px]">${prev.ciphertextHex.substring(0, 50)}...</div>
                                     <div class="text-slate-600 text-[10px] mt-1">IV: ${prev.ivHex.substring(0, 25)}...</div>
                                 </div>
                                 <div class="bg-slate-900/50 rounded-lg p-3 border border-slate-800/50">
-                                    <div class="text-slate-500">Шифрование #${state.history.length}</div>
-                                    <div class="font-mono text-purple-300 break-all text-[10px] mt-1">${last.ciphertextHex.substring(0, 50)}...</div>
+                                    <div class="text-slate-500 mb-1">Шифрование #${state.history.length}</div>
+                                    <div class="font-mono text-purple-300 break-all text-[10px]">${last.ciphertextHex.substring(0, 50)}...</div>
                                     <div class="text-slate-600 text-[10px] mt-1">IV: ${last.ivHex.substring(0, 25)}...</div>
                                 </div>
                             </div>
                             <div class="text-xs text-slate-500 mt-3 pt-2 border-t border-slate-800 flex items-center gap-2">
-                                <span>📌</span> Одинаковое сообщение → разные ciphertext (благодаря случайному IV)
+                                <span>📌</span> Каждое шифрование использует новый случайный IV, поэтому одинаковые сообщения выглядят по-разному
                             </div>
-                            <div class="text-xs text-emerald-400/70 mt-1">✅ Это важное свойство E2EE: одинаковые сообщения выглядят по-разному</div>
                         </div>
                     `;
                     const container = document.createElement('div');
@@ -2211,7 +2257,7 @@
                     container.innerHTML = compareHtml;
                     const oldCompare = document.getElementById('e2ee-compare-result');
                     if (oldCompare) oldCompare.remove();
-                    pipelineEl.appendChild(container);
+                    vizEl.appendChild(container);
                 }
             }
         });
@@ -2219,14 +2265,14 @@
         modifyBtn.addEventListener('click', async () => {
             if (state.isProcessing) return;
             if (!state.ciphertext) {
-                const msg = inputEl.value.trim() || 'Сообщение для теста модификации';
+                const msg = inputEl.value.trim() || 'Сообщение для теста';
                 await runE2EEDemo(msg);
                 if (!state.ciphertext) return;
             }
             const oldResult = document.getElementById('e2ee-attack-result');
             if (oldResult) oldResult.remove();
-            const msg = state.plaintext || inputEl.value.trim() || 'Сообщение для теста модификации';
-            await runE2EEDemo(msg, false, true);
+            const msg = state.plaintext || inputEl.value.trim() || 'Сообщение для теста';
+            await runE2EEDemo(msg, true);
         });
 
         autoBtn.addEventListener('click', runAutoDemo);
@@ -2247,77 +2293,61 @@
 })();
 </script>
 
-<!-- Дополнительные стили для E2EE Lab -->
+<!-- Дополнительные стили -->
 <style>
     .e2ee-step {
-        transition: all 0.5s ease;
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .e2ee-step .border-indigo-500\/50 {
-        box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
+        box-shadow: 0 0 40px rgba(99, 102, 241, 0.1);
     }
-    .e2ee-step .fa-spinner {
-        animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-        to { transform: rotate(360deg); }
-    }
-    #e2ee-pipeline {
+    #e2ee-visualization {
         max-height: 650px;
         overflow-y: auto;
+        scroll-behavior: smooth;
         scrollbar-width: thin;
-        scrollbar-color: rgba(79, 70, 229, 0.3) transparent;
+        scrollbar-color: rgba(79, 70, 229, 0.2) transparent;
         padding-right: 4px;
     }
-    #e2ee-pipeline::-webkit-scrollbar {
+    #e2ee-visualization::-webkit-scrollbar {
         width: 4px;
     }
-    #e2ee-pipeline::-webkit-scrollbar-track {
+    #e2ee-visualization::-webkit-scrollbar-track {
         background: transparent;
     }
-    #e2ee-pipeline::-webkit-scrollbar-thumb {
-        background: rgba(79, 70, 229, 0.3);
+    #e2ee-visualization::-webkit-scrollbar-thumb {
+        background: rgba(79, 70, 229, 0.2);
         border-radius: 10px;
     }
     .e2ee-step {
         animation: fadeSlideIn 0.5s ease forwards;
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(12px);
     }
-    .e2ee-step:nth-child(1) { animation-delay: 0.55s; }
-    .e2ee-step:nth-child(2) { animation-delay: 1.30s; }
-    .e2ee-step:nth-child(3) { animation-delay: 1.35s; }
-    .e2ee-step:nth-child(4) { animation-delay: 1.50s; }
-    .e2ee-step:nth-child(5) { animation-delay: 1.55s; }
-    .e2ee-step:nth-child(6) { animation-delay: 1.50s; }
-    .e2ee-step:nth-child(7) { animation-delay: 1.55s; }
-    .e2ee-step:nth-child(8) { animation-delay: 1.60s; }
-    .e2ee-step:nth-child(9) { animation-delay: 1.65s; }
-    .e2ee-step:nth-child(10) { animation-delay: 1.50s; }
-    .e2ee-step:nth-child(11) { animation-delay: 1.55s; }
+    .e2ee-step:nth-child(1) { animation-delay: 0.05s; }
+    .e2ee-step:nth-child(2) { animation-delay: 0.10s; }
+    .e2ee-step:nth-child(3) { animation-delay: 0.15s; }
+    .e2ee-step:nth-child(4) { animation-delay: 0.20s; }
+    .e2ee-step:nth-child(5) { animation-delay: 0.25s; }
+    .e2ee-step:nth-child(6) { animation-delay: 0.30s; }
+    .e2ee-step:nth-child(7) { animation-delay: 0.35s; }
+    .e2ee-step:nth-child(8) { animation-delay: 0.40s; }
+    .e2ee-step:nth-child(9) { animation-delay: 0.45s; }
+    .e2ee-step:nth-child(10) { animation-delay: 0.50s; }
+    .e2ee-step:nth-child(11) { animation-delay: 0.55s; }
     @keyframes fadeSlideIn {
         to { opacity: 1; transform: translateY(0); }
     }
-    /* Анимация для стрелок */
-    .e2ee-step .fa-arrow-down {
-        transition: all 0.5s ease;
-    }
-    .e2ee-step .fa-arrow-down.animate-bounce {
-        animation: arrowBounce 1s ease-in-out infinite;
+    .fa-arrow-down.animate-bounce {
+        animation: arrowBounce 1.2s ease-in-out infinite;
     }
     @keyframes arrowBounce {
         0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(4px); }
+        50% { transform: translateY(6px); }
     }
-    /* Стили для кнопок при наведении */
-    #e2ee-auto-btn:hover {
-        background: rgba(20, 184, 166, 0.2);
-    }
-    /* Плавное появление контента */
-    .e2ee-step .bg-slate-950\/50 {
-        transition: all 0.3s ease;
-    }
-    .e2ee-step:hover .bg-slate-950\/50 {
-        background: rgba(15, 23, 42, 0.7);
+    /* Безопасный индикатор в углу */
+    .e2ee-step .fa-shield-halved {
+        filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
     }
 </style>
     
