@@ -1,9 +1,3 @@
----
-title: "VRD Flight Controller — полётный контроллер для ракеты на ВРД"
-date: "2026-02-12"
-description: "Разработка гибридного двухъядерного полётного контроллера с машинным обучением для ракеты-носителя с горизонтальным взлётом."
-image: "https://opengraph.githubassets.com/1/LightRain-K/VRD_flight_controller"
----
 
 # 🚀 VRD Flight Controller
 
