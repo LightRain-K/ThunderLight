@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статьи и документация ThunderLight</title>
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Подключаем библиотеку для работы с Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Подключаем DOMPurify для безопасности -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    
+    <style>
+        /* Скопируй сюда все свои стили с основной страницы */
+        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .navbar { /* ... твои стили ... */ }
+        /* ... и все остальные стили ... */
+        
+        .article-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+        .article-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(79, 70, 229, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        .article-card .date {
+            color: #64748b;
+            font-size: 0.85em;
+        }
+        .article-card .excerpt {
+            color: #94a3b8;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        .loader { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #4f46e5; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 40px auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <!-- Навигация (скопируй свою с index.html, добавь пункт "Статьи") -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-content" style="max-width:1280px; margin:0 auto; padding:16px 32px; display:flex; justify-content:space-between; align-items:center;">
+            <a href="/" class="nav-logo" style="font-size:1.5em; font-weight:800; background:linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; display:flex; align-items:center; gap:10px;">
+                <span style="width:36px;height:36px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2em;-webkit-text-fill-color:white;">⚡</span>
+                ThunderLight
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" style="display:none; background:none; border:none; color:white; font-size:1.5em;">☰</button>
+            <ul class="nav-links" id="navLinks" style="display:flex; gap:8px; list-style:none; align-items:center;">
+                <li><a href="/#features" style="color:#94a3b8; text-decoration:none; padding:8px 16px; border-radius:8px; transition:all 0.3s;">Возможности</a></li>
+                <li><a href="/#roadmap" style="color:#94a3b8; text-decoration:none; padding:8px 16px; border-radius:8px; transition:all 0.3s;">Развитие</a></li>
+                <li><a href="/projects.html" style="color:#a5b4fc; text-decoration:none; padding:8px 16px; border-radius:8px; transition:all 0.3s; background:rgba(79,70,229,0.15);">Проекты</a></li>
+                <li><a href="/articles.html" style="color:#a5b4fc; text-decoration:none; padding:8px 16px; border-radius:8px; transition:all 0.3s; background:rgba(79,70,229,0.15);">Статьи</a></li>
+                <li><a href="/#download" class="nav-download" style="background:linear-gradient(135deg,#10b981,#059669); color:white !important; padding:10px 20px !important; border-radius:10px !important; font-weight:600 !important;">Скачать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <section style="padding:120px 32px 80px; max-width:1280px; margin:0 auto;">
+        <h1 style="font-size:3em; font-weight:900; margin-bottom:16px; background:linear-gradient(135deg,#818cf8,#c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">📚 Статьи и документация</h1>
+        <p style="color:#94a3b8; font-size:1.2em; margin-bottom:48px;">Глубокие материалы о философии, архитектуре и разработке ThunderLight.</p>
+        
+        <div id="article-list">
+            <div class="loader"></div>
+        </div>
+    </section>
+
+    <!-- Футер (скопируй свой с index.html) -->
+    <footer style="padding:80px 32px 40px; background:#020617; border-top:1px solid rgba(255,255,255,0.08);">
+        <div style="max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px;">
+            <div>
+                <a href="/" style="font-size:1.5em; font-weight:800; background:linear-gradient(135deg,#818cf8,#c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none;">ThunderLight</a>
+                <p style="color:#64748b; margin:16px 0;">Приватный мессенджер со сквозным шифрованием. Открытый код, никакого сбора данных.</p>
+            </div>
+            <div><h4 style="color:#64748b; text-transform:uppercase; letter-spacing:2px; font-size:0.9em;">Продукт</h4><ul style="list-style:none; margin-top:16px;"><li><a href="/#features" style="color:#94a3b8; text-decoration:none;">Возможности</a></li></ul></div>
+            <div><h4 style="color:#64748b; text-transform:uppercase; letter-spacing:2px; font-size:0.9em;">Документы</h4><ul style="list-style:none; margin-top:16px;"><li><a href="/privacy.html" style="color:#94a3b8; text-decoration:none;">Конфиденциальность</a></li><li><a href="/terms.html" style="color:#94a3b8; text-decoration:none;">Условия</a></li></ul></div>
+            <div><h4 style="color:#64748b; text-transform:uppercase; letter-spacing:2px; font-size:0.9em;">Контакты</h4><ul style="list-style:none; margin-top:16px;"><li><a href="https://t.me/thunderlight_online" style="color:#94a3b8; text-decoration:none;">Telegram</a></li><li><a href="mailto:thunderlight@internet.ru" style="color:#94a3b8; text-decoration:none;">Email</a></li><li><a href="https://github.com/LightRain-K" style="color:#94a3b8; text-decoration:none;">GitHub</a></li></ul></div>
+        </div>
+        <div style="max-width:1280px; margin:0 auto; padding-top:32px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; color:#64748b; font-size:0.85em;">
+            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // СПИСОК СТАТЕЙ
+        // ============================================================
+
+        const articleList = document.getElementById('article-list');
+
+        // Список файлов статей (ты добавляешь сюда новые файлы)
+        const articlesFiles = [
+            'intro.md',
+            'architecture.md',
+            'encryption.md',
+            'roadmap.md'
+        ];
+
+        // Функция для загрузки и парсинга статьи (достаём метаданные)
+        async function loadArticleMetadata(filename) {
+            try {
+                const response = await fetch(`/articles/${filename}`);
+                if (!response.ok) throw new Error(`Не удалось загрузить ${filename}`);
+                
+                const text = await response.text();
+                
+                // Парсим YAML-заголовок (Front Matter)
+                const frontMatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+                const match = text.match(frontMatterRegex);
+                
+                if (!match) {
+                    // Если нет заголовка, используем имя файла как заголовок
+                    const title = filename.replace('.md', '').replace(/-/g, ' ');
+                    return {
+                        filename: filename,
+                        title: title.charAt(0).toUpperCase() + title.slice(1),
+                        date: 'Дата неизвестна',
+                        description: 'Описание отсутствует.',
+                        content: text
+                    };
+                }
+                
+                const frontMatter = match[1];
+                const content = match[2];
+                
+                // Парсим YAML вручную (простой парсер для ключ: значение)
+                const metadata = {};
+                frontMatter.split('\n').forEach(line => {
+                    const [key, ...valueParts] = line.split(':');
+                    if (key && valueParts.length) {
+                        const value = valueParts.join(':').trim();
+                        if (value) {
+                            metadata[key.trim()] = value;
+                        }
+                    }
+                });
+                
+                return {
+                    filename: filename,
+                    title: metadata.title || filename.replace('.md', ''),
+                    date: metadata.date || 'Дата неизвестна',
+                    description: metadata.description || 'Описание отсутствует.',
+                    image: metadata.image || '/logocircle.ico',
+                    content: content
+                };
+            } catch (error) {
+                console.error('Ошибка загрузки статьи:', filename, error);
+                return null;
+            }
+        }
+
+        // Загружаем все статьи
+        async function loadAllArticles() {
+            const articles = [];
+            for (const file of articlesFiles) {
+                const data = await loadArticleMetadata(file);
+                if (data) {
+                    articles.push(data);
+                }
+            }
+            return articles;
+        }
+
+        // Отображаем список статей
+        function renderArticleList(articles) {
+            if (!articles || articles.length === 0) {
+                articleList.innerHTML = `
+                    <div style="text-align:center; padding:60px 20px; color:#94a3b8; background:rgba(15,23,42,0.4); border-radius:16px; border:1px solid rgba(255,255,255,0.05);">
+                        <i class="fas fa-file-alt text-4xl text-slate-600 mb-4"></i>
+                        <p>Статьи пока не добавлены.</p>
+                        <p style="font-size:0.9em; margin-top:8px;">Положи .md файлы в папку /articles/</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Сортируем по дате (сначала новые)
+            articles.sort((a, b) => {
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+                if (!isNaN(dateA) && !isNaN(dateB)) {
+                    return dateB - dateA;
+                }
+                return 0;
+            });
+
+            const html = articles.map(article => `
+                <a href="/article.html?file=${encodeURIComponent(article.filename)}" class="article-card block rounded-xl p-6 transition-all duration-300 no-underline">
+                    <div class="flex items-start gap-4">
+                        ${article.image ? `<img src="${article.image}" alt="${article.title}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0" />` : ''}
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-xl font-bold text-white hover:text-indigo-400 transition-colors">${article.title}</h3>
+                            <div class="date mt-1">📅 ${article.date}</div>
+                            <p class="excerpt mt-2">${article.description}</p>
+                            <span class="inline-block mt-3 text-indigo-400 hover:text-indigo-300 transition-colors text-sm">
+                                Читать статью →
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+
+            articleList.innerHTML = `<div class="grid gap-4">${html}</div>`;
+        }
+
+        // Запуск
+        async function init() {
+            const articles = await loadAllArticles();
+            renderArticleList(articles);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+    <script>
+        // --- Простой скрипт для мобильного меню ---
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        if (mobileMenuBtn && navLinks) {
+            mobileMenuBtn.addEventListener('click', () => {
+                if (navLinks.style.display === 'flex') {
+                    navLinks.style.display = 'none';
+                    mobileMenuBtn.textContent = '☰';
+                } else {
+                    navLinks.style.display = 'flex';
+                    navLinks.style.flexDirection = 'column';
+                    navLinks.style.position = 'absolute';
+                    navLinks.style.top = '100%';
+                    navLinks.style.left = '0';
+                    navLinks.style.width = '100%';
+                    navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
+                    navLinks.style.padding = '20px 32px';
+                    navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+                    mobileMenuBtn.textContent = '✕';
+                }
+            });
+        }
+        window.addEventListener('load', function() { setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 100); });
+        if (window.location.hash) { history.pushState("", document.title, window.location.pathname + window.location.search); }
+    </script>
+</body>
+</html>
