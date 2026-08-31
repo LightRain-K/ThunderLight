@@ -11,12 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     
     <style>
-        /* Скопируй сюда все свои стили с основной страницы */
         body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
-        .navbar { /* ... твои стили ... */ }
-        /* ... и все остальные стили ... */
         
-        /* Стили для содержимого статьи */
         .article-content {
             max-width: 800px;
             margin: 0 auto;
@@ -35,7 +31,6 @@
         .article-content img { max-width: 100%; border-radius: 12px; margin: 1.5em 0; }
         .article-content a { color: #818cf8; text-decoration: none; border-bottom: 1px solid rgba(129, 140, 248, 0.2); transition: border-color 0.2s; }
         .article-content a:hover { border-color: #818cf8; }
-        .article-content .table-of-contents { background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5em; margin: 1.5em 0; }
         
         .loader { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #4f46e5; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 40px auto; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -44,7 +39,7 @@
 </head>
 <body>
 
-    <!-- Навигация (скопируй свою с index.html) -->
+    <!-- Навигация -->
     <nav class="navbar" id="navbar">
         <div class="nav-content" style="max-width:1280px; margin:0 auto; padding:16px 32px; display:flex; justify-content:space-between; align-items:center;">
             <a href="/" class="nav-logo" style="font-size:1.5em; font-weight:800; background:linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; display:flex; align-items:center; gap:10px;">
@@ -69,7 +64,7 @@
         </div>
     </section>
 
-    <!-- Футер (скопируй свой с index.html) -->
+    <!-- Футер -->
     <footer style="padding:80px 32px 40px; background:#020617; border-top:1px solid rgba(255,255,255,0.08);">
         <div style="max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px;">
             <div>
@@ -87,103 +82,71 @@
 
     <script>
         // ============================================================
-        // ПРОСМОТР СТАТЬИ
+        // ПРОСМОТР СТАТЬИ — БЕЗ ПАРСИНГА YAML
         // ============================================================
 
         const container = document.getElementById('article-container');
 
-        // Получаем имя файла из URL-параметра
         function getFileFromURL() {
             const params = new URLSearchParams(window.location.search);
             return params.get('file');
         }
 
         async function loadArticle() {
-    const filename = getFileFromURL();
-    
-    if (!filename) {
-        container.innerHTML = `
-            <div class="error-msg">
-                <i class="fas fa-exclamation-circle"></i> Статья не указана.
-            </div>
-        `;
-        return;
-    }
+            const filename = getFileFromURL();
+            
+            if (!filename) {
+                container.innerHTML = `<div class="error-msg"><i class="fas fa-exclamation-circle"></i> Статья не указана.</div>`;
+                return;
+            }
 
-    try {
-        const response = await fetch(`/articles/${filename}`);
-        if (!response.ok) throw new Error(`Статья не найдена (${response.status})`);
-        
-        const text = await response.text();
-        
-        // Парсим Front Matter
-        const frontMatterRegex = /^[\uFEFF]?---\n([\s\S]*?)\n---\n([\s\S]*)$/;
-        const match = text.match(frontMatterRegex);
-        
-        let title = filename.replace('.md', '').replace(/-/g, ' ');
-        let date = 'Дата неизвестна';
-        let content = text;  // По умолчанию — весь текст
-        
-        if (match) {
-            const frontMatter = match[1];
-            content = match[2];  // <-- ЭТО ГЛАВНОЕ: берём только тело статьи
-            
-            // Парсим YAML
-            const metadata = {};
-            frontMatter.split('\n').forEach(line => {
-                const [key, ...valueParts] = line.split(':');
-                if (key && valueParts.length) {
-                    const value = valueParts.join(':').trim();
-                    if (value) {
-                        metadata[key.trim()] = value;
-                    }
+            try {
+                const response = await fetch(`/articles/${filename}`);
+                if (!response.ok) throw new Error(`Статья не найдена (${response.status})`);
+                
+                const text = await response.text();
+                
+                // Удаляем YAML-заголовок, если он есть
+                let content = text;
+                const frontMatterRegex = /^---\n([\s\S]*?)\n---\n/;
+                const match = content.match(frontMatterRegex);
+                if (match) {
+                    content = content.replace(match[0], '');
                 }
-            });
-            
-            title = metadata.title || title;
-            date = metadata.date || date;
+                
+                // Конвертируем Markdown в HTML
+                const htmlContent = marked.parse(content);
+                const sanitizedHTML = DOMPurify.sanitize(htmlContent);
+                
+                container.innerHTML = `
+                    <div class="article-content">
+                        <div class="mb-8 flex items-center gap-4 flex-wrap text-sm text-slate-500">
+                            <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                                <i class="fas fa-arrow-left"></i> Назад к статьям
+                            </a>
+                        </div>
+                        <div class="prose prose-invert max-w-none">
+                            ${sanitizedHTML}
+                        </div>
+                        <div class="mt-12 pt-8 border-t border-slate-800 text-sm text-slate-500 flex justify-between items-center flex-wrap gap-4">
+                            <span>📝 Нашли ошибку? <a href="https://github.com/LightRain-K/thunderlight-site/issues" class="text-indigo-400 hover:text-indigo-300 transition-colors">Сообщите на GitHub</a></span>
+                            <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                                <i class="fas fa-arrow-left"></i> Все статьи
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Ошибка загрузки статьи:', error);
+                container.innerHTML = `<div class="error-msg"><i class="fas fa-exclamation-triangle"></i> Не удалось загрузить статью: ${error.message}</div>`;
+            }
         }
-        
-        // Конвертируем Markdown в HTML (только тело статьи)
-        const htmlContent = marked.parse(content);
-        const sanitizedHTML = DOMPurify.sanitize(htmlContent);
-        
-        // Показываем статью
-        container.innerHTML = `
-            <div class="article-content">
-                <div class="mb-8 flex items-center gap-4 flex-wrap text-sm text-slate-500">
-                    <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
-                        <i class="fas fa-arrow-left"></i> Назад к статьям
-                    </a>
-                    <span>•</span>
-                    <span>📅 ${date}</span>
-                </div>
-                <div class="prose prose-invert max-w-none">
-                    ${sanitizedHTML}
-                </div>
-                <div class="mt-12 pt-8 border-t border-slate-800 text-sm text-slate-500 flex justify-between items-center flex-wrap gap-4">
-                    <span>📝 Нашли ошибку? <a href="https://github.com/LightRain-K/thunderlight-site/issues" class="text-indigo-400 hover:text-indigo-300 transition-colors">Сообщите на GitHub</a></span>
-                    <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
-                        <i class="fas fa-arrow-left"></i> Все статьи
-                    </a>
-                </div>
-            </div>
-        `;
-    } catch (error) {
-        console.error('Ошибка загрузки статьи:', error);
-        container.innerHTML = `
-            <div class="error-msg">
-                <i class="fas fa-exclamation-triangle"></i> Не удалось загрузить статью: ${error.message}
-            </div>
-        `;
-    }
-}
 
         document.addEventListener('DOMContentLoaded', loadArticle);
     </script>
 
     <script>
-        // --- Простой скрипт для мобильного меню ---
+        // --- Мобильное меню ---
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
         if (mobileMenuBtn && navLinks) {
