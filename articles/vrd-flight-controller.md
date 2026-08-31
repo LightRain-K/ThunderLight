@@ -8,7 +8,7 @@
 ---
 
 ## Введение
-![Ан 225]([https://site/foto](https://yandex.ru/images/search?img_url=https%3A%2F%2Fcs14.pikabu.ru%2Fpost_img%2F2021%2F12%2F03%2F7%2Fog_og_1638526019221659647.jpg&lr=56&pos=4&rpt=simage&source=serp&text=ан%20225))
+![Ан 225](https://yandex.ru/images/search?img_url=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F7%2F78%2FAntonov_An-225_Mriya_AN1134884.jpg%2F960px-Antonov_An-225_Mriya_AN1134884.jpg&lr=56&pos=46&rpt=simage&source=serp&stype=image&text=ан%20225)
 
 Развитие ракетно-космической техники сегодня всё больше смещается в сторону многоразового использования. Одним из самых перспективных направлений является создание возвращаемых первых ступеней, оснащённых воздушно-реактивными двигателями (ВРД). Такая схема позволяет не только экономить окислитель на начальном участке полёта, но и совершать управляемый возврат ступени по самолётной траектории — с посадкой на обычную взлётно-посадочную полосу.
 
