@@ -7,17 +7,9 @@
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Подключаем библиотеку для работы с Markdown -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Подключаем DOMPurify для безопасности -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
     
     <style>
-        /* Скопируй сюда все свои стили с основной страницы */
         body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
-        .navbar { /* ... твои стили ... */ }
-        /* ... и все остальные стили ... */
-        
         .article-card {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -43,7 +35,7 @@
 </head>
 <body>
 
-    <!-- Навигация (скопируй свою с index.html, добавь пункт "Статьи") -->
+    <!-- Навигация -->
     <nav class="navbar" id="navbar">
         <div class="nav-content" style="max-width:1280px; margin:0 auto; padding:16px 32px; display:flex; justify-content:space-between; align-items:center;">
             <a href="/" class="nav-logo" style="font-size:1.5em; font-weight:800; background:linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; display:flex; align-items:center; gap:10px;">
@@ -71,7 +63,7 @@
         </div>
     </section>
 
-    <!-- Футер (скопируй свой с index.html) -->
+    <!-- Футер -->
     <footer style="padding:80px 32px 40px; background:#020617; border-top:1px solid rgba(255,255,255,0.08);">
         <div style="max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px;">
             <div>
@@ -89,89 +81,29 @@
 
     <script>
         // ============================================================
-        // СПИСОК СТАТЕЙ
+        // СПИСОК СТАТЕЙ — МЕТАДАННЫЕ ХРАНЯТСЯ ЗДЕСЬ
         // ============================================================
 
         const articleList = document.getElementById('article-list');
 
-        // Список файлов статей (ты добавляешь сюда новые файлы)
-        const articlesFiles = [
-    'vrd-flight-controller.md'
-];
-
-        // Функция для загрузки и парсинга статьи (достаём метаданные)
-        async function loadArticleMetadata(filename) {
-            try {
-                const response = await fetch(`/articles/${filename}`);
-                if (!response.ok) throw new Error(`Не удалось загрузить ${filename}`);
-                
-                const text = await response.text();
-                
-                // Парсим YAML-заголовок (Front Matter)
-                const frontMatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
-                const match = text.match(frontMatterRegex);
-                
-                if (!match) {
-                    // Если нет заголовка, используем имя файла как заголовок
-                    const title = filename.replace('.md', '').replace(/-/g, ' ');
-                    return {
-                        filename: filename,
-                        title: title.charAt(0).toUpperCase() + title.slice(1),
-                        date: 'Дата неизвестна',
-                        description: 'Описание отсутствует.',
-                        content: text
-                    };
-                }
-                
-                const frontMatter = match[1];
-                const content = match[2];
-                
-                // Парсим YAML вручную (простой парсер для ключ: значение)
-                const metadata = {};
-                frontMatter.split('\n').forEach(line => {
-                    const [key, ...valueParts] = line.split(':');
-                    if (key && valueParts.length) {
-                        const value = valueParts.join(':').trim();
-                        if (value) {
-                            metadata[key.trim()] = value;
-                        }
-                    }
-                });
-                
-                return {
-                    filename: filename,
-                    title: metadata.title || filename.replace('.md', ''),
-                    date: metadata.date || 'Дата неизвестна',
-                    description: metadata.description || 'Описание отсутствует.',
-                    image: metadata.image || '/logocircle.ico',
-                    content: content
-                };
-            } catch (error) {
-                console.error('Ошибка загрузки статьи:', filename, error);
-                return null;
+        // Метаданные статей (добавляй сюда новые статьи)
+        const articles = [
+            {
+                filename: 'vrd-flight-controller.md',
+                title: 'VRD Flight Controller — полётный контроллер для ракеты на ВРД',
+                date: '2026-02-12',
+                description: 'Разработка гибридного двухъядерного полётного контроллера с машинным обучением для ракеты-носителя с горизонтальным взлётом.',
+                image: 'https://opengraph.githubassets.com/1/LightRain-K/VRD_flight_controller'
             }
-        }
-
-        // Загружаем все статьи
-        async function loadAllArticles() {
-            const articles = [];
-            for (const file of articlesFiles) {
-                const data = await loadArticleMetadata(file);
-                if (data) {
-                    articles.push(data);
-                }
-            }
-            return articles;
-        }
+        ];
 
         // Отображаем список статей
-        function renderArticleList(articles) {
+        function renderArticleList() {
             if (!articles || articles.length === 0) {
                 articleList.innerHTML = `
                     <div style="text-align:center; padding:60px 20px; color:#94a3b8; background:rgba(15,23,42,0.4); border-radius:16px; border:1px solid rgba(255,255,255,0.05);">
                         <i class="fas fa-file-alt text-4xl text-slate-600 mb-4"></i>
                         <p>Статьи пока не добавлены.</p>
-                        <p style="font-size:0.9em; margin-top:8px;">Положи .md файлы в папку /articles/</p>
                     </div>
                 `;
                 return;
@@ -179,12 +111,7 @@
 
             // Сортируем по дате (сначала новые)
             articles.sort((a, b) => {
-                const dateA = new Date(a.date);
-                const dateB = new Date(b.date);
-                if (!isNaN(dateA) && !isNaN(dateB)) {
-                    return dateB - dateA;
-                }
-                return 0;
+                return new Date(b.date) - new Date(a.date);
             });
 
             const html = articles.map(article => `
@@ -207,16 +134,11 @@
         }
 
         // Запуск
-        async function init() {
-            const articles = await loadAllArticles();
-            renderArticleList(articles);
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
+        renderArticleList();
     </script>
 
     <script>
-        // --- Простой скрипт для мобильного меню ---
+        // --- Мобильное меню ---
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
         if (mobileMenuBtn && navLinks) {
