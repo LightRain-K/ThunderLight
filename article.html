@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статья | ThunderLight</title>
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    
+    <style>
+        /* Скопируй сюда все свои стили с основной страницы */
+        body { background: #020617; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .navbar { /* ... твои стили ... */ }
+        /* ... и все остальные стили ... */
+        
+        /* Стили для содержимого статьи */
+        .article-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+        .article-content h1 { font-size: 2.5em; font-weight: 900; margin: 1.5em 0 0.5em; color: white; }
+        .article-content h2 { font-size: 1.8em; font-weight: 700; margin: 1.5em 0 0.5em; color: #e2e8f0; }
+        .article-content h3 { font-size: 1.4em; font-weight: 600; margin: 1.2em 0 0.4em; color: #cbd5e1; }
+        .article-content p { color: #94a3b8; line-height: 1.8; margin: 1em 0; font-size: 1.05em; }
+        .article-content ul, .article-content ol { color: #94a3b8; padding-left: 1.5em; margin: 1em 0; }
+        .article-content li { margin: 0.5em 0; line-height: 1.7; }
+        .article-content code { background: rgba(255,255,255,0.05); padding: 0.2em 0.5em; border-radius: 4px; font-size: 0.9em; color: #a5b4fc; }
+        .article-content pre { background: rgba(15,23,42,0.8); padding: 1.5em; border-radius: 12px; overflow-x: auto; border: 1px solid rgba(255,255,255,0.05); margin: 1.5em 0; }
+        .article-content pre code { background: none; padding: 0; color: #e2e8f0; }
+        .article-content blockquote { border-left: 4px solid #4f46e5; padding-left: 1.5em; margin: 1.5em 0; color: #94a3b8; font-style: italic; }
+        .article-content img { max-width: 100%; border-radius: 12px; margin: 1.5em 0; }
+        .article-content a { color: #818cf8; text-decoration: none; border-bottom: 1px solid rgba(129, 140, 248, 0.2); transition: border-color 0.2s; }
+        .article-content a:hover { border-color: #818cf8; }
+        .article-content .table-of-contents { background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; padding: 1.5em; margin: 1.5em 0; }
+        
+        .loader { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #4f46e5; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 40px auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-msg { color: #ef4444; text-align: center; padding: 40px; background: rgba(239, 68, 68, 0.1); border-radius: 12px; border: 1px solid rgba(239, 68, 68, 0.2); }
+    </style>
+</head>
+<body>
+
+    <!-- Навигация (скопируй свою с index.html) -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-content" style="max-width:1280px; margin:0 auto; padding:16px 32px; display:flex; justify-content:space-between; align-items:center;">
+            <a href="/" class="nav-logo" style="font-size:1.5em; font-weight:800; background:linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none; display:flex; align-items:center; gap:10px;">
+                <span style="width:36px;height:36px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2em;-webkit-text-fill-color:white;">⚡</span>
+                ThunderLight
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" style="display:none; background:none; border:none; color:white; font-size:1.5em;">☰</button>
+            <ul class="nav-links" id="navLinks" style="display:flex; gap:8px; list-style:none; align-items:center;">
+                <li><a href="/#features" style="color:#94a3b8; text-decoration:none; padding:8px 16px; border-radius:8px; transition:all 0.3s;">Возможности</a></li>
+                <li><a href="/#roadmap" style="color:#94a3b8; text-decoration:none; padding:8px 16px; border-radius:8px; transition:all 0.3s;">Развитие</a></li>
+                <li><a href="/projects.html" style="color:#a5b4fc; text-decoration:none; padding:8px 16px; border-radius:8px; transition:all 0.3s; background:rgba(79,70,229,0.15);">Проекты</a></li>
+                <li><a href="/articles.html" style="color:#a5b4fc; text-decoration:none; padding:8px 16px; border-radius:8px; transition:all 0.3s; background:rgba(79,70,229,0.15);">Статьи</a></li>
+                <li><a href="/#download" class="nav-download" style="background:linear-gradient(135deg,#10b981,#059669); color:white !important; padding:10px 20px !important; border-radius:10px !important; font-weight:600 !important;">Скачать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <section style="padding:120px 32px 80px; max-width:1280px; margin:0 auto;">
+        <div id="article-container">
+            <div class="loader"></div>
+        </div>
+    </section>
+
+    <!-- Футер (скопируй свой с index.html) -->
+    <footer style="padding:80px 32px 40px; background:#020617; border-top:1px solid rgba(255,255,255,0.08);">
+        <div style="max-width:1280px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:48px;">
+            <div>
+                <a href="/" style="font-size:1.5em; font-weight:800; background:linear-gradient(135deg,#818cf8,#c084fc); -webkit-background-clip:text; -webkit-text-fill-color:transparent; text-decoration:none;">ThunderLight</a>
+                <p style="color:#64748b; margin:16px 0;">Приватный мессенджер со сквозным шифрованием. Открытый код, никакого сбора данных.</p>
+            </div>
+            <div><h4 style="color:#64748b; text-transform:uppercase; letter-spacing:2px; font-size:0.9em;">Продукт</h4><ul style="list-style:none; margin-top:16px;"><li><a href="/#features" style="color:#94a3b8; text-decoration:none;">Возможности</a></li></ul></div>
+            <div><h4 style="color:#64748b; text-transform:uppercase; letter-spacing:2px; font-size:0.9em;">Документы</h4><ul style="list-style:none; margin-top:16px;"><li><a href="/privacy.html" style="color:#94a3b8; text-decoration:none;">Конфиденциальность</a></li><li><a href="/terms.html" style="color:#94a3b8; text-decoration:none;">Условия</a></li></ul></div>
+            <div><h4 style="color:#64748b; text-transform:uppercase; letter-spacing:2px; font-size:0.9em;">Контакты</h4><ul style="list-style:none; margin-top:16px;"><li><a href="https://t.me/thunderlight_online" style="color:#94a3b8; text-decoration:none;">Telegram</a></li><li><a href="mailto:thunderlight@internet.ru" style="color:#94a3b8; text-decoration:none;">Email</a></li><li><a href="https://github.com/LightRain-K" style="color:#94a3b8; text-decoration:none;">GitHub</a></li></ul></div>
+        </div>
+        <div style="max-width:1280px; margin:0 auto; padding-top:32px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; color:#64748b; font-size:0.85em;">
+            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // ПРОСМОТР СТАТЬИ
+        // ============================================================
+
+        const container = document.getElementById('article-container');
+
+        // Получаем имя файла из URL-параметра
+        function getFileFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('file');
+        }
+
+        async function loadArticle() {
+            const filename = getFileFromURL();
+            
+            if (!filename) {
+                container.innerHTML = `
+                    <div class="error-msg">
+                        <i class="fas fa-exclamation-circle"></i> Статья не указана.
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch(`/articles/${filename}`);
+                if (!response.ok) throw new Error(`Статья не найдена (${response.status})`);
+                
+                const text = await response.text();
+                
+                // Парсим Front Matter
+                const frontMatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+                const match = text.match(frontMatterRegex);
+                
+                let title = filename.replace('.md', '').replace(/-/g, ' ');
+                let date = 'Дата неизвестна';
+                let content = text;
+                
+                if (match) {
+                    const frontMatter = match[1];
+                    content = match[2];
+                    
+                    // Парсим YAML
+                    const metadata = {};
+                    frontMatter.split('\n').forEach(line => {
+                        const [key, ...valueParts] = line.split(':');
+                        if (key && valueParts.length) {
+                            const value = valueParts.join(':').trim();
+                            if (value) {
+                                metadata[key.trim()] = value;
+                            }
+                        }
+                    });
+                    
+                    title = metadata.title || title;
+                    date = metadata.date || date;
+                }
+                
+                // Конвертируем Markdown в HTML с использованием marked
+                const htmlContent = marked.parse(content);
+                
+                // Очищаем HTML для безопасности
+                const sanitizedHTML = DOMPurify.sanitize(htmlContent);
+                
+                // Показываем статью
+                container.innerHTML = `
+                    <div class="article-content">
+                        <div class="mb-8 flex items-center gap-4 flex-wrap text-sm text-slate-500">
+                            <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                                <i class="fas fa-arrow-left"></i> Назад к статьям
+                            </a>
+                            <span>•</span>
+                            <span>📅 ${date}</span>
+                        </div>
+                        <div class="prose prose-invert max-w-none">
+                            ${sanitizedHTML}
+                        </div>
+                        <div class="mt-12 pt-8 border-t border-slate-800 text-sm text-slate-500 flex justify-between items-center flex-wrap gap-4">
+                            <span>📝 Нашли ошибку? <a href="https://github.com/LightRain-K/thunderlight-site/issues" class="text-indigo-400 hover:text-indigo-300 transition-colors">Сообщите на GitHub</a></span>
+                            <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                                <i class="fas fa-arrow-left"></i> Все статьи
+                            </a>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Ошибка загрузки статьи:', error);
+                container.innerHTML = `
+                    <div class="error-msg">
+                        <i class="fas fa-exclamation-triangle"></i> Не удалось загрузить статью: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadArticle);
+    </script>
+
+    <script>
+        // --- Простой скрипт для мобильного меню ---
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        if (mobileMenuBtn && navLinks) {
+            mobileMenuBtn.addEventListener('click', () => {
+                if (navLinks.style.display === 'flex') {
+                    navLinks.style.display = 'none';
+                    mobileMenuBtn.textContent = '☰';
+                } else {
+                    navLinks.style.display = 'flex';
+                    navLinks.style.flexDirection = 'column';
+                    navLinks.style.position = 'absolute';
+                    navLinks.style.top = '100%';
+                    navLinks.style.left = '0';
+                    navLinks.style.width = '100%';
+                    navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
+                    navLinks.style.padding = '20px 32px';
+                    navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+                    mobileMenuBtn.textContent = '✕';
+                }
+            });
+        }
+        window.addEventListener('load', function() { setTimeout(() => window.scrollTo({ top: 0, behavior: 'auto' }), 100); });
+        if (window.location.hash) { history.pushState("", document.title, window.location.pathname + window.location.search); }
+    </script>
+</body>
+</html>
