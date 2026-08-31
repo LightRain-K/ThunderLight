@@ -99,87 +99,85 @@
         }
 
         async function loadArticle() {
-            const filename = getFileFromURL();
-            
-            if (!filename) {
-                container.innerHTML = `
-                    <div class="error-msg">
-                        <i class="fas fa-exclamation-circle"></i> Статья не указана.
-                    </div>
-                `;
-                return;
-            }
+    const filename = getFileFromURL();
+    
+    if (!filename) {
+        container.innerHTML = `
+            <div class="error-msg">
+                <i class="fas fa-exclamation-circle"></i> Статья не указана.
+            </div>
+        `;
+        return;
+    }
 
-            try {
-                const response = await fetch(`/articles/${filename}`);
-                if (!response.ok) throw new Error(`Статья не найдена (${response.status})`);
-                
-                const text = await response.text();
-                
-                // Парсим Front Matter
-                const frontMatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
-                const match = text.match(frontMatterRegex);
-                
-                let title = filename.replace('.md', '').replace(/-/g, ' ');
-                let date = 'Дата неизвестна';
-                let content = text;
-                
-                if (match) {
-                    const frontMatter = match[1];
-                    content = match[2];
-                    
-                    // Парсим YAML
-                    const metadata = {};
-                    frontMatter.split('\n').forEach(line => {
-                        const [key, ...valueParts] = line.split(':');
-                        if (key && valueParts.length) {
-                            const value = valueParts.join(':').trim();
-                            if (value) {
-                                metadata[key.trim()] = value;
-                            }
-                        }
-                    });
-                    
-                    title = metadata.title || title;
-                    date = metadata.date || date;
+    try {
+        const response = await fetch(`/articles/${filename}`);
+        if (!response.ok) throw new Error(`Статья не найдена (${response.status})`);
+        
+        const text = await response.text();
+        
+        // Парсим Front Matter
+        const frontMatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
+        const match = text.match(frontMatterRegex);
+        
+        let title = filename.replace('.md', '').replace(/-/g, ' ');
+        let date = 'Дата неизвестна';
+        let content = text;  // По умолчанию — весь текст
+        
+        if (match) {
+            const frontMatter = match[1];
+            content = match[2];  // <-- ЭТО ГЛАВНОЕ: берём только тело статьи
+            
+            // Парсим YAML
+            const metadata = {};
+            frontMatter.split('\n').forEach(line => {
+                const [key, ...valueParts] = line.split(':');
+                if (key && valueParts.length) {
+                    const value = valueParts.join(':').trim();
+                    if (value) {
+                        metadata[key.trim()] = value;
+                    }
                 }
-                
-                // Конвертируем Markdown в HTML с использованием marked
-                const htmlContent = marked.parse(content);
-                
-                // Очищаем HTML для безопасности
-                const sanitizedHTML = DOMPurify.sanitize(htmlContent);
-                
-                // Показываем статью
-                container.innerHTML = `
-                    <div class="article-content">
-                        <div class="mb-8 flex items-center gap-4 flex-wrap text-sm text-slate-500">
-                            <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
-                                <i class="fas fa-arrow-left"></i> Назад к статьям
-                            </a>
-                            <span>•</span>
-                            <span>📅 ${date}</span>
-                        </div>
-                        <div class="prose prose-invert max-w-none">
-                            ${sanitizedHTML}
-                        </div>
-                        <div class="mt-12 pt-8 border-t border-slate-800 text-sm text-slate-500 flex justify-between items-center flex-wrap gap-4">
-                            <span>📝 Нашли ошибку? <a href="https://github.com/LightRain-K/thunderlight-site/issues" class="text-indigo-400 hover:text-indigo-300 transition-colors">Сообщите на GitHub</a></span>
-                            <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
-                                <i class="fas fa-arrow-left"></i> Все статьи
-                            </a>
-                        </div>
-                    </div>
-                `;
-            } catch (error) {
-                console.error('Ошибка загрузки статьи:', error);
-                container.innerHTML = `
-                    <div class="error-msg">
-                        <i class="fas fa-exclamation-triangle"></i> Не удалось загрузить статью: ${error.message}
-                    </div>
-                `;
-            }
+            });
+            
+            title = metadata.title || title;
+            date = metadata.date || date;
         }
+        
+        // Конвертируем Markdown в HTML (только тело статьи)
+        const htmlContent = marked.parse(content);
+        const sanitizedHTML = DOMPurify.sanitize(htmlContent);
+        
+        // Показываем статью
+        container.innerHTML = `
+            <div class="article-content">
+                <div class="mb-8 flex items-center gap-4 flex-wrap text-sm text-slate-500">
+                    <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                        <i class="fas fa-arrow-left"></i> Назад к статьям
+                    </a>
+                    <span>•</span>
+                    <span>📅 ${date}</span>
+                </div>
+                <div class="prose prose-invert max-w-none">
+                    ${sanitizedHTML}
+                </div>
+                <div class="mt-12 pt-8 border-t border-slate-800 text-sm text-slate-500 flex justify-between items-center flex-wrap gap-4">
+                    <span>📝 Нашли ошибку? <a href="https://github.com/LightRain-K/thunderlight-site/issues" class="text-indigo-400 hover:text-indigo-300 transition-colors">Сообщите на GitHub</a></span>
+                    <a href="/articles.html" class="text-indigo-400 hover:text-indigo-300 transition-colors">
+                        <i class="fas fa-arrow-left"></i> Все статьи
+                    </a>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Ошибка загрузки статьи:', error);
+        container.innerHTML = `
+            <div class="error-msg">
+                <i class="fas fa-exclamation-triangle"></i> Не удалось загрузить статью: ${error.message}
+            </div>
+        `;
+    }
+}
 
         document.addEventListener('DOMContentLoaded', loadArticle);
     </script>
