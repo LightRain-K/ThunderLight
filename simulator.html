@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThunderLight — Симулятор ПИД-регулятора</title>
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Three.js для 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Стили — используем те же, что и в Lab */
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            color: var(--light);
+            background: var(--darker);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08), transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .preloader-logo {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: preloaderPulse 1.5s infinite;
+            display: block;
+        }
+        .preloader-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes preloaderPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            background: rgba(2, 6, 23, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .nav-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .nav-logo:hover { transform: scale(1.05); }
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            animation: logoGlow 2s infinite;
+        }
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.6); }
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+        .nav-links a:hover::after { width: 60%; }
+        .nav-links a:hover { color: var(--light); }
+        .nav-links a.active {
+            color: var(--light);
+            background: rgba(79, 70, 229, 0.15);
+        }
+        .nav-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            animation: downloadPulse 2s infinite;
+        }
+        .nav-download:hover {
+            transform: translateY(-2px);
+            animation: none;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        @keyframes downloadPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        }
+        .hero {
+            padding: 160px 32px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            from { transform: translate(0, 0); }
+            to { transform: translate(60px, 60px); }
+        }
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: glowFloat 10s ease-in-out infinite;
+        }
+        .hero-glow-1 { background: var(--primary); top: -200px; left: -100px; }
+        .hero-glow-2 { background: var(--accent); bottom: -200px; right: -100px; animation-delay: -5s; }
+        @keyframes glowFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            background-size: 200% 200%;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero p {
+            font-size: 1.1em;
+            color: var(--gray-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .sim-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 10px 32px 60px;
+        }
+        .sim-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .sim-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+        .sim-panel h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #sim3DContainer {
+            width: 100%;
+            height: 400px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            background: #0a0e27;
+        }
+        .pid-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+        .pid-control {
+            text-align: center;
+        }
+        .pid-control label {
+            display: block;
+            font-size: 0.8em;
+            color: var(--gray-light);
+            font-weight: 600;
+        }
+        .pid-control .value {
+            font-size: 1.2em;
+            font-weight: 700;
+            font-family: monospace;
+            color: var(--light);
+        }
+        .pid-control input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+            margin: 6px 0;
+        }
+        .pid-control input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .pid-control input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--secondary);
+        }
+        .pid-control.kp .value { color: #f59e0b; }
+        .pid-control.kp input[type="range"]::-webkit-slider-thumb { background: #f59e0b; }
+        .pid-control.ki .value { color: #06b6d4; }
+        .pid-control.ki input[type="range"]::-webkit-slider-thumb { background: #06b6d4; }
+        .pid-control.kd .value { color: #ec4899; }
+        .pid-control.kd input[type="range"]::-webkit-slider-thumb { background: #ec4899; }
+
+        #chartContainer {
+            width: 100%;
+            height: 160px;
+            position: relative;
+            margin-top: 12px;
+        }
+        #chartCanvas {
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .btn {
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85em;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--light);
+        }
+        .btn-outline:hover {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+        }
+        .btn-sm { padding: 4px 14px; font-size: 0.75em; }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+        .task-box {
+            background: rgba(79, 70, 229, 0.08);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-top: 12px;
+        }
+        .task-box .task-title {
+            color: #a5b4fc;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+        .task-box .task-desc {
+            color: var(--gray-light);
+            font-size: 0.85em;
+            margin: 3px 0 10px;
+        }
+        .task-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 12px;
+            border-radius: 50px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+        .task-status.done {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+        .task-status.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        section { padding: 40px 32px; }
+        .section-container { max-width: 1280px; margin: 0 auto; }
+        .footer {
+            padding: 50px 32px 30px;
+            background: var(--darker);
+            border-top: 1px solid var(--border);
+        }
+        .footer-grid {
+            max-width: 1280px;
+            margin: 0 auto 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        .footer-col h4 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+        .footer-col a:hover { color: var(--light); }
+        .footer-brand p {
+            color: var(--gray);
+            font-size: 0.85em;
+            margin: 10px 0 16px;
+            max-width: 300px;
+        }
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-bottom p { color: var(--gray); font-size: 0.75em; }
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+        .footer-social a {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer-social a:hover {
+            background: rgba(79, 70, 229, 0.2);
+            color: var(--light);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 1024px) {
+            .sim-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .nav-content { padding: 12px 20px; }
+            .hero { padding: 130px 20px 30px; }
+            .hero h1 { font-size: 2em; }
+            .sim-container { padding: 16px; }
+            .sim-panel { padding: 16px; }
+            #sim3DContainer { height: 280px; }
+            .pid-controls { grid-template-columns: 1fr; gap: 8px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+            .footer { padding: 30px 20px 20px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.5em; }
+            .sim-panel h3 { font-size: 0.9em; }
+            .btn { padding: 6px 14px; font-size: 0.75em; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <span class="preloader-logo">⚡ ThunderLight</span>
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <span class="nav-logo-icon">⚡</span>
+                ThunderLight
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+                <li><a href="/lab.html">Lab</a></li>
+                <li><a href="/simulator.html" class="active">Simulator</a></li>
+                <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-content">
+            <h1>💻 Симулятор <span class="hero-gradient">ПИД-регулятора</span></h1>
+            <p>Настрой коэффициенты Kp, Ki, Kd и наблюдай за реакцией системы на возмущения. Добейся идеальной стабилизации!</p>
+        </div>
+    </section>
+
+    <div class="sim-container">
+        <div class="sim-grid">
+            <!-- 3D Вид -->
+            <div class="sim-panel">
+                <h3>🛩️ 3D Модель</h3>
+                <div id="sim3DContainer"></div>
+                <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+                    <button class="btn btn-primary" id="btnStart">▶ Запустить</button>
+                    <button class="btn btn-outline" id="btnReset">⟳ Сброс</button>
+                    <button class="btn btn-danger" id="btnDisturb">⚡ Возмущение</button>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; font-size:0.8em; color:var(--gray-light);">
+                    <div>Угол: <span id="angleDisplay" style="color:var(--light);font-weight:600;">0°</span></div>
+                    <div>Скорость: <span id="speedDisplay" style="color:var(--light);font-weight:600;">0 °/с</span></div>
+                    <div>Ошибка: <span id="errorDisplay" style="color:var(--light);font-weight:600;">0°</span></div>
+                    <div>Статус: <span id="statusDisplay" style="color:var(--warning);font-weight:600;">Готов</span></div>
+                </div>
+            </div>
+
+            <!-- Настройка ПИД -->
+            <div class="sim-panel">
+                <h3>🎛️ Настройка ПИД</h3>
+                
+                <div class="pid-controls">
+                    <div class="pid-control kp">
+                        <label>Kp (Пропорциональный)</label>
+                        <input type="range" id="kpSlider" min="0" max="5" step="0.1" value="1.2">
+                        <span class="value" id="kpVal">1.2</span>
+                    </div>
+                    <div class="pid-control ki">
+                        <label>Ki (Интегральный)</label>
+                        <input type="range" id="kiSlider" min="0" max="2" step="0.05" value="0.3">
+                        <span class="value" id="kiVal">0.3</span>
+                    </div>
+                    <div class="pid-control kd">
+                        <label>Kd (Дифференциальный)</label>
+                        <input type="range" id="kdSlider" min="0" max="2" step="0.05" value="0.4">
+                        <span class="value" id="kdVal">0.4</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:16px;">
+                    <div style="display:flex;justify-content:space-between;font-size:0.6em;color:var(--gray);">
+                        <span>Угол (°)</span>
+                        <span>Время</span>
+                    </div>
+                    <div id="chartContainer">
+                        <canvas id="chartCanvas" width="500" height="160"></canvas>
+                    </div>
+                </div>
+
+                <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-success btn-sm" id="btnOptimal">🎯 Оптимальные настройки</button>
+                    <button class="btn btn-outline btn-sm" id="btnExport">📊 Экспорт</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Задания -->
+        <div style="margin-top:20px;">
+            <div class="sim-panel" style="margin-bottom:12px;">
+                <h3>📋 Задания</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px;">
+                    <div class="task-box">
+                        <div class="task-title">Задание №1 — Стабилизация</div>
+                        <div class="task-desc">Настрой ПИД так, чтобы угол стабилизировался в течение 3 секунд после возмущения.</div>
+                        <span class="task-status pending" id="task1Status">⏳ Не выполнено</span>
+                        <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask1()">Проверить</button>
+                    </div>
+                    <div class="task-box">
+                        <div class="task-title">Задание №2 — Минимальное перерегулирование</div>
+                        <div class="task-desc">Настрой ПИД так, чтобы перерегулирование не превышало 10%.</div>
+                        <span class="task-status pending" id="task2Status">⏳ Не выполнено</span>
+                        <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask2()">Проверить</button>
+                    </div>
+                    <div class="task-box">
+                        <div class="task-title">Задание №3 — Быстрый отклик</div>
+                        <div class="task-desc">Настрой ПИД так, чтобы время реакции на возмущение было меньше 0.8 секунды.</div>
+                        <span class="task-status pending" id="task3Status">⏳ Не выполнено</span>
+                        <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask3()">Проверить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                <button class="btn btn-success btn-sm" onclick="resetAllTasks()">🔄 Сбросить все задания</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">⚡</span>
+                    ThunderLight
+                </a>
+                <p>Образовательная экосистема БПЛА. Настраивай ПИД, симулируй полёт, учись управлять.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Экосистема</h4>
+                <ul>
+                    <li><a href="/articles.html">Academy</a></li>
+                    <li><a href="/lab.html">Lab</a></li>
+                    <li><a href="/simulator.html">Simulator</a></li>
+                    <li><a href="#" onclick="alert('В разработке'); return false;">Builder</a></li>
+                    <li><a href="/article.html?file=vrd-flight-controller.md">VRD FC</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Документы</h4>
+                <ul>
+                    <li><a href="/privacy.html">Конфиденциальность</a></li>
+                    <li><a href="/terms.html">Условия использования</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><a href="https://t.me/thunderlight_online" target="_blank">Telegram</a></li>
+                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderLight/" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
+            <div class="footer-social">
+                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
+                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
+                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // SIMULATOR — ПИД-РЕГУЛЯТОР С 3D-ВИЗУАЛИЗАЦИЕЙ
+        // ============================================================
+
+        // === ИНИЦИАЛИЗАЦИЯ THREE.JS ===
+        const container = document.getElementById('sim3DContainer');
+        const width = container.clientWidth || 600;
+        const height = container.clientHeight || 400;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0e27);
+        scene.fog = new THREE.Fog(0x0a0e27, 20, 50);
+
+        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+        camera.position.set(6, 4, 8);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        // === СВЕТ ===
+        const ambientLight = new THREE.AmbientLight(0x222244, 0.5);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight.position.set(10, 15, 10);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        const fillLight = new THREE.DirectionalLight(0x4444ff, 0.3);
+        fillLight.position.set(-5, 0, 5);
+        scene.add(fillLight);
+
+        // === ЗЕМЛЯ ===
+        const gridHelper = new THREE.GridHelper(20, 20, 0x4f46e5, 0x2d1b4e);
+        gridHelper.position.y = -0.5;
+        scene.add(gridHelper);
+
+        // === СОЗДАНИЕ САМОЛЁТА ===
+        const airplaneGroup = new THREE.Group();
+
+        // Фюзеляж
+        const fuselageGeo = new THREE.CylinderGeometry(0.3, 0.15, 2.5, 8);
+        const fuselageMat = new THREE.MeshPhongMaterial({ color: 0x94a3b8, metalness: 0.3, roughness: 0.7 });
+        const fuselage = new THREE.Mesh(fuselageGeo, fuselageMat);
+        fuselage.rotation.z = Math.PI / 2;
+        fuselage.position.x = 0.2;
+        airplaneGroup.add(fuselage);
+
+        // Нос
+        const noseGeo = new THREE.ConeGeometry(0.3, 0.6, 8);
+        const noseMat = new THREE.MeshPhongMaterial({ color: 0x818cf8, metalness: 0.2, roughness: 0.8 });
+        const nose = new THREE.Mesh(noseGeo, noseMat);
+        nose.rotation.z = -Math.PI / 2;
+        nose.position.x = 1.5;
+        airplaneGroup.add(nose);
+
+        // Крыло
+        const wingGeo = new THREE.BoxGeometry(3.0, 0.05, 0.6);
+        const wingMat = new THREE.MeshPhongMaterial({ color: 0x4f46e5, metalness: 0.2, roughness: 0.6 });
+        const wing = new THREE.Mesh(wingGeo, wingMat);
+        wing.position.x = 0;
+        wing.position.y = 0.05;
+        airplaneGroup.add(wing);
+
+        // Хвост
+        const tailGeo = new THREE.BoxGeometry(0.4, 0.4, 0.05);
+        const tailMat = new THREE.MeshPhongMaterial({ color: 0x4f46e5, metalness: 0.2, roughness: 0.6 });
+        const tail = new THREE.Mesh(tailGeo, tailMat);
+        tail.position.x = -1.3;
+        tail.position.y = 0.1;
+        airplaneGroup.add(tail);
+
+        // Горизонтальный стабилизатор
+        const stabGeo = new THREE.BoxGeometry(0.6, 0.05, 0.25);
+        const stabMat = new THREE.MeshPhongMaterial({ color: 0x4f46e5, metalness: 0.2, roughness: 0.6 });
+        const stab = new THREE.Mesh(stabGeo, stabMat);
+        stab.position.x = -1.3;
+        stab.position.y = 0;
+        airplaneGroup.add(stab);
+
+        // Кабина
+        const cockpitGeo = new THREE.SphereGeometry(0.2, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+        const cockpitMat = new THREE.MeshPhongMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.6 });
+        const cockpit = new THREE.Mesh(cockpitGeo, cockpitMat);
+        cockpit.position.set(0.7, 0.2, 0);
+        cockpit.rotation.x = 0.2;
+        airplaneGroup.add(cockpit);
+
+        // Винт
+        const propGroup = new THREE.Group();
+        const propGeo = new THREE.BoxGeometry(0.05, 0.6, 0.05);
+        const propMat = new THREE.MeshPhongMaterial({ color: 0x94a3b8 });
+        const prop1 = new THREE.Mesh(propGeo, propMat);
+        prop1.position.y = 0.3;
+        propGroup.add(prop1);
+        const prop2 = new THREE.Mesh(propGeo, propMat);
+        prop2.position.y = -0.3;
+        propGroup.add(prop2);
+        const propCenter = new THREE.Mesh(
+            new THREE.SphereGeometry(0.05, 8, 8),
+            new THREE.MeshPhongMaterial({ color: 0x94a3b8 })
+        );
+        propGroup.add(propCenter);
+        propGroup.position.x = 1.8;
+        airplaneGroup.add(propGroup);
+
+        // Маленькие крылышки
+        const tipGeo = new THREE.BoxGeometry(0.3, 0.03, 0.1);
+        const tipMat = new THREE.MeshPhongMaterial({ color: 0x818cf8 });
+        const tip1 = new THREE.Mesh(tipGeo, tipMat);
+        tip1.position.set(0, 0.05, 1.5);
+        airplaneGroup.add(tip1);
+        const tip2 = new THREE.Mesh(tipGeo, tipMat);
+        tip2.position.set(0, 0.05, -1.5);
+        airplaneGroup.add(tip2);
+
+        // Добавляем самолёт в сцену
+        airplaneGroup.position.y = 0;
+        scene.add(airplaneGroup);
+
+        // === ФИЗИКА ПИД ===
+        let pidState = {
+            angle: 0,           // текущий угол
+            targetAngle: 0,     // целевой угол (0°)
+            angularSpeed: 0,
+            integral: 0,
+            lastError: 0,
+            running: false,
+            time: 0,
+            history: [],
+            kp: 1.2,
+            ki: 0.3,
+            kd: 0.4,
+            maxAngle: 45,
+        };
+
+        // Получаем значения ПИД
+        const kpSlider = document.getElementById('kpSlider');
+        const kiSlider = document.getElementById('kiSlider');
+        const kdSlider = document.getElementById('kdSlider');
+        const kpVal = document.getElementById('kpVal');
+        const kiVal = document.getElementById('kiVal');
+        const kdVal = document.getElementById('kdVal');
+        const angleDisplay = document.getElementById('angleDisplay');
+        const speedDisplay = document.getElementById('speedDisplay');
+        const errorDisplay = document.getElementById('errorDisplay');
+        const statusDisplay = document.getElementById('statusDisplay');
+
+        // График
+        const chartCanvas = document.getElementById('chartCanvas');
+        const chartCtx = chartCanvas.getContext('2d');
+
+        // === ОБНОВЛЕНИЕ ПИД ===
+        function updatePID() {
+            pidState.kp = parseFloat(kpSlider.value);
+            pidState.ki = parseFloat(kiSlider.value);
+            pidState.kd = parseFloat(kdSlider.value);
+            kpVal.textContent = pidState.kp.toFixed(1);
+            kiVal.textContent = pidState.ki.toFixed(2);
+            kdVal.textContent = pidState.kd.toFixed(2);
+        }
+
+        kpSlider.addEventListener('input', updatePID);
+        kiSlider.addEventListener('input', updatePID);
+        kdSlider.addEventListener('input', updatePID);
+
+        // === ФИЗИКА ===
+        function calculatePID(dt) {
+            if (!pidState.running) return;
+
+            const error = pidState.targetAngle - pidState.angle;
+
+            // Пропорциональный
+            const P = pidState.kp * error;
+
+            // Интегральный (с ограничением)
+            pidState.integral += error * dt;
+            pidState.integral = Math.max(-10, Math.min(10, pidState.integral));
+            const I = pidState.ki * pidState.integral;
+
+            // Дифференциальный
+            const derivative = (error - pidState.lastError) / dt;
+            const D = pidState.kd * derivative;
+
+            // Управляющий сигнал (угловое ускорение)
+            const output = P + I + D;
+            pidState.angularSpeed += output * dt;
+            pidState.angularSpeed *= 0.98; // небольшое затухание
+            pidState.angle += pidState.angularSpeed * dt;
+
+            // Ограничение угла
+            pidState.angle = Math.max(-pidState.maxAngle, Math.min(pidState.maxAngle, pidState.angle));
+
+            pidState.lastError = error;
+
+            // Сохраняем историю
+            pidState.history.push({
+                angle: pidState.angle,
+                target: pidState.targetAngle,
+                time: pidState.time,
+                error: error,
+            });
+            if (pidState.history.length > 200) pidState.history.shift();
+
+            pidState.time += dt;
+
+            // Обновляем индикаторы
+            angleDisplay.textContent = pidState.angle.toFixed(1) + '°';
+            speedDisplay.textContent = pidState.angularSpeed.toFixed(1) + ' °/с';
+            errorDisplay.textContent = error.toFixed(1) + '°';
+            if (Math.abs(error) < 0.5) {
+                statusDisplay.textContent = '✅ Стабильно';
+                statusDisplay.style.color = '#10b981';
+            } else if (Math.abs(error) < 2) {
+                statusDisplay.textContent = '🔄 Регулируется';
+                statusDisplay.style.color = '#f59e0b';
+            } else {
+                statusDisplay.textContent = '⚡ Нестабильно';
+                statusDisplay.style.color = '#ef4444';
+            }
+        }
+
+        // === 3D АНИМАЦИЯ ===
+        let propAngle = 0;
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+
+            // Вращение самолёта
+            airplaneGroup.rotation.z = pidState.angle * Math.PI / 180;
+            // Небольшой наклон крыльев
+            airplaneGroup.rotation.x = Math.sin(pidState.angle * Math.PI / 180) * 0.1;
+
+            // Вращение винта
+            if (pidState.running) {
+                propAngle += 0.5;
+            }
+            propGroup.rotation.z = propAngle;
+
+            // Лёгкое покачивание
+            if (pidState.running) {
+                airplaneGroup.position.y = Math.sin(pidState.time * 0.5) * 0.05;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // === ГРАФИК ===
+        function drawChart() {
+            const w = chartCanvas.width;
+            const h = chartCanvas.height;
+            chartCtx.clearRect(0, 0, w, h);
+
+            if (pidState.history.length < 2) {
+                chartCtx.fillStyle = 'rgba(255,255,255,0.05)';
+                chartCtx.font = '10px monospace';
+                chartCtx.fillText('Запустите симуляцию', w/2 - 60, h/2 + 4);
+                return;
+            }
+
+            const data = pidState.history;
+            const maxAngle = Math.max(15, ...data.map(d => Math.abs(d.angle))) * 1.2;
+
+            // Сетка
+            chartCtx.strokeStyle = 'rgba(255,255,255,0.03)';
+            chartCtx.lineWidth = 0.5;
+            for (let i = 0; i < 4; i++) {
+                const y = (i / 4) * h;
+                chartCtx.beginPath();
+                chartCtx.moveTo(0, y);
+                chartCtx.lineTo(w, y);
+                chartCtx.stroke();
+            }
+
+            // Целевая линия (0°)
+            const targetY = h / 2;
+            chartCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+            chartCtx.lineWidth = 1;
+            chartCtx.setLineDash([4, 4]);
+            chartCtx.beginPath();
+            chartCtx.moveTo(0, targetY);
+            chartCtx.lineTo(w, targetY);
+            chartCtx.stroke();
+            chartCtx.setLineDash([]);
+
+            // Линия угла
+            chartCtx.strokeStyle = 'rgba(79, 70, 229, 0.8)';
+            chartCtx.lineWidth = 2;
+            chartCtx.beginPath();
+            for (let i = 0; i < data.length; i++) {
+                const x = (i / data.length) * w;
+                const y = h / 2 - (data[i].angle / maxAngle) * h * 0.45;
+                if (i === 0) chartCtx.moveTo(x, y);
+                else chartCtx.lineTo(x, y);
+            }
+            chartCtx.stroke();
+
+            // Последняя точка
+            const last = data[data.length - 1];
+            const lastX = w;
+            const lastY = h / 2 - (last.angle / maxAngle) * h * 0.45;
+            chartCtx.fillStyle = '#4f46e5';
+            chartCtx.beginPath();
+            chartCtx.arc(lastX - 3, lastY, 4, 0, Math.PI * 2);
+            chartCtx.fill();
+
+            // Подписи
+            chartCtx.fillStyle = 'rgba(255,255,255,0.15)';
+            chartCtx.font = '7px monospace';
+            chartCtx.fillText(maxAngle.toFixed(0) + '°', 2, 12);
+            chartCtx.fillText('0°', 2, h/2 + 4);
+            chartCtx.fillText('-' + maxAngle.toFixed(0) + '°', 2, h - 4);
+        }
+
+        // === ЦИКЛ ===
+        let lastTime = 0;
+
+        function loop(timestamp) {
+            if (lastTime === 0) lastTime = timestamp;
+            let delta = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+            delta = Math.min(delta, 0.03);
+
+            if (pidState.running) {
+                calculatePID(delta);
+                drawChart();
+            } else {
+                drawChart();
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        // === УПРАВЛЕНИЕ ===
+        document.getElementById('btnStart').addEventListener('click', () => {
+            if (!pidState.running) {
+                pidState.running = true;
+                pidState.time = 0;
+                pidState.history = [];
+                pidState.integral = 0;
+                pidState.lastError = 0;
+                document.getElementById('btnStart').textContent = '▶ Запущено';
+                document.getElementById('btnStart').style.opacity = '0.7';
+                statusDisplay.textContent = '🔄 Работает';
+                statusDisplay.style.color = '#06b6d4';
+            }
+        });
+
+        document.getElementById('btnReset').addEventListener('click', () => {
+            pidState.running = false;
+            pidState.angle = 0;
+            pidState.angularSpeed = 0;
+            pidState.integral = 0;
+            pidState.lastError = 0;
+            pidState.history = [];
+            pidState.time = 0;
+            document.getElementById('btnStart').textContent = '▶ Запустить';
+            document.getElementById('btnStart').style.opacity = '1';
+            statusDisplay.textContent = 'Готов';
+            statusDisplay.style.color = '#f59e0b';
+            angleDisplay.textContent = '0°';
+            speedDisplay.textContent = '0 °/с';
+            errorDisplay.textContent = '0°';
+            drawChart();
+        });
+
+        document.getElementById('btnDisturb').addEventListener('click', () => {
+            if (pidState.running) {
+                pidState.angle += 15;
+                statusDisplay.textContent = '⚡ Возмущение!';
+                statusDisplay.style.color = '#ef4444';
+                setTimeout(() => {
+                    statusDisplay.textContent = '🔄 Регулируется';
+                    statusDisplay.style.color = '#f59e0b';
+                }, 500);
+            } else {
+                alert('Сначала запустите симуляцию!');
+            }
+        });
+
+        document.getElementById('btnOptimal').addEventListener('click', () => {
+            kpSlider.value = '1.8';
+            kiSlider.value = '0.4';
+            kdSlider.value = '0.6';
+            updatePID();
+        });
+
+        document.getElementById('btnExport').addEventListener('click', () => {
+            if (pidState.history.length === 0) {
+                alert('Нет данных для экспорта. Запустите симуляцию.');
+                return;
+            }
+            let csv = 'Время,Угол,Ошибка\n';
+            pidState.history.forEach(d => {
+                csv += `${d.time.toFixed(2)},${d.angle.toFixed(2)},${d.error.toFixed(2)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pid_data.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // === ЗАДАНИЯ ===
+        let tasks = { task1: false, task2: false, task3: false };
+
+        function checkTask1() {
+            const history = pidState.history;
+            if (history.length < 30) {
+                alert('Недостаточно данных. Запустите симуляцию и подождите.');
+                return;
+            }
+            // Проверяем, стабилизировался ли угол за 3 секунды
+            const last30 = history.slice(-30);
+            const avgError = last30.reduce((sum, d) => sum + Math.abs(d.error), 0) / last30.length;
+            if (avgError < 0.5) {
+                tasks.task1 = true;
+                document.getElementById('task1Status').textContent = '✅ Выполнено!';
+                document.getElementById('task1Status').className = 'task-status done';
+            } else {
+                alert('❌ Не выполнено. Средняя ошибка: ' + avgError.toFixed(2) + '°. Настройте ПИД для стабилизации.');
+            }
+        }
+
+        function checkTask2() {
+            const history = pidState.history;
+            if (history.length < 10) {
+                alert('Недостаточно данных. Запустите симуляцию и подождите.');
+                return;
+            }
+            // Проверяем перерегулирование
+            let maxOvershoot = 0;
+            for (let i = 10; i < history.length; i++) {
+                if (history[i].angle > 0 && history[i].angle > maxOvershoot) {
+                    maxOvershoot = history[i].angle;
+                }
+            }
+            if (maxOvershoot < 1.5) {
+                tasks.task2 = true;
+                document.getElementById('task2Status').textContent = '✅ Выполнено!';
+                document.getElementById('task2Status').className = 'task-status done';
+            } else {
+                alert('❌ Не выполнено. Перерегулирование: ' + maxOvershoot.toFixed(1) + '°. Настройте Kd для уменьшения.');
+            }
+        }
+
+        function checkTask3() {
+            const history = pidState.history;
+            if (history.length < 20) {
+                alert('Недостаточно данных. Запустите симуляцию и подождите.');
+                return;
+            }
+            // Проверяем время реакции (когда угол впервые вошёл в зону ±0.5°)
+            let reactionTime = 0;
+            for (let i = 5; i < history.length; i++) {
+                if (Math.abs(history[i].angle) < 0.5) {
+                    reactionTime = history[i].time;
+                    break;
+                }
+            }
+            if (reactionTime > 0 && reactionTime < 2.0) {
+                tasks.task3 = true;
+                document.getElementById('task3Status').textContent = '✅ Выполнено!';
+                document.getElementById('task3Status').className = 'task-status done';
+            } else {
+                alert('❌ Не выполнено. Время реакции: ' + reactionTime.toFixed(2) + 'с. Настройте Kp для ускорения.');
+            }
+        }
+
+        function resetAllTasks() {
+            tasks = { task1: false, task2: false, task3: false };
+            document.querySelectorAll('.task-status').forEach(el => {
+                el.textContent = '⏳ Не выполнено';
+                el.className = 'task-status pending';
+            });
+            document.getElementById('btnReset').click();
+        }
+
+        // === АДАПТАЦИЯ ===
+        window.addEventListener('resize', () => {
+            const w = container.clientWidth || 600;
+            const h = container.clientHeight || 400;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        });
+
+        // === ИНИЦИАЛИЗАЦИЯ ===
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 600);
+            updatePID();
+            drawChart();
+            animate3D();
+        });
+
+        // === ДОПОЛНИТЕЛЬНО ===
+        const cursorGlow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                const size = Math.random() * 3 + 1;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        let menuOpen = false;
+
+        mobileMenuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
+                navLinks.style.padding = '20px 32px';
+                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+                mobileMenuBtn.textContent = '✕';
+            } else {
+                navLinks.style.display = 'none';
+                mobileMenuBtn.textContent = '☰';
+            }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (menuOpen) {
+                    menuOpen = false;
+                    navLinks.style.display = 'none';
+                    mobileMenuBtn.textContent = '☰';
+                }
+            });
+        });
+
+        // Запуск основного цикла
+        requestAnimationFrame(loop);
+
+        if (window.location.hash) {
+            window.scrollTo(0, 0);
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+    </script>
+
+</body>
+</html>
