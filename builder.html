@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThunderLight — Конструктор БПЛА</title>
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            color: var(--light);
+            background: var(--darker);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08), transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .preloader-logo {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: preloaderPulse 1.5s infinite;
+            display: block;
+        }
+        .preloader-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes preloaderPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            background: rgba(2, 6, 23, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .nav-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .nav-logo:hover { transform: scale(1.05); }
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            animation: logoGlow 2s infinite;
+        }
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.6); }
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+        .nav-links a:hover::after { width: 60%; }
+        .nav-links a:hover { color: var(--light); }
+        .nav-links a.active {
+            color: var(--light);
+            background: rgba(79, 70, 229, 0.15);
+        }
+        .nav-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            animation: downloadPulse 2s infinite;
+        }
+        .nav-download:hover {
+            transform: translateY(-2px);
+            animation: none;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        @keyframes downloadPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        }
+        .hero {
+            padding: 160px 32px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            from { transform: translate(0, 0); }
+            to { transform: translate(60px, 60px); }
+        }
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: glowFloat 10s ease-in-out infinite;
+        }
+        .hero-glow-1 { background: var(--primary); top: -200px; left: -100px; }
+        .hero-glow-2 { background: var(--accent); bottom: -200px; right: -100px; animation-delay: -5s; }
+        @keyframes glowFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            background-size: 200% 200%;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero p {
+            font-size: 1.1em;
+            color: var(--gray-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .builder-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 10px 32px 60px;
+        }
+        .builder-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .builder-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+        .builder-panel h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .part-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .part-option {
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .part-option:hover {
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        .part-option.selected {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.15);
+        }
+        .part-option .icon { font-size: 1.8em; display: block; margin-bottom: 4px; }
+        .part-option .name { font-size: 0.8em; font-weight: 600; }
+        .part-option .spec { font-size: 0.65em; color: var(--gray-light); }
+
+        .slider-group {
+            margin-bottom: 14px;
+        }
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: var(--gray-light);
+            margin-bottom: 3px;
+        }
+        .slider-group label span {
+            color: var(--light);
+            font-weight: 600;
+            font-family: monospace;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--secondary);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .param-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .param-item {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            text-align: center;
+        }
+        .param-item .label {
+            font-size: 0.7em;
+            color: var(--gray-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .param-item .value {
+            font-size: 1.3em;
+            font-weight: 700;
+            font-family: monospace;
+            color: var(--light);
+        }
+        .param-item .unit {
+            font-size: 0.7em;
+            color: var(--gray);
+        }
+        .param-item.good .value { color: var(--success); }
+        .param-item.warning .value { color: var(--warning); }
+        .param-item.danger .value { color: var(--danger); }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85em;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--light);
+        }
+        .btn-outline:hover {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+        }
+        .btn-sm { padding: 4px 14px; font-size: 0.75em; }
+
+        .preview-canvas {
+            width: 100%;
+            height: 280px;
+            background: radial-gradient(ellipse at center, rgba(79, 70, 229, 0.05), transparent 70%);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: block;
+        }
+
+        section { padding: 40px 32px; }
+        .section-container { max-width: 1280px; margin: 0 auto; }
+        .footer {
+            padding: 50px 32px 30px;
+            background: var(--darker);
+            border-top: 1px solid var(--border);
+        }
+        .footer-grid {
+            max-width: 1280px;
+            margin: 0 auto 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        .footer-col h4 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+        .footer-col a:hover { color: var(--light); }
+        .footer-brand p {
+            color: var(--gray);
+            font-size: 0.85em;
+            margin: 10px 0 16px;
+            max-width: 300px;
+        }
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-bottom p { color: var(--gray); font-size: 0.75em; }
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+        .footer-social a {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer-social a:hover {
+            background: rgba(79, 70, 229, 0.2);
+            color: var(--light);
+            transform: translateY(-2px);
+        }
+        @media (max-width: 1024px) {
+            .builder-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .nav-content { padding: 12px 20px; }
+            .hero { padding: 130px 20px 30px; }
+            .hero h1 { font-size: 2em; }
+            .builder-container { padding: 16px; }
+            .builder-panel { padding: 16px; }
+            .part-selector { grid-template-columns: 1fr 1fr; }
+            .param-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+            .footer { padding: 30px 20px 20px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.5em; }
+            .builder-panel h3 { font-size: 0.9em; }
+            .part-selector { grid-template-columns: 1fr; }
+            .btn { padding: 6px 14px; font-size: 0.75em; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <span class="preloader-logo">⚡ ThunderLight</span>
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <span class="nav-logo-icon">⚡</span>
+                ThunderLight
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+                <li><a href="/lab.html">Lab</a></li>
+                <li><a href="/simulator.html">Simulator</a></li>
+                <li><a href="/builder.html" class="active">Builder</a></li>
+                <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-content">
+            <h1>🛠️ Конструктор <span class="hero-gradient">БПЛА</span></h1>
+            <p>Собирай свой самолёт из деталей, смотри на расчёт параметров и получай рекомендации.</p>
+        </div>
+    </section>
+
+    <div class="builder-container">
+        <div class="builder-grid">
+            <!-- Левая панель — выбор деталей -->
+            <div class="builder-panel">
+                <h3>🧩 Выбор деталей</h3>
+
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.8em;color:var(--gray-light);margin-bottom:6px;">✈️ Тип крыла</div>
+                    <div class="part-selector" id="wingSelector">
+                        <div class="part-option selected" data-wing="straight">
+                            <span class="icon">▬</span>
+                            <span class="name">Прямое</span>
+                            <span class="spec">A = 0.8 м²</span>
+                        </div>
+                        <div class="part-option" data-wing="swept">
+                            <span class="icon">╱▬</span>
+                            <span class="name">Стреловидное</span>
+                            <span class="spec">A = 0.7 м²</span>
+                        </div>
+                        <div class="part-option" data-wing="delta">
+                            <span class="icon">△</span>
+                            <span class="name">Треугольное</span>
+                            <span class="spec">A = 0.9 м²</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.8em;color:var(--gray-light);margin-bottom:6px;">🧱 Материал</div>
+                    <div class="part-selector" id="materialSelector">
+                        <div class="part-option selected" data-material="pla">
+                            <span class="icon">🧵</span>
+                            <span class="name">PLA</span>
+                            <span class="spec">1.24 г/см³</span>
+                        </div>
+                        <div class="part-option" data-material="plywood">
+                            <span class="icon">🪵</span>
+                            <span class="name">Фанера</span>
+                            <span class="spec">0.6 г/см³</span>
+                        </div>
+                        <div class="part-option" data-material="composite">
+                            <span class="icon">🧬</span>
+                            <span class="name">Композит</span>
+                            <span class="spec">0.8 г/см³</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:12px;">
+                    <div style="font-size:0.8em;color:var(--gray-light);margin-bottom:6px;">⚡ Двигатель</div>
+                    <div class="part-selector" id="engineSelector">
+                        <div class="part-option selected" data-engine="electric">
+                            <span class="icon">🔋</span>
+                            <span class="name">Электрический</span>
+                            <span class="spec">200 W</span>
+                        </div>
+                        <div class="part-option" data-engine="gas">
+                            <span class="icon">🔥</span>
+                            <span class="name">ДВС</span>
+                            <span class="spec">500 W</span>
+                        </div>
+                        <div class="part-option" data-engine="hybrid">
+                            <span class="icon">⚡🔥</span>
+                            <span class="name">Гибридный</span>
+                            <span class="spec">350 W</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slider-group">
+                    <label>Размах крыла <span id="spanVal">120 см</span></label>
+                    <input type="range" id="spanSlider" min="60" max="200" value="120" step="5">
+                </div>
+
+                <div class="slider-group">
+                    <label>Масса фюзеляжа <span id="fuselageMassVal">200 г</span></label>
+                    <input type="range" id="fuselageMassSlider" min="100" max="500" value="200" step="10">
+                </div>
+
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+                    <button class="btn btn-primary" id="btnRandom">🎲 Случайный</button>
+                    <button class="btn btn-outline" id="btnResetBuilder">⟳ Сброс</button>
+                </div>
+            </div>
+
+            <!-- Правая панель — результат -->
+            <div class="builder-panel">
+                <h3>📊 Параметры аппарата</h3>
+
+                <!-- 2D-превью -->
+                <canvas id="previewCanvas" class="preview-canvas"></canvas>
+
+                <div class="param-grid">
+                    <div class="param-item good">
+                        <div class="label">Масса</div>
+                        <div class="value" id="totalMass">542</div>
+                        <div class="unit">г</div>
+                    </div>
+                    <div class="param-item good">
+                        <div class="label">Площадь крыла</div>
+                        <div class="value" id="wingArea">0.72</div>
+                        <div class="unit">м²</div>
+                    </div>
+                    <div class="param-item good">
+                        <div class="label">Нагрузка на крыло</div>
+                        <div class="value" id="wingLoad">75.3</div>
+                        <div class="unit">г/дм²</div>
+                    </div>
+                    <div class="param-item warning">
+                        <div class="label">Центр тяжести</div>
+                        <div class="value" id="cgPosition">32</div>
+                        <div class="unit">% САХ</div>
+                    </div>
+                    <div class="param-item good">
+                        <div class="label">Мощность</div>
+                        <div class="value" id="power">200</div>
+                        <div class="unit">Вт</div>
+                    </div>
+                    <div class="param-item good">
+                        <div class="label">Тяговооружённость</div>
+                        <div class="value" id="thrustWeight">0.85</div>
+                        <div class="unit">—</div>
+                    </div>
+                </div>
+
+                <div id="recommendation" style="margin-top:12px;padding:12px 16px;border-radius:10px;background:rgba(79,70,229,0.08);border:1px solid rgba(79,70,229,0.15);font-size:0.85em;color:var(--gray-light);">
+                    ✅ Отличная конфигурация! Аппарат сбалансирован.
+                </div>
+
+                <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
+                    <button class="btn btn-success btn-sm" id="btnExportBuilder">📊 Экспорт спецификации</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">⚡</span>
+                    ThunderLight
+                </a>
+                <p>Образовательная экосистема БПЛА. Проектируй, собирай, летай.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Экосистема</h4>
+                <ul>
+                    <li><a href="/articles.html">Academy</a></li>
+                    <li><a href="/lab.html">Lab</a></li>
+                    <li><a href="/simulator.html">Simulator</a></li>
+                    <li><a href="/builder.html">Builder</a></li>
+                    <li><a href="/article.html?file=vrd-flight-controller.md">VRD FC</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Документы</h4>
+                <ul>
+                    <li><a href="/privacy.html">Конфиденциальность</a></li>
+                    <li><a href="/terms.html">Условия использования</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><a href="https://t.me/thunderlight_online" target="_blank">Telegram</a></li>
+                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderLight/" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
+            <div class="footer-social">
+                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
+                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
+                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // BUILDER — ВИРТУАЛЬНЫЙ КОНСТРУКТОР БПЛА
+        // ============================================================
+
+        // === ДАННЫЕ ДЕТАЛЕЙ ===
+        const WINGS = {
+            straight: { name: 'Прямое', area: 0.8, mass: 120, cgOffset: 0 },
+            swept: { name: 'Стреловидное', area: 0.7, mass: 110, cgOffset: -2 },
+            delta: { name: 'Треугольное', area: 0.9, mass: 140, cgOffset: 4 },
+        };
+
+        const MATERIALS = {
+            pla: { name: 'PLA', density: 1.24, massMul: 1.0 },
+            plywood: { name: 'Фанера', density: 0.6, massMul: 0.5 },
+            composite: { name: 'Композит', density: 0.8, massMul: 0.7 },
+        };
+
+        const ENGINES = {
+            electric: { name: 'Электрический', power: 200, mass: 120, thrust: 180 },
+            gas: { name: 'ДВС', power: 500, mass: 300, thrust: 450 },
+            hybrid: { name: 'Гибридный', power: 350, mass: 220, thrust: 320 },
+        };
+
+        // === СОСТОЯНИЕ ===
+        let config = {
+            wingType: 'straight',
+            material: 'pla',
+            engine: 'electric',
+            span: 120, // см
+            fuselageMass: 200, // г
+        };
+
+        // === DOM ===
+        const wingSelector = document.getElementById('wingSelector');
+        const materialSelector = document.getElementById('materialSelector');
+        const engineSelector = document.getElementById('engineSelector');
+        const spanSlider = document.getElementById('spanSlider');
+        const spanVal = document.getElementById('spanVal');
+        const fuselageMassSlider = document.getElementById('fuselageMassSlider');
+        const fuselageMassVal = document.getElementById('fuselageMassVal');
+
+        // Параметры
+        const totalMassEl = document.getElementById('totalMass');
+        const wingAreaEl = document.getElementById('wingArea');
+        const wingLoadEl = document.getElementById('wingLoad');
+        const cgPositionEl = document.getElementById('cgPosition');
+        const powerEl = document.getElementById('power');
+        const thrustWeightEl = document.getElementById('thrustWeight');
+        const recommendationEl = document.getElementById('recommendation');
+
+        // Canvas для превью
+        const previewCanvas = document.getElementById('previewCanvas');
+        const pCtx = previewCanvas.getContext('2d');
+
+        // === ВЫБОР ДЕТАЛЕЙ ===
+        function setupSelector(container, callback) {
+            container.querySelectorAll('.part-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    container.querySelectorAll('.part-option').forEach(o => o.classList.remove('selected'));
+                    el.classList.add('selected');
+                    callback(el.dataset);
+                });
+            });
+        }
+
+        setupSelector(wingSelector, (data) => {
+            config.wingType = data.wing;
+            updateBuilder();
+        });
+
+        setupSelector(materialSelector, (data) => {
+            config.material = data.material;
+            updateBuilder();
+        });
+
+        setupSelector(engineSelector, (data) => {
+            config.engine = data.engine;
+            updateBuilder();
+        });
+
+        spanSlider.addEventListener('input', () => {
+            config.span = parseInt(spanSlider.value);
+            spanVal.textContent = config.span + ' см';
+            updateBuilder();
+        });
+
+        fuselageMassSlider.addEventListener('input', () => {
+            config.fuselageMass = parseInt(fuselageMassSlider.value);
+            fuselageMassVal.textContent = config.fuselageMass + ' г';
+            updateBuilder();
+        });
+
+        // === РАСЧЁТ ПАРАМЕТРОВ ===
+        function calculateParams() {
+            const wing = WINGS[config.wingType];
+            const material = MATERIALS[config.material];
+            const engine = ENGINES[config.engine];
+
+            // Площадь крыла (масштабируется от размаха)
+            const baseArea = wing.area;
+            const spanFactor = config.span / 120;
+            const area = baseArea * spanFactor * spanFactor;
+
+            // Масса крыла (зависит от материала и площади)
+            const wingMass = wing.mass * material.massMul * spanFactor * 0.9;
+
+            // Масса фюзеляжа (с учётом материала)
+            const fuselageMass = config.fuselageMass * (material.density / 0.8) * 0.7;
+
+            // Масса двигателя
+            const engineMass = engine.mass;
+
+            // Общая масса
+            const totalMass = wingMass + fuselageMass + engineMass + 50; // +50г на электронику
+
+            // Нагрузка на крыло (г/дм²)
+            const areaDm2 = area * 100; // м² -> дм²
+            const wingLoad = totalMass / areaDm2;
+
+            // Центр тяжести (% САХ)
+            const cgOffset = wing.cgOffset + (config.span / 120 - 1) * 2;
+            const cg = 30 + cgOffset;
+
+            // Мощность
+            const power = engine.power;
+
+            // Тяговооружённость
+            const thrust = engine.thrust * (config.span / 120) * 0.9;
+            const thrustWeight = thrust / totalMass;
+
+            return {
+                totalMass: Math.round(totalMass),
+                area: area,
+                wingLoad: wingLoad,
+                cg: cg,
+                power: power,
+                thrustWeight: thrustWeight,
+                wingSpan: config.span,
+                wingType: wing.name,
+                material: material.name,
+                engine: engine.name,
+                recommended: false,
+            };
+        }
+
+        // === ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===
+        function updateBuilder() {
+            const params = calculateParams();
+
+            // Обновляем числа
+            totalMassEl.textContent = params.totalMass;
+            wingAreaEl.textContent = params.area.toFixed(2);
+            wingLoadEl.textContent = params.wingLoad.toFixed(1);
+            cgPositionEl.textContent = params.cg.toFixed(0);
+            powerEl.textContent = params.power;
+            thrustWeightEl.textContent = params.thrustWeight.toFixed(2);
+
+            // Цветовая индикация
+            const cgEl = cgPositionEl.closest('.param-item');
+            if (params.cg > 25 && params.cg < 35) {
+                cgEl.className = 'param-item good';
+            } else if (params.cg > 20 && params.cg < 40) {
+                cgEl.className = 'param-item warning';
+            } else {
+                cgEl.className = 'param-item danger';
+            }
+
+            const loadEl = wingLoadEl.closest('.param-item');
+            if (params.wingLoad < 80) {
+                loadEl.className = 'param-item good';
+            } else if (params.wingLoad < 120) {
+                loadEl.className = 'param-item warning';
+            } else {
+                loadEl.className = 'param-item danger';
+            }
+
+            // Рекомендация
+            let rec = '';
+            let recColor = '';
+
+            if (params.cg > 25 && params.cg < 35 && params.wingLoad < 80 && params.thrustWeight > 0.6) {
+                rec = '✅ Отличная конфигурация! Аппарат сбалансирован и готов к полёту.';
+                recColor = '#10b981';
+            } else if (params.cg < 20 || params.cg > 40) {
+                rec = '⚠️ Центр тяжести смещён. Рекомендуется изменить компоновку.';
+                recColor = '#ef4444';
+            } else if (params.wingLoad > 120) {
+                rec = '⚠️ Высокая нагрузка на крыло. Увеличьте размах или уменьшите массу.';
+                recColor = '#f59e0b';
+            } else if (params.thrustWeight < 0.5) {
+                rec = '⚠️ Недостаточная тяговооружённость. Выберите более мощный двигатель.';
+                recColor = '#f59e0b';
+            } else {
+                rec = '✅ Конфигурация допустима. Рекомендуется проверить центровку.';
+                recColor = '#06b6d4';
+            }
+
+            recommendationEl.textContent = rec;
+            recommendationEl.style.borderColor = recColor;
+            recommendationEl.style.color = recColor;
+
+            // Рисуем превью
+            drawPreview(params);
+        }
+
+        // === 2D-ПРЕВЬЮ ===
+        function drawPreview(params) {
+            const w = previewCanvas.width;
+            const h = previewCanvas.height;
+
+            pCtx.clearRect(0, 0, w, h);
+
+            // Фон
+            const grad = pCtx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, '#0a0e27');
+            grad.addColorStop(0.6, '#1a1a3e');
+            grad.addColorStop(1, '#2d1b4e');
+            pCtx.fillStyle = grad;
+            pCtx.fillRect(0, 0, w, h);
+
+            // Сетка
+            pCtx.strokeStyle = 'rgba(255,255,255,0.03)';
+            pCtx.lineWidth = 0.5;
+            for (let i = 0; i < w; i += 30) {
+                pCtx.beginPath();
+                pCtx.moveTo(i, 0);
+                pCtx.lineTo(i, h);
+                pCtx.stroke();
+            }
+            for (let i = 0; i < h; i += 30) {
+                pCtx.beginPath();
+                pCtx.moveTo(0, i);
+                pCtx.lineTo(w, i);
+                pCtx.stroke();
+            }
+
+            const cx = w / 2;
+            const cy = h / 2 + 20;
+
+            // Масштаб
+            const scale = Math.min(w, h) / 350 * (params.wingSpan / 120);
+
+            // === КРЫЛО ===
+            const wingSpanPx = params.wingSpan * scale * 1.5;
+            const chordPx = 40 * scale;
+
+            pCtx.shadowColor = 'rgba(79, 70, 229, 0.2)';
+            pCtx.shadowBlur = 20;
+
+            // Цвет крыла в зависимости от материала
+            const wingColors = {
+                'PLA': 'rgba(79, 70, 229, 0.6)',
+                'Фанера': 'rgba(180, 130, 80, 0.6)',
+                'Композит': 'rgba(100, 200, 180, 0.6)',
+            };
+            const wingColor = wingColors[params.material] || 'rgba(79, 70, 229, 0.6)';
+
+            pCtx.fillStyle = wingColor;
+            pCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+            pCtx.lineWidth = 1;
+
+            // Верхнее крыло
+            pCtx.beginPath();
+            pCtx.moveTo(cx - wingSpanPx/2, cy - 10);
+            pCtx.quadraticCurveTo(cx - wingSpanPx/2 + 20, cy - 10 - chordPx/2, cx, cy - 10 - chordPx);
+            pCtx.quadraticCurveTo(cx + wingSpanPx/2 - 20, cy - 10 - chordPx/2, cx + wingSpanPx/2, cy - 10);
+            pCtx.closePath();
+            pCtx.fill();
+            pCtx.stroke();
+
+            // Нижнее крыло
+            pCtx.beginPath();
+            pCtx.moveTo(cx - wingSpanPx/2, cy + 10);
+            pCtx.quadraticCurveTo(cx - wingSpanPx/2 + 20, cy + 10 + chordPx/2, cx, cy + 10 + chordPx);
+            pCtx.quadraticCurveTo(cx + wingSpanPx/2 - 20, cy + 10 + chordPx/2, cx + wingSpanPx/2, cy + 10);
+            pCtx.closePath();
+            pCtx.fill();
+            pCtx.stroke();
+
+            // === ФЮЗЕЛЯЖ ===
+            const fuseLen = 80 * scale;
+            pCtx.shadowBlur = 15;
+            pCtx.fillStyle = 'rgba(148, 163, 184, 0.5)';
+            pCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+            pCtx.lineWidth = 1;
+
+            pCtx.beginPath();
+            pCtx.moveTo(cx + fuseLen/2, cy - 8);
+            pCtx.quadraticCurveTo(cx + fuseLen/2 + 10, cy - 2, cx + fuseLen/2, cy);
+            pCtx.quadraticCurveTo(cx + fuseLen/2 + 10, cy + 2, cx + fuseLen/2, cy + 8);
+            pCtx.lineTo(cx - fuseLen/2, cy + 8);
+            pCtx.quadraticCurveTo(cx - fuseLen/2 - 10, cy, cx - fuseLen/2, cy - 8);
+            pCtx.closePath();
+            pCtx.fill();
+            pCtx.stroke();
+
+            // === КАБИНА ===
+            pCtx.shadowBlur = 10;
+            pCtx.fillStyle = 'rgba(6, 182, 212, 0.15)';
+            pCtx.strokeStyle = 'rgba(6, 182, 212, 0.1)';
+            pCtx.beginPath();
+            pCtx.ellipse(cx + fuseLen/4, cy - 4, 12 * scale, 6 * scale, 0, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.stroke();
+
+            // === ДВИГАТЕЛЬ ===
+            pCtx.shadowBlur = 10;
+            pCtx.fillStyle = 'rgba(251, 191, 36, 0.2)';
+            pCtx.strokeStyle = 'rgba(251, 191, 36, 0.1)';
+            const engX = cx + fuseLen/2 + 8 * scale;
+            pCtx.beginPath();
+            pCtx.arc(engX, cy, 10 * scale, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.stroke();
+
+            // === ИНФОРМАЦИЯ НА КАНВАСЕ ===
+            pCtx.shadowBlur = 0;
+            pCtx.fillStyle = 'rgba(255,255,255,0.15)';
+            pCtx.font = '9px monospace';
+            pCtx.fillText(`Размах: ${params.wingSpan} см`, 12, 18);
+            pCtx.fillText(`Масса: ${params.totalMass} г`, 12, 32);
+            pCtx.fillText(`Нагрузка: ${params.wingLoad.toFixed(1)} г/дм²`, 12, 46);
+            pCtx.fillText(`ЦТ: ${params.cg.toFixed(0)}% САХ`, 12, 60);
+
+            // Маркер центра тяжести
+            pCtx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+            pCtx.strokeStyle = 'rgba(239, 68, 68, 0.2)';
+            pCtx.lineWidth = 1;
+            pCtx.setLineDash([3, 3]);
+            pCtx.beginPath();
+            pCtx.moveTo(cx, cy - 30);
+            pCtx.lineTo(cx, cy + 30);
+            pCtx.stroke();
+            pCtx.setLineDash([]);
+
+            pCtx.fillStyle = 'rgba(239, 68, 68, 0.6)';
+            pCtx.beginPath();
+            pCtx.arc(cx, cy, 4, 0, Math.PI * 2);
+            pCtx.fill();
+            pCtx.fillStyle = 'rgba(255,255,255,0.2)';
+            pCtx.font = '7px monospace';
+            pCtx.fillText('ЦТ', cx + 6, cy + 3);
+
+            pCtx.shadowBlur = 0;
+        }
+
+        // === КНОПКИ ===
+        document.getElementById('btnRandom').addEventListener('click', () => {
+            const wingTypes = ['straight', 'swept', 'delta'];
+            const materials = ['pla', 'plywood', 'composite'];
+            const engines = ['electric', 'gas', 'hybrid'];
+
+            config.wingType = wingTypes[Math.floor(Math.random() * wingTypes.length)];
+            config.material = materials[Math.floor(Math.random() * materials.length)];
+            config.engine = engines[Math.floor(Math.random() * engines.length)];
+            config.span = Math.round(Math.random() * 140 + 60);
+            config.fuselageMass = Math.round(Math.random() * 400 + 100);
+
+            // Обновляем UI
+            wingSelector.querySelectorAll('.part-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.wing === config.wingType);
+            });
+            materialSelector.querySelectorAll('.part-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.material === config.material);
+            });
+            engineSelector.querySelectorAll('.part-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.engine === config.engine);
+            });
+            spanSlider.value = config.span;
+            spanVal.textContent = config.span + ' см';
+            fuselageMassSlider.value = config.fuselageMass;
+            fuselageMassVal.textContent = config.fuselageMass + ' г';
+
+            updateBuilder();
+        });
+
+        document.getElementById('btnResetBuilder').addEventListener('click', () => {
+            config.wingType = 'straight';
+            config.material = 'pla';
+            config.engine = 'electric';
+            config.span = 120;
+            config.fuselageMass = 200;
+
+            wingSelector.querySelectorAll('.part-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.wing === 'straight');
+            });
+            materialSelector.querySelectorAll('.part-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.material === 'pla');
+            });
+            engineSelector.querySelectorAll('.part-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.engine === 'electric');
+            });
+            spanSlider.value = 120;
+            spanVal.textContent = '120 см';
+            fuselageMassSlider.value = 200;
+            fuselageMassVal.textContent = '200 г';
+
+            updateBuilder();
+        });
+
+        document.getElementById('btnExportBuilder').addEventListener('click', () => {
+            const params = calculateParams();
+            const text = `
+        ═══════════════════════════════════
+          СПЕЦИФИКАЦИЯ БПЛА
+        ═══════════════════════════════════
+
+        📐 КОНСТРУКЦИЯ
+        ──────────────────────────────
+        Тип крыла:        ${params.wingType}
+        Материал:         ${params.material}
+        Двигатель:        ${params.engine}
+        Размах крыла:     ${params.wingSpan} см
+
+        ⚙️ ПАРАМЕТРЫ
+        ──────────────────────────────
+        Общая масса:      ${params.totalMass} г
+        Площадь крыла:    ${params.area.toFixed(2)} м²
+        Нагрузка на крыло: ${params.wingLoad.toFixed(1)} г/дм²
+        Центр тяжести:    ${params.cg.toFixed(0)}% САХ
+        Мощность:         ${params.power} Вт
+        Тяговооружённость: ${params.thrustWeight.toFixed(2)}
+
+        📊 ОЦЕНКА
+        ──────────────────────────────
+        ${recommendationEl.textContent}
+
+        ═══════════════════════════════════
+        ThunderLight — Образовательная экосистема БПЛА
+            `;
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'specification_bpla.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // === ИНИЦИАЛИЗАЦИЯ ===
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 600);
+
+            // Настраиваем размер canvas
+            previewCanvas.width = previewCanvas.clientWidth || 500;
+            previewCanvas.height = 280;
+
+            updateBuilder();
+        });
+
+        // === ДОПОЛНИТЕЛЬНО ===
+        const cursorGlow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                const size = Math.random() * 3 + 1;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        let menuOpen = false;
+
+        mobileMenuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
+                navLinks.style.padding = '20px 32px';
+                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+                mobileMenuBtn.textContent = '✕';
+            } else {
+                navLinks.style.display = 'none';
+                mobileMenuBtn.textContent = '☰';
+            }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (menuOpen) {
+                    menuOpen = false;
+                    navLinks.style.display = 'none';
+                    mobileMenuBtn.textContent = '☰';
+                }
+            });
+        });
+
+        if (window.location.hash) {
+            window.scrollTo(0, 0);
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+
+        // Адаптация canvas при изменении размера
+        window.addEventListener('resize', () => {
+            const rect = previewCanvas.getBoundingClientRect();
+            if (rect.width > 0) {
+                previewCanvas.width = rect.width;
+                previewCanvas.height = 280;
+                updateBuilder();
+            }
+        });
+    </script>
+
+</body>
+</html>
