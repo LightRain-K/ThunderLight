@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThunderLight — Документация по БПЛА</title>
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            color: var(--light);
+            background: var(--darker);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08), transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .preloader-logo {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: preloaderPulse 1.5s infinite;
+            display: block;
+        }
+        .preloader-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes preloaderPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            background: rgba(2, 6, 23, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .nav-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .nav-logo:hover { transform: scale(1.05); }
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            animation: logoGlow 2s infinite;
+        }
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.6); }
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+        .nav-links a:hover::after { width: 60%; }
+        .nav-links a:hover { color: var(--light); }
+        .nav-links a.active {
+            color: var(--light);
+            background: rgba(79, 70, 229, 0.15);
+        }
+        .nav-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            animation: downloadPulse 2s infinite;
+        }
+        .nav-download:hover {
+            transform: translateY(-2px);
+            animation: none;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        @keyframes downloadPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        }
+
+        .hero {
+            padding: 160px 32px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            from { transform: translate(0, 0); }
+            to { transform: translate(60px, 60px); }
+        }
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: glowFloat 10s ease-in-out infinite;
+        }
+        .hero-glow-1 { background: var(--primary); top: -200px; left: -100px; }
+        .hero-glow-2 { background: var(--accent); bottom: -200px; right: -100px; animation-delay: -5s; }
+        @keyframes glowFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            background-size: 200% 200%;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero p {
+            font-size: 1.1em;
+            color: var(--gray-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .docs-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 10px 32px 60px;
+        }
+
+        /* Боковое меню */
+        .docs-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+        }
+        .docs-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+        .docs-sidebar::-webkit-scrollbar { width: 3px; }
+        .docs-sidebar::-webkit-scrollbar-track { background: transparent; }
+        .docs-sidebar::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.3); border-radius: 10px; }
+
+        .docs-sidebar .title {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+        .docs-sidebar a {
+            display: block;
+            padding: 8px 12px;
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.85em;
+            border-radius: 8px;
+            transition: var(--transition);
+            border-left: 2px solid transparent;
+        }
+        .docs-sidebar a:hover {
+            color: var(--light);
+            background: rgba(255,255,255,0.03);
+        }
+        .docs-sidebar a.active {
+            color: var(--light);
+            background: rgba(79, 70, 229, 0.12);
+            border-left-color: var(--primary);
+        }
+
+        .docs-content {
+            min-height: 600px;
+        }
+
+        .doc-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .doc-section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .doc-section h2 {
+            font-size: 1.8em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+        .doc-section h3 {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            color: #a5b4fc;
+        }
+        .doc-section p, .doc-section li {
+            color: var(--gray-light);
+            font-size: 0.95em;
+            line-height: 1.8;
+        }
+        .doc-section ul, .doc-section ol {
+            padding-left: 24px;
+            margin: 12px 0;
+        }
+        .doc-section li { margin-bottom: 6px; }
+
+        .doc-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 16px 0;
+        }
+        .doc-card .label {
+            font-size: 0.7em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+        }
+        .doc-card .value {
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--light);
+            font-family: monospace;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .spec-item {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .spec-item .label { font-size: 0.8em; color: var(--gray-light); }
+        .spec-item .value { font-size: 0.9em; font-weight: 600; color: var(--light); font-family: monospace; }
+
+        .code-block {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.8em;
+            color: #a5b4fc;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        .code-block .comment { color: var(--gray); }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .string { color: #34d399; }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85em;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--light);
+        }
+        .btn-outline:hover {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+        }
+        .btn-sm { padding: 4px 14px; font-size: 0.75em; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 0.65em;
+            font-weight: 600;
+        }
+        .badge-success { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .badge-info { background: rgba(6, 182, 212, 0.2); color: var(--accent); }
+
+        .file-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .file-item {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+            text-decoration: none;
+            color: var(--light);
+        }
+        .file-item:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: translateY(-2px);
+        }
+        .file-item .icon { font-size: 1.5em; }
+        .file-item .info .name { font-size: 0.9em; font-weight: 600; }
+        .file-item .info .desc { font-size: 0.7em; color: var(--gray-light); }
+
+        .footer {
+            padding: 50px 32px 30px;
+            background: var(--darker);
+            border-top: 1px solid var(--border);
+        }
+        .footer-grid {
+            max-width: 1280px;
+            margin: 0 auto 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        .footer-col h4 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+        .footer-col a:hover { color: var(--light); }
+        .footer-brand p {
+            color: var(--gray);
+            font-size: 0.85em;
+            margin: 10px 0 16px;
+            max-width: 300px;
+        }
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-bottom p { color: var(--gray); font-size: 0.75em; }
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+        .footer-social a {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer-social a:hover {
+            background: rgba(79, 70, 229, 0.2);
+            color: var(--light);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 1024px) {
+            .docs-layout { grid-template-columns: 1fr; }
+            .docs-sidebar {
+                position: relative;
+                top: 0;
+                max-height: none;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+                padding: 12px 16px;
+            }
+            .docs-sidebar .title { display: none; }
+            .docs-sidebar a {
+                padding: 6px 12px;
+                font-size: 0.75em;
+                border-left: none;
+                border-bottom: 2px solid transparent;
+            }
+            .docs-sidebar a.active { border-bottom-color: var(--primary); }
+            .spec-grid { grid-template-columns: 1fr; }
+            .file-list { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .nav-content { padding: 12px 20px; }
+            .hero { padding: 130px 20px 30px; }
+            .hero h1 { font-size: 2em; }
+            .docs-container { padding: 16px; }
+            .docs-sidebar a { font-size: 0.7em; padding: 4px 10px; }
+            .doc-section h2 { font-size: 1.4em; }
+            .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+            .footer { padding: 30px 20px 20px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.5em; }
+            .docs-sidebar a { font-size: 0.65em; }
+            .spec-item { flex-direction: column; align-items: flex-start; gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <span class="preloader-logo">⚡ ThunderLight</span>
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <span class="nav-logo-icon">⚡</span>
+                ThunderLight
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+                <li><a href="/lab.html">Lab</a></li>
+                <li><a href="/simulator.html">Simulator</a></li>
+                <li><a href="/builder.html">Builder</a></li>
+                <li><a href="/docs.html" class="active">Документация</a></li>
+                <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-content">
+            <h1>📚 Документация <span class="hero-gradient">по БПЛА</span></h1>
+            <p>Полное руководство по сборке, настройке и эксплуатации образовательного конструктора БПЛА ThunderLight.</p>
+        </div>
+    </section>
+
+    <div class="docs-container">
+        <div class="docs-layout">
+            <!-- Боковое меню -->
+            <nav class="docs-sidebar" id="docsSidebar">
+                <div class="title">📖 Содержание</div>
+                <a href="#" class="active" data-section="spec">📋 Спецификация</a>
+                <a href="#" data-section="schematics">🔌 Схемы подключения</a>
+                <a href="#" data-section="models">🖨️ 3D-модели</a>
+                <a href="#" data-section="software">📚 Программное обеспечение</a>
+                <a href="#" data-section="assembly">📖 Инструкция по сборке</a>
+                <a href="#" data-section="calibration">🧪 Калибровка</a>
+                <a href="#" data-section="techdata">📊 Технические данные</a>
+                <a href="#" data-section="safety">🛡️ Безопасность</a>
+                <a href="#" data-section="repository">📁 Репозиторий</a>
+            </nav>
+
+            <!-- Контент -->
+            <div class="docs-content">
+
+                <!-- ====== СПЕЦИФИКАЦИЯ ====== -->
+                <div class="doc-section active" id="section-spec">
+                    <h2>📋 Спецификация компонентов</h2>
+                    <p>Полный перечень деталей и электронных компонентов, необходимых для сборки конструктора БПЛА ThunderLight.</p>
+
+                    <h3>Электронные компоненты</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item"><span class="label">Полётный контроллер</span><span class="value">Arduino Nano (ATmega328P)</span></div>
+                        <div class="spec-item"><span class="label">Верхний уровень</span><span class="value">Raspberry Pi 3</span></div>
+                        <div class="spec-item"><span class="label">Датчик IMU</span><span class="value">MPU-6050 (6 DOF)</span></div>
+                        <div class="spec-item"><span class="label">Сервоприводы</span><span class="value">MG-90S × 4</span></div>
+                        <div class="spec-item"><span class="label">Регуляторы ESC</span><span class="value">20A × 4</span></div>
+                        <div class="spec-item"><span class="label">Двигатели</span><span class="value">2212 1000kV × 4</span></div>
+                        <div class="spec-item"><span class="label">Аккумулятор</span><span class="value">3S 2200mAh Li-Po</span></div>
+                        <div class="spec-item"><span class="label">Пропеллеры</span><span class="value">10" × 4.5</span></div>
+                        <div class="spec-item"><span class="label">Приёмник</span><span class="value">FlySky FS-iA6</span></div>
+                        <div class="spec-item"><span class="label">GPS-модуль</span><span class="value">NEO-6M (опционально)</span></div>
+                    </div>
+
+                    <h3>Конструкционные детали</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item"><span class="label">Рама</span><span class="value">3D-печать (PLA)</span></div>
+                        <div class="spec-item"><span class="label">Размер рамы</span><span class="value">250 мм (диагональ)</span></div>
+                        <div class="spec-item"><span class="label">Материал</span><span class="value">PLA-пластик</span></div>
+                        <div class="spec-item"><span class="label">Крепёж</span><span class="value">Винты M3, стойки</span></div>
+                    </div>
+
+                    <div class="doc-card" style="margin-top:20px;">
+                        <div class="label">📦 Полный комплект</div>
+                        <p style="margin-top:8px;">Все компоненты можно приобрести отдельно. Примерная стоимость комплекта: <strong style="color:#f59e0b;">~12 000 ₽</strong></p>
+                        <a href="#section-repository" class="btn btn-primary btn-sm" style="margin-top:10px;">📁 Скачать спецификацию</a>
+                    </div>
+                </div>
+
+                <!-- ====== СХЕМЫ ПОДКЛЮЧЕНИЯ ====== -->
+                <div class="doc-section" id="section-schematics">
+                    <h2>🔌 Схемы подключения</h2>
+                    <p>Электрические схемы соединения всех компонентов системы управления.</p>
+
+                    <h3>Общая архитектура</h3>
+                    <div class="doc-card">
+                        <pre class="code-block" style="font-size:0.75em;">
+                ┌─────────────────────────────────────────────────────────────────┐
+                │                    THUNDERLIGHT VRD FC                         │
+                ├─────────────────────────────────────────────────────────────────┤
+                │                                                                 │
+                │  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐    │
+                │  │   Arduino   │◄────►│  Raspberry  │      │   Пульт     │    │
+                │  │    Nano     │ UART │    Pi 3     │      │   (RX)      │    │
+                │  └──────┬──────┘      └──────┬──────┘      └──────┬──────┘    │
+                │         │                    │                    │           │
+                │         ▼                    ▼                    ▼           │
+                │  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐    │
+                │  │   IMU       │      │   Телемет-  │      │   Приёмник  │    │
+                │  │   MPU-6050  │      │   рия       │      │   (RX)      │    │
+                │  └─────────────┘      └─────────────┘      └─────────────┘    │
+                │         │                    │                                 │
+                │         ▼                    ▼                                 │
+                │  ┌─────────────┐      ┌─────────────┐                         │
+                │  │   ESC × 4   │      │   GPS       │                         │
+                │  └─────────────┘      └─────────────┘                         │
+                │         │                                                      │
+                │         ▼                                                      │
+                │  ┌─────────────┐                                               │
+                │  │  Моторы × 4 │                                               │
+                │  └─────────────┘                                               │
+                └─────────────────────────────────────────────────────────────────┘
+                        </pre>
+                    </div>
+
+                    <h3>Подключение Arduino Nano</h3>
+                    <div class="doc-card">
+                        <div class="spec-grid">
+                            <div class="spec-item"><span class="label">MPU-6050 (I2C)</span><span class="value">A4 (SDA), A5 (SCL)</span></div>
+                            <div class="spec-item"><span class="label">ESC 1</span><span class="value">D3 (PWM)</span></div>
+                            <div class="spec-item"><span class="label">ESC 2</span><span class="value">D5 (PWM)</span></div>
+                            <div class="spec-item"><span class="label">ESC 3</span><span class="value">D6 (PWM)</span></div>
+                            <div class="spec-item"><span class="label">ESC 4</span><span class="value">D9 (PWM)</span></div>
+                            <div class="spec-item"><span class="label">Приёмник (PPM)</span><span class="value">D2 (PPM)</span></div>
+                            <div class="spec-item"><span class="label">UART (RPi)</span><span class="value">D0 (RX), D1 (TX)</span></div>
+                            <div class="spec-item"><span class="label">Питание</span><span class="value">5V, GND</span></div>
+                        </div>
+                    </div>
+
+                    <div class="doc-card" style="margin-top:12px;">
+                        <div class="label">📄 Полная схема</div>
+                        <p style="margin-top:8px;">Скачайте подробную схему подключения в формате PDF.</p>
+                        <a href="#" class="btn btn-outline btn-sm" style="margin-top:6px;">📥 Скачать схему (PDF)</a>
+                    </div>
+                </div>
+
+                <!-- ====== 3D-МОДЕЛИ ====== -->
+                <div class="doc-section" id="section-models">
+                    <h2>🖨️ 3D-модели для печати</h2>
+                    <p>Все детали рамы и корпусов доступны для самостоятельной 3D-печати.</p>
+
+                    <h3>Файлы для скачивания</h3>
+                    <div class="file-list">
+                        <a href="#" class="file-item">
+                            <span class="icon">📦</span>
+                            <div class="info">
+                                <div class="name">Рама основная</div>
+                                <div class="desc">STL, 45 г PLA, время печати 3 ч</div>
+                            </div>
+                        </a>
+                        <a href="#" class="file-item">
+                            <span class="icon">📦</span>
+                            <div class="info">
+                                <div class="name">Корпус контроллера</div>
+                                <div class="desc">STL, 25 г PLA, время печати 1.5 ч</div>
+                            </div>
+                        </a>
+                        <a href="#" class="file-item">
+                            <span class="icon">📦</span>
+                            <div class="info">
+                                <div class="name">Крепление аккумулятора</div>
+                                <div class="desc">STL, 12 г PLA, время печати 1 ч</div>
+                            </div>
+                        </a>
+                        <a href="#" class="file-item">
+                            <span class="icon">📦</span>
+                            <div class="info">
+                                <div class="name">Крепление камеры</div>
+                                <div class="desc">STL, 8 г PLA, время печати 0.5 ч</div>
+                            </div>
+                        </a>
+                        <a href="#" class="file-item">
+                            <span class="icon">📦</span>
+                            <div class="info">
+                                <div class="name">Защита пропеллеров</div>
+                                <div class="desc">STL, 20 г PLA, время печати 1.5 ч</div>
+                            </div>
+                        </a>
+                        <a href="#" class="file-item">
+                            <span class="icon">📦</span>
+                            <div class="info">
+                                <div class="name">Шаблоны для лазерной резки</div>
+                                <div class="desc">DXF, фанера 3 мм</div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="doc-card" style="margin-top:16px;">
+                        <div class="label">🖨️ Рекомендации по печати</div>
+                        <ul>
+                            <li>Материал: PLA или PETG</li>
+                            <li>Высота слоя: 0.2 мм</li>
+                            <li>Заполнение: 20-30%</li>
+                            <li>Поддержка: включена для сложных деталей</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- ====== ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ====== -->
+                <div class="doc-section" id="section-software">
+                    <h2>📚 Программное обеспечение</h2>
+                    <p>Код для Arduino и Raspberry Pi, а также список необходимого ПО.</p>
+
+                    <h3>Arduino (нижний уровень)</h3>
+                    <div class="code-block">
+                        <span class="comment">// VRD Flight Controller — Low Level (Arduino Nano)</span>
+                        <span class="comment">// Стабилизация, чтение IMU, управление ESC</span>
+
+                        <span class="keyword">#include</span> &lt;Wire.h&gt;
+                        <span class="keyword">#include</span> &lt;MPU6050.h&gt;
+
+                        MPU6050 imu;
+                        <span class="keyword">float</span> pitch, roll, yaw;
+                        <span class="keyword">float</span> targetPitch = 0, targetRoll = 0;
+
+                        <span class="keyword">void</span> <span class="keyword">setup</span>() {
+                            Serial.begin(115200);
+                            imu.initialize();
+                        }
+
+                        <span class="keyword">void</span> <span class="keyword">loop</span>() {
+                            imu.getRotation(&pitch, &roll, &yaw);
+                            <span class="comment">// ПИД-регулятор</span>
+                            <span class="keyword">float</span> errorP = targetPitch - pitch;
+                            <span class="keyword">float</span> output = kp * errorP + ki * integral + kd * derivative;
+                            <span class="comment">// Отправка на ESC</span>
+                            analogWrite(ESC_PIN, output);
+                            delay(10);
+                        }
+                    </div>
+
+                    <h3>Raspberry Pi (верхний уровень)</h3>
+                    <div class="code-block">
+                        <span class="comment"># VRD Flight Controller — High Level (Raspberry Pi 3)</span>
+                        <span class="comment"># Планирование траектории, телеметрия, визуализация</span>
+
+                        <span class="keyword">import</span> serial
+                        <span class="keyword">import</span> numpy <span class="keyword">as</span> np
+                        <span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+                        ser = serial.Serial('/dev/ttyS0', 115200)
+
+                        <span class="keyword">def</span> <span class="keyword">get_telemetry</span>():
+                            data = ser.readline().decode().strip().split(',')
+                            <span class="keyword">return</span> {
+                                'pitch': float(data[0]),
+                                'roll': float(data[1]),
+                                'altitude': float(data[2])
+                            }
+
+                        <span class="keyword">while</span> True:
+                            telemetry = get_telemetry()
+                            <span class="comment"># Визуализация</span>
+                            print(f"Pitch: {telemetry['pitch']:.2f}°")
+                    </div>
+
+                    <h3>Необходимое ПО</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item"><span class="label">Arduino IDE</span><span class="value">v1.8.19+</span></div>
+                        <div class="spec-item"><span class="label">Python</span><span class="value">v3.9+</span></div>
+                        <div class="spec-item"><span class="label">Библиотеки</span><span class="value">pyserial, numpy, matplotlib</span></div>
+                        <div class="spec-item"><span class="label">Git</span><span class="value">для клонирования репозитория</span></div>
+                    </div>
+                </div>
+
+                <!-- ====== ИНСТРУКЦИЯ ПО СБОРКЕ ====== -->
+                <div class="doc-section" id="section-assembly">
+                    <h2>📖 Инструкция по сборке</h2>
+                    <p>Пошаговое руководство по сборке аппарата.</p>
+
+                    <h3>Шаг 1: Подготовка деталей</h3>
+                    <ul>
+                        <li>Распечатайте все детали рамы на 3D-принтере</li>
+                        <li>Проверьте наличие всех электронных компонентов</li>
+                        <li>Подготовьте инструменты: отвёртки, пинцет, паяльник</li>
+                    </ul>
+
+                    <h3>Шаг 2: Сборка рамы</h3>
+                    <ul>
+                        <li>Соедините центральную плату с плечами рамы</li>
+                        <li>Закрепите двигатели на концах плеч</li>
+                        <li>Установите ESC на плечи</li>
+                    </ul>
+
+                    <h3>Шаг 3: Электроника</h3>
+                    <ul>
+                        <li>Установите Arduino Nano и Raspberry Pi на центральную плату</li>
+                        <li>Подключите IMU MPU-6050 к Arduino</li>
+                        <li>Подключите ESC к Arduino и аккумулятору</li>
+                        <li>Подключите приёмник</li>
+                    </ul>
+
+                    <h3>Шаг 4: Программирование</h3>
+                    <ul>
+                        <li>Загрузите скетч в Arduino</li>
+                        <li>Запустите Python-скрипт на Raspberry Pi</li>
+                        <li>Настройте параметры ПИД-регулятора</li>
+                    </ul>
+
+                    <div class="doc-card" style="margin-top:16px;">
+                        <div class="label">📹 Видеоинструкция</div>
+                        <p style="margin-top:8px;">Подробная видеоинструкция по сборке доступна по ссылке.</p>
+                        <a href="#" class="btn btn-primary btn-sm" style="margin-top:6px;">▶ Смотреть видео</a>
+                    </div>
+                </div>
+
+                <!-- ====== КАЛИБРОВКА ====== -->
+                <div class="doc-section" id="section-calibration">
+                    <h2>🧪 Калибровка</h2>
+                    <p>Настройка датчиков, ESC и ПИД-регулятора.</p>
+
+                    <h3>Калибровка IMU (MPU-6050)</h3>
+                    <ul>
+                        <li>Установите аппарат на ровную поверхность</li>
+                        <li>Запустите скетч калибровки</li>
+                        <li>Запишите значения смещения (offset) акселерометра и гироскопа</li>
+                        <li>Внесите значения в код</li>
+                    </ul>
+
+                    <h3>Калибровка ESC</h3>
+                    <ul>
+                        <li>Отключите пропеллеры</li>
+                        <li>Включите питание с максимальным сигналом</li>
+                        <li>Дождитесь звукового сигнала</li>
+                        <li>Снизьте сигнал до минимума</li>
+                    </ul>
+
+                    <h3>Настройка ПИД-регулятора</h3>
+                    <ul>
+                        <li>Используйте <a href="/simulator.html" style="color:var(--accent);">симулятор ПИД</a> для подбора коэффициентов</li>
+                        <li>Начните с Kp = 1.2, Ki = 0.3, Kd = 0.4</li>
+                        <li>Постепенно увеличивайте Kp до появления колебаний</li>
+                        <li>Добавьте Kd для гашения колебаний</li>
+                        <li>Добавьте Ki для устранения статической ошибки</li>
+                    </ul>
+
+                    <div class="doc-card">
+                        <div class="label">🎯 Рекомендуемые настройки</div>
+                        <div class="spec-grid">
+                            <div class="spec-item"><span class="label">Kp</span><span class="value">1.8</span></div>
+                            <div class="spec-item"><span class="label">Ki</span><span class="value">0.4</span></div>
+                            <div class="spec-item"><span class="label">Kd</span><span class="value">0.6</span></div>
+                            <div class="spec-item"><span class="label">Частота ПИД</span><span class="value">100 Гц</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ====== ТЕХНИЧЕСКИЕ ДАННЫЕ ====== -->
+                <div class="doc-section" id="section-techdata">
+                    <h2>📊 Технические данные</h2>
+                    <p>Характеристики и результаты испытаний системы управления.</p>
+
+                    <h3>Характеристики аппарата</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item"><span class="label">Масса</span><span class="value">~550 г</span></div>
+                        <div class="spec-item"><span class="label">Размер (диагональ)</span><span class="value">250 мм</span></div>
+                        <div class="spec-item"><span class="label">Время полёта</span><span class="value">~12 мин</span></div>
+                        <div class="spec-item"><span class="label">Макс. скорость</span><span class="value">~65 км/ч</span></div>
+                        <div class="spec-item"><span class="label">Тяговооружённость</span><span class="value">2.8</span></div>
+                        <div class="spec-item"><span class="label">Дальность управления</span><span class="value">~500 м</span></div>
+                    </div>
+
+                    <h3>Результаты испытаний системы управления</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item"><span class="label">Ошибка стабилизации</span><span class="value" style="color:#10b981;">≤ 1.2°</span></div>
+                        <div class="spec-item"><span class="label">Время реакции</span><span class="value" style="color:#10b981;">0.35 с</span></div>
+                        <div class="spec-item"><span class="label">Время восстановления</span><span class="value" style="color:#10b981;">0.7 с</span></div>
+                        <div class="spec-item"><span class="label">Отклонение от траектории</span><span class="value" style="color:#10b981;">0.82%</span></div>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="label">✅ Все требования выполнены с запасом</div>
+                        <p style="margin-top:8px;">Система управления показала стабильную работу во всех режимах испытаний.</p>
+                    </div>
+                </div>
+
+                <!-- ====== БЕЗОПАСНОСТЬ ====== -->
+                <div class="doc-section" id="section-safety">
+                    <h2>🛡️ Безопасность</h2>
+                    <p>Правила безопасной работы с БПЛА и аккумуляторами.</p>
+
+                    <h3>Общие правила</h3>
+                    <ul>
+                        <li>Всегда проверяйте целостность конструкции перед запуском</li>
+                        <li>Запускайте аппарат только на открытой площадке вдали от людей</li>
+                        <li>Никогда не приближайтесь к вращающимся пропеллерам</li>
+                        <li>При работе с БПЛА используйте защитные очки</li>
+                    </ul>
+
+                    <h3>Правила работы с Li-Po аккумуляторами</h3>
+                    <ul>
+                        <li>Заряжайте аккумуляторы только специальным зарядным устройством</li>
+                        <li>Не оставляйте заряжающиеся аккумуляторы без присмотра</li>
+                        <li>Храните аккумуляторы в огнеупорных контейнерах</li>
+                        <li>Не используйте повреждённые или вздутые аккумуляторы</li>
+                        <li>Не разряжайте аккумулятор ниже 3.0 В на элемент</li>
+                    </ul>
+
+                    <h3>Что делать в экстренной ситуации</h3>
+                    <ul>
+                        <li>При неконтролируемом полёте — немедленно отключите питание</li>
+                        <li>При пожаре аккумулятора — используйте песок или огнетушитель (не воду!)</li>
+                        <li>При падении — отойдите на безопасное расстояние</li>
+                    </ul>
+
+                    <div class="doc-card" style="border-color: rgba(239, 68, 68, 0.3);">
+                        <div class="label" style="color: var(--danger);">⚠️ ВАЖНО</div>
+                        <p style="margin-top:8px;color:var(--gray-light);">Нарушение правил безопасности может привести к серьёзным травмам. Перед запуском ознакомьтесь со всеми правилами.</p>
+                    </div>
+                </div>
+
+                <!-- ====== РЕПОЗИТОРИЙ ====== -->
+                <div class="doc-section" id="section-repository">
+                    <h2>📁 Репозиторий</h2>
+                    <p>Все файлы проекта доступны на GitHub.</p>
+
+                    <div class="doc-card" style="text-align:center;padding:32px;">
+                        <span style="font-size:3em;display:block;margin-bottom:12px;">🐙</span>
+                        <h3 style="font-size:1.3em;font-weight:700;">ThunderLight на GitHub</h3>
+                        <p style="color:var(--gray-light);margin:8px 0 16px;">
+                            Исходные коды, 3D-модели, схемы и документация.
+                        </p>
+                        <a href="https://github.com/LightRain-K/ThunderLight" target="_blank" class="btn btn-primary" style="display:inline-flex;">
+                            <i class="fab fa-github"></i> Перейти в репозиторий
+                        </a>
+                    </div>
+
+                    <h3>Структура репозитория</h3>
+                    <div class="code-block" style="font-size:0.8em;">
+                        ThunderLight/
+                        ├── firmware/
+                        │   ├── arduino/          # Скетч для Arduino Nano
+                        │   └── python/           # Скрипты для Raspberry Pi
+                        ├── hardware/
+                        │   ├── 3d_models/        # STL-файлы для печати
+                        │   ├── schematics/       # Схемы подключения
+                        │   └── pcb/              # Файлы печатных плат
+                        ├── docs/
+                        │   ├── assembly/         # Инструкция по сборке
+                        │   ├── calibration/      # Калибровка
+                        │   └── safety/           # Правила безопасности
+                        └── README.md
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">⚡</span>
+                    ThunderLight
+                </a>
+                <p>Образовательная экосистема БПЛА. Проектируй, собирай, летай.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Экосистема</h4>
+                <ul>
+                    <li><a href="/articles.html">Academy</a></li>
+                    <li><a href="/lab.html">Lab</a></li>
+                    <li><a href="/simulator.html">Simulator</a></li>
+                    <li><a href="/builder.html">Builder</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Документы</h4>
+                <ul>
+                    <li><a href="/privacy.html">Конфиденциальность</a></li>
+                    <li><a href="/terms.html">Условия использования</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><a href="https://t.me/thunderlight_online" target="_blank">Telegram</a></li>
+                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderLight/" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
+            <div class="footer-social">
+                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
+                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
+                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // ДОКУМЕНТАЦИЯ — НАВИГАЦИЯ
+        // ============================================================
+
+        const sidebarLinks = document.querySelectorAll('#docsSidebar a');
+        const sections = document.querySelectorAll('.doc-section');
+
+        function showSection(sectionId) {
+            // Скрываем все секции
+            sections.forEach(s => s.classList.remove('active'));
+
+            // Показываем нужную
+            const target = document.getElementById('section-' + sectionId);
+            if (target) target.classList.add('active');
+
+            // Обновляем активную ссылку
+            sidebarLinks.forEach(link => {
+                link.classList.toggle('active', link.dataset.section === sectionId);
+            });
+
+            // Прокручиваем к началу контента
+            document.querySelector('.docs-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = link.dataset.section;
+                if (section) {
+                    showSection(section);
+                    // Обновляем URL без перезагрузки
+                    history.pushState({ section: section }, '', '#section-' + section);
+                }
+            });
+        });
+
+        // Обработка якоря в URL
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash.replace('#section-', '');
+            if (hash) {
+                const link = document.querySelector(`#docsSidebar a[data-section="${hash}"]`);
+                if (link) {
+                    showSection(hash);
+                }
+            }
+        });
+
+        // При загрузке проверяем хеш
+        window.addEventListener('load', () => {
+            const hash = window.location.hash.replace('#section-', '');
+            if (hash) {
+                const link = document.querySelector(`#docsSidebar a[data-section="${hash}"]`);
+                if (link) showSection(hash);
+            }
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 600);
+        });
+
+        // === ДОПОЛНИТЕЛЬНО ===
+        const cursorGlow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                const size = Math.random() * 3 + 1;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        let menuOpen = false;
+
+        mobileMenuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
+                navLinks.style.padding = '20px 32px';
+                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+                mobileMenuBtn.textContent = '✕';
+            } else {
+                navLinks.style.display = 'none';
+                mobileMenuBtn.textContent = '☰';
+            }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (menuOpen) {
+                    menuOpen = false;
+                    navLinks.style.display = 'none';
+                    mobileMenuBtn.textContent = '☰';
+                }
+            });
+        });
+
+        if (window.location.hash) {
+            window.scrollTo(0, 0);
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+    </script>
+
+</body>
+</html>
