@@ -282,18 +282,45 @@
             margin: 0 auto;
         }
 
-        .articles-container {
+        .academy-container {
             max-width: 1280px;
             margin: 0 auto;
             padding: 10px 32px 60px;
         }
+
+        /* Статистика прогресса */
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .progress-stat {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .progress-stat .number {
+            font-size: 2em;
+            font-weight: 900;
+            color: var(--light);
+        }
+        .progress-stat .label {
+            font-size: 0.75em;
+            color: var(--gray-light);
+        }
+        .progress-stat .number.green { color: var(--success); }
+        .progress-stat .number.blue { color: var(--accent); }
+        .progress-stat .number.purple { color: #a5b4fc; }
 
         /* Фильтры */
         .filter-bar {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
             padding: 12px 16px;
             background: rgba(15, 23, 42, 0.4);
             border: 1px solid var(--border);
@@ -320,60 +347,159 @@
             color: var(--light);
         }
 
-        .articles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+        /* Список курсов */
+        .course-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
-        .article-card {
+        .course-item {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 22px 24px;
+            padding: 20px 24px;
             transition: var(--transition);
+            display: grid;
+            grid-template-columns: 48px 1fr auto;
+            gap: 16px;
+            align-items: center;
             text-decoration: none;
             color: inherit;
         }
-        .article-card:hover {
+        .course-item:hover {
             border-color: rgba(79, 70, 229, 0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            transform: translateX(4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
-        .article-card .topic {
-            display: inline-block;
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-size: 0.65em;
-            font-weight: 600;
-            margin-bottom: 10px;
+        .course-item .icon {
+            font-size: 1.8em;
+            text-align: center;
         }
-        .topic-python { background: rgba(52, 211, 153, 0.2); color: #34d399; }
-        .topic-arduino { background: rgba(250, 204, 21, 0.2); color: #facc15; }
-        .topic-electronics { background: rgba(251, 191, 36, 0.2); color: #f59e0b; }
-        .topic-bpla { background: rgba(79, 70, 229, 0.2); color: #818cf8; }
-        .topic-pid { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
-        .article-card .level {
-            font-size: 0.6em;
-            color: var(--gray);
-            margin-left: 8px;
-        }
-        .article-card h3 {
+        .course-item .info h3 {
             font-size: 1.05em;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
-        .article-card p {
-            color: var(--gray-light);
+        .course-item .info .desc {
             font-size: 0.85em;
-            line-height: 1.6;
+            color: var(--gray-light);
+            line-height: 1.5;
         }
-        .article-card .meta {
+        .course-item .info .meta {
             display: flex;
             gap: 12px;
-            margin-top: 12px;
+            margin-top: 6px;
             font-size: 0.7em;
             color: var(--gray);
+            flex-wrap: wrap;
         }
+        .course-item .info .meta span {
+            background: rgba(255,255,255,0.05);
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+        .course-item .status {
+            text-align: right;
+            min-width: 100px;
+        }
+        .course-item .status .badge {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+        .badge-new { background: var(--primary); color: white; }
+        .badge-progress { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .badge-done { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .badge-locked { background: rgba(100, 116, 139, 0.2); color: var(--gray); }
+
+        .course-item .status .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+        .course-item .status .progress-bar .fill {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.6s ease;
+        }
+
+        .course-item .action-btn {
+            padding: 4px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--gray-light);
+            font-size: 0.7em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+        .course-item .action-btn:hover {
+            border-color: rgba(255,255,255,0.3);
+            color: var(--light);
+            background: rgba(255,255,255,0.05);
+        }
+        .course-item .action-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+        }
+        .course-item .action-btn.primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4);
+        }
+        .course-item .action-btn.done-btn {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        /* Связь с инструментами */
+        .tools-section {
+            margin-top: 40px;
+            padding: 24px;
+            background: rgba(79, 70, 229, 0.06);
+            border: 1px solid rgba(79, 70, 229, 0.15);
+            border-radius: var(--radius);
+        }
+        .tools-section h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        .tool-link {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--light);
+            transition: var(--transition);
+        }
+        .tool-link:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: translateY(-3px);
+        }
+        .tool-link .icon { font-size: 1.5em; display: block; margin-bottom: 4px; }
+        .tool-link .name { font-size: 0.8em; font-weight: 600; }
+        .tool-link .desc { font-size: 0.6em; color: var(--gray-light); }
 
         .btn {
             padding: 8px 20px;
@@ -474,8 +600,16 @@
             .nav-content { padding: 12px 20px; }
             .hero { padding: 130px 20px 30px; }
             .hero h1 { font-size: 2em; }
-            .articles-container { padding: 16px; }
-            .articles-grid { grid-template-columns: 1fr; }
+            .academy-container { padding: 16px; }
+            .course-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 16px;
+            }
+            .course-item .status { text-align: center; min-width: unset; }
+            .course-item .icon { font-size: 2.2em; }
+            .progress-stats { grid-template-columns: 1fr 1fr; }
+            .tools-grid { grid-template-columns: 1fr 1fr; }
             .filter-bar { gap: 4px; padding: 8px 12px; }
             .filter-btn { font-size: 0.7em; padding: 4px 12px; }
             .footer-grid { grid-template-columns: 1fr; gap: 20px; }
@@ -484,7 +618,9 @@
         }
         @media (max-width: 480px) {
             .hero h1 { font-size: 1.5em; }
-            .article-card { padding: 16px; }
+            .course-item { padding: 12px; }
+            .progress-stats { grid-template-columns: 1fr; }
+            .tools-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -509,12 +645,12 @@
             <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="/">Главная</a></li>
+                <li><a href="/articles/" class="active">Academy</a></li>
                 <li><a href="/uav-project.html">БПЛА</a></li>
                 <li><a href="/lab.html">Lab</a></li>
                 <li><a href="/simulator.html">Simulator</a></li>
                 <li><a href="/builder.html">Builder</a></li>
                 <li><a href="/docs.html">Документация</a></li>
-                <li><a href="/articles/" class="active">Academy</a></li>
                 <li><a href="/drone-sim.html">Drone Sim</a></li>
                 <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
             </ul>
@@ -528,12 +664,32 @@
         <div class="hero-glow hero-glow-2"></div>
         <div class="hero-content">
             <h1>📖 Academy <span class="hero-gradient">ThunderLight</span></h1>
-            <p>Структурированные уроки по Python, Arduino, электронике и управлению БПЛА. От новичка до инженера.</p>
+            <p>Структурированные курсы по Python, Arduino, электронике и управлению БПЛА. От новичка до инженера.</p>
         </div>
     </section>
 
-    <!-- ======== СТАТЬИ ======== -->
-    <div class="articles-container">
+    <!-- ======== ACADEMY ======== -->
+    <div class="academy-container">
+
+        <!-- Статистика прогресса -->
+        <div class="progress-stats" id="progressStats">
+            <div class="progress-stat">
+                <div class="number green" id="totalCourses">6</div>
+                <div class="label">Всего курсов</div>
+            </div>
+            <div class="progress-stat">
+                <div class="number blue" id="completedCourses">0</div>
+                <div class="label">Пройдено</div>
+            </div>
+            <div class="progress-stat">
+                <div class="number purple" id="inProgressCourses">0</div>
+                <div class="label">В процессе</div>
+            </div>
+            <div class="progress-stat">
+                <div class="number" id="progressPercent" style="color:#f59e0b;">0%</div>
+                <div class="label">Общий прогресс</div>
+            </div>
+        </div>
 
         <!-- Фильтры -->
         <div class="filter-bar" id="filterBar">
@@ -545,106 +701,153 @@
             <button class="filter-btn" data-filter="pid">🎯 ПИД</button>
         </div>
 
-        <!-- Сетка статей -->
-        <div class="articles-grid" id="articlesGrid">
+        <!-- Список курсов -->
+        <div class="course-list" id="courseList">
 
-            <!-- ===== PYTHON ===== -->
-            <a href="/articles/python/01-intro.html" class="article-card" data-topic="python">
-                <span class="topic topic-python">🐍 Python</span><span class="level">Уровень 1</span>
-                <h3>Введение в Python</h3>
-                <p>Знакомство с языком, установка, первая программа. Основы синтаксиса.</p>
-                <div class="meta"><span>📚 4 урока</span><span>⏱ 30 мин</span></div>
-            </a>
+            <!-- Курс 1: Python -->
+            <div class="course-item" data-topic="python" data-id="python-intro">
+                <div class="icon">🐍</div>
+                <div class="info">
+                    <h3>Python для инженеров</h3>
+                    <div class="desc">Основы программирования на Python. Переменные, функции, циклы, работа с данными.</div>
+                    <div class="meta">
+                        <span>📚 8 уроков</span>
+                        <span>⏱ 4 часа</span>
+                        <span>🏷️ Базовый</span>
+                    </div>
+                </div>
+                <div class="status">
+                    <span class="badge badge-new">Новый</span>
+                    <div class="progress-bar"><div class="fill" style="width:0%;"></div></div>
+                    <a href="/articles/python/01-intro.html" class="action-btn primary" style="margin-top:6px;">▶ Начать</a>
+                </div>
+            </div>
 
-            <a href="/articles/python/02-variables.html" class="article-card" data-topic="python">
-                <span class="topic topic-python">🐍 Python</span><span class="level">Уровень 1</span>
-                <h3>Переменные и типы данных</h3>
-                <p>Числа, строки, списки, словари. Всё, что нужно для начала.</p>
-                <div class="meta"><span>📚 5 уроков</span><span>⏱ 40 мин</span></div>
-            </a>
+            <!-- Курс 2: Arduino -->
+            <div class="course-item" data-topic="arduino" data-id="arduino-intro">
+                <div class="icon">⚡</div>
+                <div class="info">
+                    <h3>Arduino для начинающих</h3>
+                    <div class="desc">Микроконтроллеры, датчики, сервоприводы. Написание первых скетчей на C++.</div>
+                    <div class="meta">
+                        <span>📚 10 уроков</span>
+                        <span>⏱ 5 часов</span>
+                        <span>🏷️ Базовый</span>
+                    </div>
+                </div>
+                <div class="status">
+                    <span class="badge badge-new">Новый</span>
+                    <div class="progress-bar"><div class="fill" style="width:0%;"></div></div>
+                    <a href="/articles/arduino/01-intro.html" class="action-btn primary" style="margin-top:6px;">▶ Начать</a>
+                </div>
+            </div>
 
-            <a href="/articles/python/03-conditions.html" class="article-card" data-topic="python">
-                <span class="topic topic-python">🐍 Python</span><span class="level">Уровень 1</span>
-                <h3>Условные операторы и циклы</h3>
-                <p>if, else, elif, for, while. Управление потоком программы.</p>
-                <div class="meta"><span>📚 4 урока</span><span>⏱ 35 мин</span></div>
-            </a>
+            <!-- Курс 3: Электроника -->
+            <div class="course-item" data-topic="electronics" data-id="electronics-intro">
+                <div class="icon">🔌</div>
+                <div class="info">
+                    <h3>Основы электроники</h3>
+                    <div class="desc">Закон Ома, схемы, компоненты. Чтение принципиальных схем и пайка.</div>
+                    <div class="meta">
+                        <span>📚 6 уроков</span>
+                        <span>⏱ 3 часа</span>
+                        <span>🏷️ Базовый</span>
+                    </div>
+                </div>
+                <div class="status">
+                    <span class="badge badge-new">Новый</span>
+                    <div class="progress-bar"><div class="fill" style="width:0%;"></div></div>
+                    <a href="/articles/electronics/01-intro.html" class="action-btn primary" style="margin-top:6px;">▶ Начать</a>
+                </div>
+            </div>
 
-            <a href="/articles/python/04-functions.html" class="article-card" data-topic="python">
-                <span class="topic topic-python">🐍 Python</span><span class="level">Уровень 2</span>
-                <h3>Функции и модули</h3>
-                <p>Создание функций, аргументы, возврат значений. Импорт модулей.</p>
-                <div class="meta"><span>📚 3 урока</span><span>⏱ 30 мин</span></div>
-            </a>
+            <!-- Курс 4: БПЛА -->
+            <div class="course-item" data-topic="bpla" data-id="bpla-intro">
+                <div class="icon">✈️</div>
+                <div class="info">
+                    <h3>Введение в БПЛА</h3>
+                    <div class="desc">Устройство и управление дронами. ПИД-регуляторы, телеметрия, полётные контроллеры.</div>
+                    <div class="meta">
+                        <span>📚 12 уроков</span>
+                        <span>⏱ 6 часов</span>
+                        <span>🏷️ Средний</span>
+                    </div>
+                </div>
+                <div class="status">
+                    <span class="badge badge-locked">🔒 Требуется база</span>
+                    <div class="progress-bar"><div class="fill" style="width:0%;"></div></div>
+                    <a href="/articles/bpla/01-intro.html" class="action-btn" style="margin-top:6px;">📖 Смотреть</a>
+                </div>
+            </div>
 
-            <!-- ===== ARDUINO ===== -->
-            <a href="/articles/arduino/01-intro.html" class="article-card" data-topic="arduino">
-                <span class="topic topic-arduino">⚡ Arduino</span><span class="level">Уровень 1</span>
-                <h3>Знакомство с Arduino</h3>
-                <p>Что такое Arduino, установка IDE, первая программа — мигающий светодиод.</p>
-                <div class="meta"><span>📚 4 урока</span><span>⏱ 30 мин</span></div>
-            </a>
+            <!-- Курс 5: ПИД -->
+            <div class="course-item" data-topic="pid" data-id="pid-intro">
+                <div class="icon">🎯</div>
+                <div class="info">
+                    <h3>ПИД-регуляторы на практике</h3>
+                    <div class="desc">Теория и настройка ПИД-регулятора в симуляторе. Отладка коэффициентов.</div>
+                    <div class="meta">
+                        <span>📚 5 уроков</span>
+                        <span>⏱ 3 часа</span>
+                        <span>🏷️ Средний</span>
+                    </div>
+                </div>
+                <div class="status">
+                    <span class="badge badge-locked">🔒 Требуется база</span>
+                    <div class="progress-bar"><div class="fill" style="width:0%;"></div></div>
+                    <a href="/articles/pid/01-intro.html" class="action-btn" style="margin-top:6px;">📖 Смотреть</a>
+                </div>
+            </div>
 
-            <a href="/articles/arduino/02-blink.html" class="article-card" data-topic="arduino">
-                <span class="topic topic-arduino">⚡ Arduino</span><span class="level">Уровень 1</span>
-                <h3>Blink — первый проект</h3>
-                <p>Подключение светодиода, написание скетча, загрузка прошивки.</p>
-                <div class="meta"><span>📚 3 урока</span><span>⏱ 25 мин</span></div>
-            </a>
-
-            <a href="/articles/arduino/03-sensors.html" class="article-card" data-topic="arduino">
-                <span class="topic topic-arduino">⚡ Arduino</span><span class="level">Уровень 2</span>
-                <h3>Датчики и сенсоры</h3>
-                <p>Подключение датчиков: кнопки, потенциометры, фоторезисторы.</p>
-                <div class="meta"><span>📚 5 уроков</span><span>⏱ 40 мин</span></div>
-            </a>
-
-            <!-- ===== ЭЛЕКТРОНИКА ===== -->
-            <a href="/articles/electronics/01-ohm.html" class="article-card" data-topic="electronics">
-                <span class="topic topic-electronics">🔌 Электроника</span><span class="level">Уровень 1</span>
-                <h3>Закон Ома</h3>
-                <p>Напряжение, ток, сопротивление. Расчёты для простых цепей.</p>
-                <div class="meta"><span>📚 3 урока</span><span>⏱ 25 мин</span></div>
-            </a>
-
-            <a href="/articles/electronics/02-schematics.html" class="article-card" data-topic="electronics">
-                <span class="topic topic-electronics">🔌 Электроника</span><span class="level">Уровень 2</span>
-                <h3>Чтение принципиальных схем</h3>
-                <p>Как читать схемы, обозначения компонентов, практические примеры.</p>
-                <div class="meta"><span>📚 4 урока</span><span>⏱ 35 мин</span></div>
-            </a>
-
-            <!-- ===== БПЛА ===== -->
-            <a href="/articles/bpla/01-design.html" class="article-card" data-topic="bpla">
-                <span class="topic topic-bpla">✈️ БПЛА</span><span class="level">Уровень 2</span>
-                <h3>Устройство БПЛА</h3>
-                <p>Компоненты мультиротора: рама, двигатели, ESC, полётный контроллер.</p>
-                <div class="meta"><span>📚 5 уроков</span><span>⏱ 40 мин</span></div>
-            </a>
-
-            <a href="/articles/bpla/02-flight-controller.html" class="article-card" data-topic="bpla">
-                <span class="topic topic-bpla">✈️ БПЛА</span><span class="level">Уровень 3</span>
-                <h3>Полётный контроллер</h3>
-                <p>Архитектура VRD FC, гибридная система управления (Arduino + RPi).</p>
-                <div class="meta"><span>📚 6 уроков</span><span>⏱ 50 мин</span></div>
-            </a>
-
-            <!-- ===== ПИД ===== -->
-            <a href="/articles/pid/01-theory.html" class="article-card" data-topic="pid">
-                <span class="topic topic-pid">🎯 ПИД</span><span class="level">Уровень 3</span>
-                <h3>Теория ПИД-регулятора</h3>
-                <p>Пропорциональная, интегральная, дифференциальная составляющие.</p>
-                <div class="meta"><span>📚 4 урока</span><span>⏱ 35 мин</span></div>
-            </a>
-
-            <a href="/articles/pid/02-tuning.html" class="article-card" data-topic="pid">
-                <span class="topic topic-pid">🎯 ПИД</span><span class="level">Уровень 3</span>
-                <h3>Настройка ПИД на практике</h3>
-                <p>Методы настройки, типовые ошибки, работа с симулятором.</p>
-                <div class="meta"><span>📚 4 урока</span><span>⏱ 40 мин</span></div>
-            </a>
+            <!-- Курс 6: Программирование дронов -->
+            <div class="course-item" data-topic="drone-programming" data-id="drone-programming">
+                <div class="icon">💻</div>
+                <div class="info">
+                    <h3>Программирование дронов</h3>
+                    <div class="desc">Пиши код на Python, управляй виртуальным дроном. Взлёт, маршруты, миссии.</div>
+                    <div class="meta">
+                        <span>📚 7 уроков</span>
+                        <span>⏱ 4 часа</span>
+                        <span>🏷️ Продвинутый</span>
+                    </div>
+                </div>
+                <div class="status">
+                    <span class="badge badge-locked">🔒 Требуется база</span>
+                    <div class="progress-bar"><div class="fill" style="width:0%;"></div></div>
+                    <a href="/drone-sim.html" class="action-btn" style="margin-top:6px;">🚀 Перейти</a>
+                </div>
+            </div>
 
         </div>
+
+        <!-- Связь с инструментами -->
+        <div class="tools-section">
+            <h3>🔧 Примени знания на практике</h3>
+            <p style="color:var(--gray-light);font-size:0.9em;margin-bottom:14px;">После изучения теории переходи к инструментам и проверяй свои навыки.</p>
+            <div class="tools-grid">
+                <a href="/lab.html" class="tool-link">
+                    <span class="icon">🧪</span>
+                    <span class="name">Lab</span>
+                    <span class="desc">Интерактивные эксперименты</span>
+                </a>
+                <a href="/simulator.html" class="tool-link">
+                    <span class="icon">💻</span>
+                    <span class="name">Simulator</span>
+                    <span class="desc">Настройка ПИД-регулятора</span>
+                </a>
+                <a href="/builder.html" class="tool-link">
+                    <span class="icon">🛠️</span>
+                    <span class="name">Builder</span>
+                    <span class="desc">Проектирование БПЛА</span>
+                </a>
+                <a href="/drone-sim.html" class="tool-link">
+                    <span class="icon">✈️</span>
+                    <span class="name">Drone Sim</span>
+                    <span class="desc">Программирование дронов</span>
+                </a>
+            </div>
+        </div>
+
     </div>
 
     <!-- ======== ФУТЕР ======== -->
@@ -695,21 +898,161 @@
     </footer>
 
     <script>
-        // Предзагрузчик
+        // ================================================================
+        // ACADEMY — СПИСОК КУРСОВ, ФИЛЬТРЫ, ПРОГРЕСС
+        // ================================================================
+
+        // === ЗАГРУЗКА СОСТОЯНИЯ ИЗ localStorage ===
+        function loadProgress() {
+            try {
+                const saved = localStorage.getItem('thunderlight_academy');
+                if (saved) return JSON.parse(saved);
+            } catch {}
+            return {};
+        }
+
+        function saveProgress(data) {
+            localStorage.setItem('thunderlight_academy', JSON.stringify(data));
+        }
+
+        const progress = loadProgress();
+
+        // === ДАННЫЕ КУРСОВ ===
+        const courses = [
+            { id: 'python-intro', topic: 'python', title: 'Python для инженеров', lessons: 8, locked: false, link: '/articles/python/01-intro.html' },
+            { id: 'arduino-intro', topic: 'arduino', title: 'Arduino для начинающих', lessons: 10, locked: false, link: '/articles/arduino/01-intro.html' },
+            { id: 'electronics-intro', topic: 'electronics', title: 'Основы электроники', lessons: 6, locked: false, link: '/articles/electronics/01-intro.html' },
+            { id: 'bpla-intro', topic: 'bpla', title: 'Введение в БПЛА', lessons: 12, locked: true, link: '/articles/bpla/01-intro.html' },
+            { id: 'pid-intro', topic: 'pid', title: 'ПИД-регуляторы на практике', lessons: 5, locked: true, link: '/articles/pid/01-intro.html' },
+            { id: 'drone-programming', topic: 'drone-programming', title: 'Программирование дронов', lessons: 7, locked: true, link: '/drone-sim.html' },
+        ];
+
+        // === ОБНОВЛЕНИЕ СТАТИСТИКИ ===
+        function updateStats() {
+            let completed = 0;
+            let inProgress = 0;
+            let totalLessons = 0;
+            let doneLessons = 0;
+
+            courses.forEach(c => {
+                const p = progress[c.id] || { done: 0 };
+                const done = p.done || 0;
+                const total = c.lessons;
+                totalLessons += total;
+                doneLessons += Math.min(done, total);
+                if (done >= total) completed++;
+                else if (done > 0) inProgress++;
+            });
+
+            document.getElementById('completedCourses').textContent = completed;
+            document.getElementById('inProgressCourses').textContent = inProgress;
+            document.getElementById('totalCourses').textContent = courses.length;
+            document.getElementById('progressPercent').textContent =
+                totalLessons > 0 ? Math.round((doneLessons / totalLessons) * 100) + '%' : '0%';
+
+            // Обновляем статусы в карточках
+            document.querySelectorAll('.course-item').forEach(el => {
+                const id = el.dataset.id;
+                const c = courses.find(c => c.id === id);
+                if (!c) return;
+                const p = progress[id] || { done: 0 };
+                const done = p.done || 0;
+                const total = c.lessons;
+                const badge = el.querySelector('.badge');
+                const fill = el.querySelector('.fill');
+                const actionBtn = el.querySelector('.action-btn');
+
+                if (done >= total) {
+                    badge.textContent = '✅ Пройдено';
+                    badge.className = 'badge badge-done';
+                    if (fill) fill.style.width = '100%';
+                    if (actionBtn) {
+                        actionBtn.textContent = '🔄 Повторить';
+                        actionBtn.className = 'action-btn done-btn';
+                    }
+                } else if (done > 0) {
+                    badge.textContent = `🔄 ${done}/${total}`;
+                    badge.className = 'badge badge-progress';
+                    if (fill) fill.style.width = Math.round((done / total) * 100) + '%';
+                } else {
+                    if (c.locked) {
+                        badge.textContent = '🔒 Требуется база';
+                        badge.className = 'badge badge-locked';
+                    } else {
+                        badge.textContent = '📖 Начать';
+                        badge.className = 'badge badge-new';
+                    }
+                    if (fill) fill.style.width = '0%';
+                }
+            });
+        }
+
+        // === ФИЛЬТРАЦИЯ ===
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const courseItems = document.querySelectorAll('.course-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.dataset.filter;
+                courseItems.forEach(item => {
+                    const topic = item.dataset.topic;
+                    if (filter === 'all' || topic === filter) {
+                        item.style.display = 'grid';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // === КЛИК ПО КУРСУ (сохранение прогресса) ===
+        document.querySelectorAll('.course-item .action-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const item = btn.closest('.course-item');
+                const id = item.dataset.id;
+                const c = courses.find(c => c.id === id);
+                if (!c) return;
+
+                // Если курс заблокирован — не даём начать
+                if (c.locked) {
+                    e.preventDefault();
+                    alert('Этот курс требует базовых знаний. Пройдите начальные курсы по Python и Arduino.');
+                    return;
+                }
+
+                // Сохраняем прогресс (отмечаем первый урок как пройденный при старте)
+                if (!progress[id]) progress[id] = { done: 0 };
+                if (progress[id].done === 0) {
+                    progress[id].done = 1;
+                    saveProgress(progress);
+                    updateStats();
+                }
+                // Разрешаем переход
+                return true;
+            });
+        });
+
+        // === ИНИЦИАЛИЗАЦИЯ ===
+        updateStats();
+
+        // === ПРЕДЗАГРУЗЧИК ===
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
             }, 600);
         });
 
-        // Курсор
+        // === КУРСОР ===
         const cursorGlow = document.getElementById('cursorGlow');
         document.addEventListener('mousemove', (e) => {
             cursorGlow.style.left = e.clientX + 'px';
             cursorGlow.style.top = e.clientY + 'px';
         });
 
-        // Частицы
+        // === ЧАСТИЦЫ ===
         function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
@@ -728,12 +1071,12 @@
         }
         createParticles();
 
-        // Навбар
+        // === НАВБАР ===
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
 
-        // Мобильное меню
+        // === МОБИЛЬНОЕ МЕНЮ ===
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
         let menuOpen = false;
@@ -767,45 +1110,7 @@
             });
         });
 
-        // ===== ФИЛЬТРАЦИЯ СТАТЕЙ =====
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        const articles = document.querySelectorAll('.article-card');
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                const filter = btn.dataset.filter;
-
-                articles.forEach(article => {
-                    if (filter === 'all' || article.dataset.topic === filter) {
-                        article.style.display = 'block';
-                    } else {
-                        article.style.display = 'none';
-                    }
-                });
-            });
-        });
-
-        // ===== АНИМАЦИЯ ПОЯВЛЕНИЯ =====
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.article-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'all 0.5s ease';
-            observer.observe(el);
-        });
-
-        // Убираем якорь из URL
+        // === УБИРАЕМ ЯКОРЬ ИЗ URL ===
         if (window.location.hash) {
             window.scrollTo(0, 0);
             history.pushState("", document.title, window.location.pathname + window.location.search);
