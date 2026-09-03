@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>ThunderLight — Лаборатория БПЛА</title>
+    <meta name="description" content="Интерактивная лаборатория ThunderLight — экспериментируй с параметрами полёта и наблюдай за поведением самолёта в реальном времени.">
+    
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Yandex.Metrika -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111722204', 'ym');
+        ym(111722204, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/111722204" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            color: var(--light);
+            background: var(--darker);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Курсор */
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08), transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+
+        /* Частицы */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+
+        /* Предзагрузчик */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .preloader-logo {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: preloaderPulse 1.5s infinite;
+            display: block;
+        }
+        .preloader-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes preloaderPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Навигация */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            background: rgba(2, 6, 23, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .nav-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .nav-logo:hover { transform: scale(1.05); }
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            animation: logoGlow 2s infinite;
+        }
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.6); }
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+        .nav-links a:hover::after { width: 60%; }
+        .nav-links a:hover { color: var(--light); }
+        .nav-links a.active {
+            color: var(--light);
+            background: rgba(79, 70, 229, 0.15);
+        }
+        .nav-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            animation: downloadPulse 2s infinite;
+        }
+        .nav-download:hover {
+            transform: translateY(-2px);
+            animation: none;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        @keyframes downloadPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        }
+
+        /* Hero */
+        .hero {
+            padding: 160px 32px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            from { transform: translate(0, 0); }
+            to { transform: translate(60px, 60px); }
+        }
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: glowFloat 10s ease-in-out infinite;
+        }
+        .hero-glow-1 { background: var(--primary); top: -200px; left: -100px; }
+        .hero-glow-2 { background: var(--accent); bottom: -200px; right: -100px; animation-delay: -5s; }
+        @keyframes glowFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            background-size: 200% 200%;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero p {
+            font-size: 1.1em;
+            color: var(--gray-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Основная секция с лабораторией */
+        .lab-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 20px 32px 80px;
+        }
+        .lab-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .lab-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+        .lab-panel h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Canvas для самолёта */
+        #simCanvas {
+            width: 100%;
+            height: 400px;
+            background: radial-gradient(ellipse at center bottom, rgba(79, 70, 229, 0.05), transparent 70%);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: block;
+        }
+
+        /* Слайдеры */
+        .slider-group {
+            margin-bottom: 16px;
+        }
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: var(--gray-light);
+            margin-bottom: 4px;
+        }
+        .slider-group label span {
+            color: var(--light);
+            font-weight: 600;
+            font-family: monospace;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 4px;
+            -webkit-appearance: none;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--secondary);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        /* График */
+        #chartContainer {
+            width: 100%;
+            height: 180px;
+            position: relative;
+        }
+        #chartCanvas {
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        /* Задания */
+        .task-box {
+            background: rgba(79, 70, 229, 0.08);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 16px;
+        }
+        .task-box .task-title {
+            color: #a5b4fc;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        .task-box .task-desc {
+            color: var(--gray-light);
+            font-size: 0.9em;
+            margin: 4px 0 12px;
+        }
+        .task-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        .task-status.done {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+        .task-status.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9em;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--light);
+        }
+        .btn-outline:hover {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Секции */
+        section { padding: 60px 32px; }
+        .section-container { max-width: 1280px; margin: 0 auto; }
+
+        /* Футер */
+        .footer {
+            padding: 60px 32px 40px;
+            background: var(--darker);
+            border-top: 1px solid var(--border);
+        }
+        .footer-grid {
+            max-width: 1280px;
+            margin: 0 auto 40px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+        .footer-col h4 {
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 10px; }
+        .footer-col a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: var(--transition);
+        }
+        .footer-col a:hover { color: var(--light); }
+        .footer-brand p {
+            color: var(--gray);
+            font-size: 0.9em;
+            margin: 12px 0 20px;
+            max-width: 300px;
+        }
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .footer-bottom p { color: var(--gray); font-size: 0.8em; }
+        .footer-social {
+            display: flex;
+            gap: 12px;
+        }
+        .footer-social a {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer-social a:hover {
+            background: rgba(79, 70, 229, 0.2);
+            color: var(--light);
+            transform: translateY(-2px);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 1024px) {
+            .lab-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .nav-content { padding: 12px 20px; }
+            .hero { padding: 130px 20px 60px; }
+            .hero h1 { font-size: 2em; }
+            .lab-container { padding: 16px; }
+            .lab-panel { padding: 16px; }
+            #simCanvas { height: 280px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+            .footer { padding: 40px 20px 24px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.5em; }
+            .lab-panel h3 { font-size: 0.95em; }
+            .btn { padding: 8px 16px; font-size: 0.8em; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Курсор -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- Частицы -->
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Предзагрузчик -->
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <span class="preloader-logo">⚡ ThunderLight</span>
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
+
+    <!-- ======== НАВИГАЦИЯ ======== -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <span class="nav-logo-icon">⚡</span>
+                ThunderLight
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+                <li><a href="/lab.html" class="active">Lab</a></li>
+                <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ======== HERO ======== -->
+    <section class="hero">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-content">
+            <h1>🧪 Лаборатория <span class="hero-gradient">ThunderLight</span></h1>
+            <p>Экспериментируй с параметрами полёта, наблюдай за поведением самолёта и выполняй инженерные задания.</p>
+        </div>
+    </section>
+
+    <!-- ======== ЛАБОРАТОРИЯ ======== -->
+    <div class="lab-container">
+        <div class="lab-grid">
+            <!-- Левая панель: симуляция -->
+            <div class="lab-panel">
+                <h3>🛩️ Полётная модель</h3>
+                <canvas id="simCanvas" width="600" height="400"></canvas>
+                
+                <div style="display:flex; gap:12px; margin-top:12px; flex-wrap:wrap;">
+                    <button class="btn btn-primary" id="btnRun">▶ Запустить</button>
+                    <button class="btn btn-outline" id="btnReset">⟳ Сброс</button>
+                    <button class="btn btn-outline" id="btnPause">⏸ Пауза</button>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; font-size:0.85em; color:var(--gray-light);">
+                    <div>Высота: <span id="altitudeDisplay" style="color:var(--light);font-weight:600;">0 м</span></div>
+                    <div>Скорость: <span id="speedDisplay" style="color:var(--light);font-weight:600;">0 м/с</span></div>
+                    <div>Угол тангажа: <span id="pitchDisplay" style="color:var(--light);font-weight:600;">0°</span></div>
+                    <div>Подъёмная сила: <span id="liftDisplay" style="color:var(--light);font-weight:600;">0 Н</span></div>
+                </div>
+            </div>
+
+            <!-- Правая панель: управление -->
+            <div class="lab-panel">
+                <h3>🎛️ Параметры управления</h3>
+                
+                <div class="slider-group">
+                    <label>Скорость <span id="speedVal">18 м/с</span></label>
+                    <input type="range" id="speedSlider" min="5" max="40" value="18" step="0.5">
+                </div>
+                <div class="slider-group">
+                    <label>Угол атаки <span id="aoaVal">4°</span></label>
+                    <input type="range" id="aoaSlider" min="-5" max="20" value="4" step="0.5">
+                </div>
+                <div class="slider-group">
+                    <label>Масса <span id="massVal">850 г</span></label>
+                    <input type="range" id="massSlider" min="300" max="1500" value="850" step="10">
+                </div>
+                <div class="slider-group">
+                    <label>Центр тяжести <span id="cgVal">32%</span></label>
+                    <input type="range" id="cgSlider" min="20" max="45" value="32" step="0.5">
+                </div>
+
+                <!-- График -->
+                <div style="margin-top:16px;">
+                    <div style="display:flex;justify-content:space-between;font-size:0.75em;color:var(--gray);">
+                        <span>Высота</span>
+                        <span>Время</span>
+                    </div>
+                    <div id="chartContainer">
+                        <canvas id="chartCanvas" width="500" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ======== ЗАДАНИЯ ======== -->
+        <div style="margin-top:24px;">
+            <div class="lab-panel" style="margin-bottom:16px;">
+                <h3>📋 Лабораторные задания</h3>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px;">
+                    <div class="task-box">
+                        <div class="task-title">Задание №1</div>
+                        <div class="task-desc">Найди устойчивую конфигурацию: подбери скорость и угол атаки так, чтобы высота оставалась постоянной.</div>
+                        <span class="task-status pending" id="task1Status">⏳ Не выполнено</span>
+                        <button class="btn btn-outline" style="margin-top:10px;padding:4px 16px;font-size:0.8em;" onclick="checkTask1()">Проверить</button>
+                    </div>
+                    <div class="task-box">
+                        <div class="task-title">Задание №2</div>
+                        <div class="task-desc">Добейся максимальной высоты при скорости 15 м/с. Измени угол атаки и массу.</div>
+                        <span class="task-status pending" id="task2Status">⏳ Не выполнено</span>
+                        <button class="btn btn-outline" style="margin-top:10px;padding:4px 16px;font-size:0.8em;" onclick="checkTask2()">Проверить</button>
+                    </div>
+                    <div class="task-box">
+                        <div class="task-title">Задание №3</div>
+                        <div class="task-desc">Сбалансируй центровку: измени положение ЦТ так, чтобы угол тангажа не превышал 5°.</div>
+                        <span class="task-status pending" id="task3Status">⏳ Не выполнено</span>
+                        <button class="btn btn-outline" style="margin-top:10px;padding:4px 16px;font-size:0.8em;" onclick="checkTask3()">Проверить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
+                <button class="btn btn-success" onclick="resetAllTasks()">🔄 Сбросить все задания</button>
+                <button class="btn btn-outline" onclick="exportData()">📊 Экспорт данных</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======== ФУТЕР ======== -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">⚡</span>
+                    ThunderLight
+                </a>
+                <p>Образовательная экосистема БПЛА. Экспериментируй, учись, создавай.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Экосистема</h4>
+                <ul>
+                    <li><a href="/articles.html">Academy</a></li>
+                    <li><a href="/lab.html">Lab</a></li>
+                    <li><a href="#" onclick="alert('В разработке'); return false;">Simulator</a></li>
+                    <li><a href="#" onclick="alert('В разработке'); return false;">Builder</a></li>
+                    <li><a href="/article.html?file=vrd-flight-controller.md">VRD FC</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Документы</h4>
+                <ul>
+                    <li><a href="/privacy.html">Конфиденциальность</a></li>
+                    <li><a href="/terms.html">Условия использования</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><a href="https://t.me/thunderlight_online" target="_blank">Telegram</a></li>
+                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderLight/" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
+            <div class="footer-social">
+                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
+                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
+                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ======== СКРИПТЫ ======== -->
+    <script>
+        // ========================
+        // СИМУЛЯЦИЯ ПОЛЁТА
+        // ========================
+
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const chartCanvas = document.getElementById('chartCanvas');
+        const chartCtx = chartCanvas.getContext('2d');
+
+        // Параметры
+        let params = {
+            speed: 18,
+            aoa: 4,
+            mass: 850,
+            cg: 32,
+        };
+
+        let state = {
+            altitude: 0,
+            pitch: 0,
+            verticalSpeed: 0,
+            horizontalSpeed: 18,
+            time: 0,
+            running: false,
+            paused: false,
+            history: [],
+            lift: 0,
+            weight: 0,
+            drag: 0,
+            thrust: 0,
+        };
+
+        // Константы
+        const G = 9.81;
+        const RHO = 1.225;
+        const WING_AREA = 0.5;
+        const MAX_HISTORY = 100;
+
+        // Элементы отображения
+        const speedDisplay = document.getElementById('speedDisplay');
+        const altitudeDisplay = document.getElementById('altitudeDisplay');
+        const pitchDisplay = document.getElementById('pitchDisplay');
+        const liftDisplay = document.getElementById('liftDisplay');
+
+        // ========================
+        // РАСЧЁТ ФИЗИКИ
+        // ========================
+
+        function calculatePhysics(dt) {
+            const speed = params.speed;
+            const aoaRad = params.aoa * Math.PI / 180;
+            const mass = params.mass / 1000; // в кг
+            const cg = params.cg / 100;
+
+            // Подъёмная сила: L = 0.5 * rho * v^2 * S * Cl
+            // Cl ≈ 2 * pi * alpha (для малых углов)
+            const cl = 2 * Math.PI * aoaRad;
+            const lift = 0.5 * RHO * speed * speed * WING_AREA * cl;
+            state.lift = lift;
+
+            // Вес
+            const weight = mass * G;
+            state.weight = weight;
+
+            // Сопротивление: D = 0.5 * rho * v^2 * S * Cd
+            const cd = 0.05 + 0.1 * Math.abs(aoaRad);
+            const drag = 0.5 * RHO * speed * speed * WING_AREA * cd;
+            state.drag = drag;
+
+            // Тяга (упрощённо, чтобы поддерживать скорость)
+            const thrust = drag + 0.5 * mass * G * 0.1;
+            state.thrust = thrust;
+
+            // Вертикальное ускорение
+            const liftForce = lift - weight;
+            const verticalAccel = liftForce / mass;
+
+            // Обновление состояния
+            state.verticalSpeed += verticalAccel * dt;
+            state.altitude += state.verticalSpeed * dt;
+            if (state.altitude < 0) {
+                state.altitude = 0;
+                state.verticalSpeed = 0;
+            }
+
+            // Угол тангажа (упрощённо, зависит от угла атаки и центровки)
+            const pitchTarget = params.aoa * 0.8 + (cg - 0.32) * 20;
+            state.pitch += (pitchTarget - state.pitch) * dt * 2;
+
+            // Горизонтальная скорость (поддерживается тягой)
+            state.horizontalSpeed = speed;
+
+            // Сохраняем историю для графика
+            state.history.push({
+                altitude: state.altitude,
+                time: state.time,
+                pitch: state.pitch,
+                lift: lift,
+            });
+            if (state.history.length > MAX_HISTORY) {
+                state.history.shift();
+            }
+
+            state.time += dt;
+        }
+
+        // ========================
+        // ОТРИСОВКА
+        // ========================
+
+        function draw() {
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Очистка
+            ctx.clearRect(0, 0, w, h);
+
+            // Небо
+            const grad = ctx.createLinearGradient(0, 0, 0, h);
+            grad.addColorStop(0, '#0a0e27');
+            grad.addColorStop(0.6, '#1a1a3e');
+            grad.addColorStop(1, '#2d1b4e');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Горизонт
+            const horizonY = h * 0.7 - state.altitude * 0.5;
+            ctx.fillStyle = 'rgba(34, 197, 94, 0.15)';
+            ctx.fillRect(0, horizonY, w, h - horizonY);
+
+            // Сетка
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < w; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, h);
+                ctx.stroke();
+            }
+            for (let i = 0; i < h; i += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(w, i);
+                ctx.stroke();
+            }
+
+            // === РИСУЕМ САМОЛЁТ ===
+            const cx = w / 2;
+            const cy = horizonY - 20;
+
+            // Тени
+            ctx.shadowColor = 'rgba(79, 70, 229, 0.3)';
+            ctx.shadowBlur = 30;
+
+            // Трансформация (поворот)
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(state.pitch * Math.PI / 180);
+
+            // Фюзеляж
+            ctx.shadowColor = 'rgba(79, 70, 229, 0.2)';
+            ctx.shadowBlur = 20;
+
+            // Корпус
+            ctx.beginPath();
+            ctx.moveTo(50, 0);
+            ctx.quadraticCurveTo(70, -8, 60, -12);
+            ctx.lineTo(-30, -8);
+            ctx.lineTo(-40, 0);
+            ctx.lineTo(-30, 8);
+            ctx.lineTo(60, 12);
+            ctx.quadraticCurveTo(70, 8, 50, 0);
+            ctx.fillStyle = 'rgba(100, 116, 139, 0.8)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Крыло
+            ctx.shadowColor = 'rgba(99, 102, 241, 0.3)';
+            ctx.shadowBlur = 25;
+            ctx.fillStyle = 'rgba(79, 70, 229, 0.6)';
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.lineWidth = 1;
+
+            ctx.beginPath();
+            ctx.moveTo(10, -4);
+            ctx.quadraticCurveTo(0, -35, -20, -30);
+            ctx.lineTo(-25, -25);
+            ctx.lineTo(-5, -6);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(10, 4);
+            ctx.quadraticCurveTo(0, 35, -20, 30);
+            ctx.lineTo(-25, 25);
+            ctx.lineTo(-5, 6);
+            ctx.fill();
+            ctx.stroke();
+
+            // Хвост
+            ctx.shadowBlur = 15;
+            ctx.fillStyle = 'rgba(100, 116, 139, 0.6)';
+            ctx.beginPath();
+            ctx.moveTo(-30, -2);
+            ctx.lineTo(-45, -15);
+            ctx.lineTo(-42, -12);
+            ctx.lineTo(-32, -3);
+            ctx.fill();
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(-30, 2);
+            ctx.lineTo(-45, 15);
+            ctx.lineTo(-42, 12);
+            ctx.lineTo(-32, 3);
+            ctx.fill();
+            ctx.stroke();
+
+            // Кабина
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = 'rgba(6, 182, 212, 0.3)';
+            ctx.strokeStyle = 'rgba(6, 182, 212, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(30, -2, 12, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+
+            // Стрелка направления (вектор скорости)
+            ctx.restore();
+
+            // Вектор подъёмной силы
+            const liftScale = state.lift / 50;
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = 'rgba(34, 197, 94, 0.6)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx, cy - 40 - liftScale * 1.5);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Стрелка веса
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx, cy + 40);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Информация на канвасе
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.font = '10px monospace';
+            ctx.fillText(`Lift: ${state.lift.toFixed(1)} N`, 10, 20);
+            ctx.fillText(`Weight: ${state.weight.toFixed(1)} N`, 10, 34);
+            ctx.fillText(`Thrust: ${state.thrust.toFixed(1)} N`, 10, 48);
+            ctx.fillText(`Drag: ${state.drag.toFixed(1)} N`, 10, 62);
+
+            // Обновление цифровых индикаторов
+            altitudeDisplay.textContent = state.altitude.toFixed(1) + ' м';
+            speedDisplay.textContent = state.horizontalSpeed.toFixed(1) + ' м/с';
+            pitchDisplay.textContent = state.pitch.toFixed(1) + '°';
+            liftDisplay.textContent = state.lift.toFixed(1) + ' Н';
+        }
+
+        // ========================
+        // ГРАФИК
+        // ========================
+
+        function drawChart() {
+            const w = chartCanvas.width;
+            const h = chartCanvas.height;
+            chartCtx.clearRect(0, 0, w, h);
+
+            if (state.history.length < 2) return;
+
+            const data = state.history;
+            const maxAlt = Math.max(10, ...data.map(d => d.altitude)) * 1.2;
+
+            chartCtx.strokeStyle = 'rgba(79, 70, 229, 0.3)';
+            chartCtx.lineWidth = 0.5;
+            chartCtx.beginPath();
+            chartCtx.moveTo(0, h);
+            chartCtx.lineTo(w, h);
+            chartCtx.stroke();
+
+            // Линия высоты
+            chartCtx.strokeStyle = 'rgba(34, 197, 94, 0.8)';
+            chartCtx.lineWidth = 2;
+            chartCtx.beginPath();
+            for (let i = 0; i < data.length; i++) {
+                const x = (i / data.length) * w;
+                const y = h - (data[i].altitude / maxAlt) * h;
+                if (i === 0) chartCtx.moveTo(x, y);
+                else chartCtx.lineTo(x, y);
+            }
+            chartCtx.stroke();
+
+            // Точка в конце
+            const last = data[data.length - 1];
+            const lastX = w;
+            const lastY = h - (last.altitude / maxAlt) * h;
+            chartCtx.fillStyle = 'rgba(34, 197, 94, 0.8)';
+            chartCtx.beginPath();
+            chartCtx.arc(lastX - 4, lastY, 4, 0, Math.PI * 2);
+            chartCtx.fill();
+
+            // Подписи
+            chartCtx.fillStyle = 'rgba(255,255,255,0.2)';
+            chartCtx.font = '8px monospace';
+            chartCtx.fillText(maxAlt.toFixed(0) + ' м', 4, 10);
+            chartCtx.fillText('0 м', 4, h - 4);
+        }
+
+        // ========================
+        // ЦИКЛ СИМУЛЯЦИИ
+        // ========================
+
+        let lastTime = 0;
+        let dt = 0.016;
+
+        function loop(timestamp) {
+            if (lastTime === 0) lastTime = timestamp;
+            const delta = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+
+            if (state.running && !state.paused) {
+                calculatePhysics(delta);
+                draw();
+                drawChart();
+                checkTasksAuto();
+            } else if (!state.running) {
+                // Начальное состояние
+                state.altitude = 0;
+                state.verticalSpeed = 0;
+                state.horizontalSpeed = params.speed;
+                state.pitch = 0;
+                state.history = [];
+                draw();
+                drawChart();
+            }
+
+            requestAnimationFrame(loop);
+        }
+
+        // ========================
+        // УПРАВЛЕНИЕ
+        // ========================
+
+        document.getElementById('btnRun').addEventListener('click', () => {
+            if (!state.running) {
+                state.running = true;
+                state.paused = false;
+                document.getElementById('btnRun').textContent = '▶ Запущено';
+                document.getElementById('btnRun').style.opacity = '0.7';
+                if (state.history.length === 0) {
+                    state.altitude = 0;
+                    state.verticalSpeed = 0;
+                    state.horizontalSpeed = params.speed;
+                    state.pitch = 0;
+                }
+            } else if (state.paused) {
+                state.paused = false;
+                document.getElementById('btnPause').textContent = '⏸ Пауза';
+            }
+        });
+
+        document.getElementById('btnPause').addEventListener('click', () => {
+            if (state.running) {
+                state.paused = !state.paused;
+                document.getElementById('btnPause').textContent = state.paused ? '▶ Продолжить' : '⏸ Пауза';
+            }
+        });
+
+        document.getElementById('btnReset').addEventListener('click', () => {
+            state.running = false;
+            state.paused = false;
+            state.altitude = 0;
+            state.verticalSpeed = 0;
+            state.horizontalSpeed = params.speed;
+            state.pitch = 0;
+            state.history = [];
+            state.time = 0;
+            document.getElementById('btnRun').textContent = '▶ Запустить';
+            document.getElementById('btnRun').style.opacity = '1';
+            document.getElementById('btnPause').textContent = '⏸ Пауза';
+            draw();
+            drawChart();
+            updateDisplays();
+        });
+
+        // Слайдеры
+        document.getElementById('speedSlider').addEventListener('input', function() {
+            params.speed = parseFloat(this.value);
+            document.getElementById('speedVal').textContent = params.speed + ' м/с';
+            if (!state.running) {
+                state.horizontalSpeed = params.speed;
+                draw();
+            }
+        });
+
+        document.getElementById('aoaSlider').addEventListener('input', function() {
+            params.aoa = parseFloat(this.value);
+            document.getElementById('aoaVal').textContent = params.aoa + '°';
+            if (!state.running) draw();
+        });
+
+        document.getElementById('massSlider').addEventListener('input', function() {
+            params.mass = parseFloat(this.value);
+            document.getElementById('massVal').textContent = params.mass + ' г';
+            if (!state.running) draw();
+        });
+
+        document.getElementById('cgSlider').addEventListener('input', function() {
+            params.cg = parseFloat(this.value);
+            document.getElementById('cgVal').textContent = params.cg + '%';
+            if (!state.running) draw();
+        });
+
+        function updateDisplays() {
+            altitudeDisplay.textContent = state.altitude.toFixed(1) + ' м';
+            speedDisplay.textContent = state.horizontalSpeed.toFixed(1) + ' м/с';
+            pitchDisplay.textContent = state.pitch.toFixed(1) + '°';
+            liftDisplay.textContent = state.lift.toFixed(1) + ' Н';
+        }
+
+        // ========================
+        // ЗАДАНИЯ
+        // ========================
+
+        let tasks = { task1: false, task2: false, task3: false };
+
+        function checkTask1() {
+            const alt = state.altitude;
+            const speed = params.speed;
+            const aoa = params.aoa;
+            // Устойчивость: высота > 5 м, скорость > 10, угол атаки в диапазоне
+            if (alt > 5 && speed > 10 && speed < 30 && aoa > 0 && aoa < 12) {
+                tasks.task1 = true;
+                document.getElementById('task1Status').textContent = '✅ Выполнено!';
+                document.getElementById('task1Status').className = 'task-status done';
+            } else {
+                alert('❌ Не выполнено. Попробуй: скорость 15-25 м/с, угол атаки 2-8°, набери высоту > 5 м.');
+            }
+        }
+
+        function checkTask2() {
+            const alt = state.altitude;
+            const speed = params.speed;
+            const mass = params.mass;
+            if (alt > 15 && speed >= 14 && speed <= 16 && mass > 400 && mass < 1200) {
+                tasks.task2 = true;
+                document.getElementById('task2Status').textContent = '✅ Выполнено!';
+                document.getElementById('task2Status').className = 'task-status done';
+            } else {
+                alert('❌ Не выполнено. Установи скорость 15 м/с, набери высоту > 15 м.');
+            }
+        }
+
+        function checkTask3() {
+            const pitch = state.pitch;
+            const cg = params.cg;
+            if (Math.abs(pitch) < 5 && cg > 28 && cg < 38) {
+                tasks.task3 = true;
+                document.getElementById('task3Status').textContent = '✅ Выполнено!';
+                document.getElementById('task3Status').className = 'task-status done';
+            } else {
+                alert('❌ Не выполнено. Настрой центровку 28-38% и добейся угла тангажа < 5°.');
+            }
+        }
+
+        function checkTasksAuto() {
+            const alt = state.altitude;
+            const speed = params.speed;
+            const aoa = params.aoa;
+            const mass = params.mass;
+            const pitch = state.pitch;
+            const cg = params.cg;
+
+            if (!tasks.task1 && alt > 5 && speed > 10 && speed < 30 && aoa > 0 && aoa < 12) {
+                tasks.task1 = true;
+                document.getElementById('task1Status').textContent = '✅ Выполнено!';
+                document.getElementById('task1Status').className = 'task-status done';
+            }
+            if (!tasks.task2 && alt > 15 && speed >= 14 && speed <= 16 && mass > 400 && mass < 1200) {
+                tasks.task2 = true;
+                document.getElementById('task2Status').textContent = '✅ Выполнено!';
+                document.getElementById('task2Status').className = 'task-status done';
+            }
+            if (!tasks.task3 && Math.abs(pitch) < 5 && cg > 28 && cg < 38) {
+                tasks.task3 = true;
+                document.getElementById('task3Status').textContent = '✅ Выполнено!';
+                document.getElementById('task3Status').className = 'task-status done';
+            }
+        }
+
+        function resetAllTasks() {
+            tasks = { task1: false, task2: false, task3: false };
+            document.querySelectorAll('.task-status').forEach(el => {
+                el.textContent = '⏳ Не выполнено';
+                el.className = 'task-status pending';
+            });
+            document.getElementById('btnReset').click();
+        }
+
+        function exportData() {
+            if (state.history.length === 0) {
+                alert('Нет данных для экспорта. Запусти симуляцию.');
+                return;
+            }
+            let csv = 'Время,Высота,Скорость,Угол тангажа,Подъёмная сила\n';
+            state.history.forEach(d => {
+                csv += `${d.time.toFixed(2)},${d.altitude.toFixed(2)},${params.speed.toFixed(2)},${d.pitch.toFixed(2)},${d.lift.toFixed(2)}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'flight_data.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ========================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ========================
+
+        // Предзагрузчик
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 600);
+        });
+
+        // Курсор
+        const cursorGlow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        // Частицы
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                const size = Math.random() * 3 + 1;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // Навбар
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Мобильное меню
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        let menuOpen = false;
+
+        mobileMenuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
+                navLinks.style.padding = '20px 32px';
+                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+                mobileMenuBtn.textContent = '✕';
+            } else {
+                navLinks.style.display = 'none';
+                mobileMenuBtn.textContent = '☰';
+            }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (menuOpen) {
+                    menuOpen = false;
+                    navLinks.style.display = 'none';
+                    mobileMenuBtn.textContent = '☰';
+                }
+            });
+        });
+
+        // Запуск цикла
+        requestAnimationFrame(loop);
+
+        // Убираем якорь из URL
+        if (window.location.hash) {
+            window.scrollTo(0, 0);
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+    </script>
+
+</body>
+</html>
