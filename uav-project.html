@@ -3,31 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>ThunderLight — Образовательная экосистема БПЛА</title>
-    <meta name="description" content="Образовательная экосистема БПЛА ThunderLight — от цифровой теории к реальному полёту. Academy, Lab, Simulator, Builder, VRD FC и Real UAV.">
-    
+    <meta name="description" content="ThunderLight — образовательная экосистема для изучения БПЛА, программирования и инженерии.">
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Yandex.Metrika -->
-    <script type="text/javascript">
-        (function(m,e,t,r,i,k,a){
-            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111722204', 'ym');
-        ym(111722204, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/111722204" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 
     <style>
         :root {
             --primary: #4f46e5;
-            --primary-dark: #3730a3;
             --secondary: #7c3aed;
             --accent: #06b6d4;
             --dark: #0f172a;
@@ -40,10 +24,8 @@
             --warning: #f59e0b;
             --danger: #ef4444;
             --radius: 16px;
-            --radius-sm: 8px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
@@ -54,8 +36,6 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
-
-        /* Курсор-эффект */
         .cursor-glow {
             position: fixed;
             width: 300px;
@@ -67,8 +47,6 @@
             transform: translate(-50%, -50%);
             transition: opacity 0.3s;
         }
-
-        /* Частицы */
         .particles-container {
             position: fixed;
             top: 0;
@@ -90,8 +68,6 @@
             90% { opacity: 0.5; }
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
-
-        /* Предзагрузчик */
         .preloader {
             position: fixed;
             top: 0;
@@ -130,7 +106,6 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Навигация — полностью скопирована с главной */
         .navbar {
             position: fixed;
             top: 0;
@@ -237,15 +212,13 @@
             transition: var(--transition);
         }
         .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
-
         @keyframes downloadPulse {
             0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
             50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
         }
 
-        /* Hero — адаптирован под проект */
         .hero {
-            padding: 180px 32px 120px;
+            padding: 180px 32px 100px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -284,32 +257,6 @@
             66% { transform: translate(-20px, 20px) scale(0.9); }
         }
         .hero-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
-        .hero h1 {
-            font-size: 3.5em;
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            letter-spacing: -2px;
-        }
-        .hero-gradient {
-            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 5s ease infinite;
-            background-size: 200% 200%;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .hero p {
-            font-size: 1.2em;
-            color: var(--gray-light);
-            max-width: 700px;
-            margin: 0 auto 30px;
-        }
         .hero-badge {
             display: inline-flex;
             align-items: center;
@@ -333,9 +280,82 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.5; transform: scale(1.5); }
         }
+        .hero h1 {
+            font-size: 3.8em;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -2px;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            background-size: 200% 200%;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero p {
+            font-size: 1.2em;
+            color: var(--gray-light);
+            max-width: 650px;
+            margin: 0 auto 40px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
 
-        /* Секции */
-        section { padding: 100px 32px; }
+        .btn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1em;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 4px 24px rgba(79, 70, 229, 0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(79, 70, 229, 0.6);
+        }
+        .btn-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 24px rgba(16, 185, 129, 0.4);
+        }
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.6);
+        }
+        .btn-outline {
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            color: var(--light);
+            background: transparent;
+        }
+        .btn-outline:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        section { padding: 80px 32px; }
         .section-container { max-width: 1280px; margin: 0 auto; }
         .section-header { text-align: center; margin-bottom: 60px; }
         .section-label {
@@ -365,144 +385,143 @@
             margin: 0 auto;
         }
 
-        /* Карточки для компонентов экосистемы */
-        .eco-cards {
+        .course-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 24px;
         }
-        .eco-card {
+        .course-card {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 32px 28px;
+            padding: 28px 24px;
             transition: var(--transition);
-            text-align: center;
             text-decoration: none;
             color: inherit;
             position: relative;
             overflow: hidden;
-            cursor: pointer;
         }
-        .eco-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(79, 70, 229, 0.08), transparent 200px);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        .eco-card:hover::after { opacity: 1; }
-        .eco-card:hover {
+        .course-card:hover {
             border-color: rgba(79, 70, 229, 0.3);
-            transform: translateY(-6px);
+            transform: translateY(-4px);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
-        .eco-card-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 16px;
-            background: rgba(79, 70, 229, 0.15);
-            border-radius: 16px;
+        .course-card .icon { font-size: 2.2em; display: block; margin-bottom: 12px; }
+        .course-card h3 { font-size: 1.2em; font-weight: 700; margin-bottom: 8px; }
+        .course-card p { color: var(--gray-light); font-size: 0.9em; line-height: 1.6; }
+        .course-card .meta {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2em;
-            transition: var(--transition);
+            gap: 12px;
+            margin-top: 12px;
+            font-size: 0.75em;
+            color: var(--gray);
+            flex-wrap: wrap;
         }
-        .eco-card:hover .eco-card-icon {
-            transform: scale(1.1) rotate(-5deg);
-            background: rgba(79, 70, 229, 0.25);
+        .course-card .meta span { background: rgba(255,255,255,0.05); padding: 2px 10px; border-radius: 20px; }
+        .course-card .progress {
+            margin-top: 12px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
         }
-        .eco-card h3 {
-            font-size: 1.3em;
-            font-weight: 700;
-            margin-bottom: 8px;
+        .course-card .progress .bar {
+            height: 100%;
+            border-radius: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.6s ease;
+            width: 0%;
         }
-        .eco-card p {
-            color: var(--gray-light);
-            font-size: 0.95em;
-            line-height: 1.6;
+        .course-card .badge-new {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.6em;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .course-card .badge-done {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--success);
+            color: white;
+            font-size: 0.6em;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
         }
 
-        /* Цикл обучения */
-        .cycle-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            padding: 30px 20px;
+        .ecosystem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .eco-link {
             background: rgba(15, 23, 42, 0.4);
             border: 1px solid var(--border);
-            border-radius: var(--radius);
-            margin: 20px 0;
-        }
-        .cycle-step {
-            text-align: center;
-            padding: 12px 16px;
-            min-width: 80px;
-            background: rgba(79, 70, 229, 0.08);
             border-radius: 12px;
-            border: 1px solid rgba(79, 70, 229, 0.15);
+            padding: 20px 16px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--light);
             transition: var(--transition);
         }
-        .cycle-step:hover {
-            background: rgba(79, 70, 229, 0.15);
-            transform: scale(1.05);
+        .eco-link:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: translateY(-3px);
         }
-        .cycle-step .icon { font-size: 1.8em; display: block; margin-bottom: 4px; }
-        .cycle-step .label { font-size: 0.8em; color: var(--gray-light); font-weight: 500; }
-        .cycle-arrow { font-size: 1.5em; color: var(--gray); }
+        .eco-link .icon { font-size: 2em; display: block; margin-bottom: 6px; }
+        .eco-link .name { font-size: 0.85em; font-weight: 600; }
+        .eco-link .desc { font-size: 0.65em; color: var(--gray-light); }
 
-        /* Статистика */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 24px;
-            max-width: 900px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            max-width: 800px;
             margin: 0 auto;
         }
         .stat-item {
             text-align: center;
             background: rgba(15, 23, 42, 0.4);
             border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px 16px;
+            border-radius: 12px;
+            padding: 20px 16px;
         }
-        .stat-number {
-            font-size: 2.8em;
+        .stat-item .number {
+            font-size: 2.5em;
             font-weight: 900;
             background: linear-gradient(135deg, #818cf8, #c084fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            line-height: 1;
         }
-        .stat-label { color: var(--gray-light); font-size: 0.9em; margin-top: 8px; }
+        .stat-item .label { color: var(--gray-light); font-size: 0.85em; }
 
-        /* Футер */
         .footer {
-            padding: 80px 32px 40px;
+            padding: 60px 32px 40px;
             background: var(--darker);
             border-top: 1px solid var(--border);
         }
         .footer-grid {
             max-width: 1280px;
-            margin: 0 auto 60px;
+            margin: 0 auto 40px;
             display: grid;
             grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 48px;
+            gap: 40px;
         }
         .footer-col h4 {
-            font-size: 0.9em;
+            font-size: 0.85em;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             color: var(--gray);
-            margin-bottom: 24px;
+            margin-bottom: 16px;
         }
         .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li { margin-bottom: 8px; }
         .footer-col a {
             color: var(--gray-light);
             text-decoration: none;
@@ -513,29 +532,29 @@
         .footer-brand p {
             color: var(--gray);
             font-size: 0.9em;
-            margin: 16px 0 24px;
+            margin: 12px 0 20px;
             max-width: 300px;
         }
         .footer-bottom {
             max-width: 1280px;
             margin: 0 auto;
-            padding-top: 32px;
+            padding-top: 24px;
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 12px;
         }
-        .footer-bottom p { color: var(--gray); font-size: 0.85em; }
+        .footer-bottom p { color: var(--gray); font-size: 0.8em; }
         .footer-social {
             display: flex;
-            gap: 16px;
+            gap: 12px;
         }
         .footer-social a {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
             background: rgba(255, 255, 255, 0.05);
             display: flex;
             align-items: center;
@@ -547,10 +566,9 @@
         .footer-social a:hover {
             background: rgba(79, 70, 229, 0.2);
             color: var(--light);
-            transform: translateY(-3px);
+            transform: translateY(-2px);
         }
 
-        /* Адаптивность */
         @media (max-width: 1024px) {
             .footer-grid { grid-template-columns: 1fr 1fr; }
         }
@@ -558,40 +576,31 @@
             .nav-links { display: none; }
             .mobile-menu-btn { display: block; }
             .nav-content { padding: 12px 20px; }
-            .hero { padding: 140px 20px 80px; }
+            .hero { padding: 140px 20px 60px; }
             .hero h1 { font-size: 2.2em; }
             .hero p { font-size: 1em; }
             section { padding: 60px 20px; }
             .section-title { font-size: 2em; }
-            .eco-cards { grid-template-columns: 1fr; }
-            .cycle-container { gap: 8px; }
-            .cycle-step { min-width: 60px; padding: 8px 12px; }
-            .cycle-step .icon { font-size: 1.3em; }
-            .cycle-arrow { font-size: 1em; }
-            .footer-grid { grid-template-columns: 1fr; gap: 32px; }
-            .footer { padding: 40px 20px 30px; }
-            .footer-bottom { flex-direction: column; text-align: center; }
+            .course-grid { grid-template-columns: 1fr; }
+            .ecosystem-grid { grid-template-columns: 1fr 1fr; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
-            .stat-number { font-size: 2em; }
+            .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+            .footer { padding: 40px 20px 24px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
         }
         @media (max-width: 480px) {
             .hero h1 { font-size: 1.6em; }
-            .hero { padding: 120px 16px 60px; }
-            .section-title { font-size: 1.5em; }
-            .cycle-step .label { font-size: 0.65em; }
-            .stat-number { font-size: 1.6em; }
+            .hero-buttons .btn { width: 100%; justify-content: center; }
+            .ecosystem-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Курсор -->
     <div class="cursor-glow" id="cursorGlow"></div>
-
-    <!-- Частицы -->
     <div class="particles-container" id="particles"></div>
 
-    <!-- Предзагрузчик -->
     <div class="preloader" id="preloader">
         <div class="preloader-content">
             <span class="preloader-logo">⚡ ThunderLight</span>
@@ -599,7 +608,6 @@
         </div>
     </div>
 
-    <!-- ======== НАВИГАЦИЯ ======== -->
     <nav class="navbar" id="navbar">
         <div class="nav-content">
             <a href="/" class="nav-logo">
@@ -608,11 +616,13 @@
             </a>
             <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
             <ul class="nav-links" id="navLinks">
-                <li><a href="/">Главная</a></li>
-                <li><a href="/projects.html">Проекты</a></li>
-                <li><a href="/articles.html">Статьи</a></li>
-                <li><a href="/uav-project.html" class="active">БПЛА</a></li>
+                <li><a href="/" class="active">Главная</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
                 <li><a href="/lab.html">Lab</a></li>
+                <li><a href="/simulator.html">Simulator</a></li>
+                <li><a href="/builder.html">Builder</a></li>
+                <li><a href="/docs.html">Документация</a></li>
+                <li><a href="/drone-sim.html">Drone Sim</a></li>
                 <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
             </ul>
         </div>
@@ -626,176 +636,197 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <span class="hero-badge-dot"></span>
-                Образовательная экосистема
+                Образовательная экосистема БПЛА
             </div>
-            <h1>Образовательная экосистема<br><span class="hero-gradient">ThunderLight БПЛА</span></h1>
-            <p>От цифровой теории к реальному полёту. Узнай, как работает управление, запрограммируй алгоритм и проверь его на физической модели.</p>
+            <h1>Изучай <span class="hero-gradient">инженерию и программирование</span> через БПЛА</h1>
+            <p>ThunderLight — это открытая образовательная среда, где ты можешь изучить основы Python, Arduino, схемотехники и управления БПЛА.</p>
+            <div class="hero-buttons">
+                <a href="#courses" class="btn btn-primary">🎓 Начать обучение</a>
+                <a href="/uav-project.html" class="btn btn-outline">🚀 Перейти к БПЛА</a>
+            </div>
         </div>
     </section>
 
     <!-- ======== СТАТИСТИКА ======== -->
     <section style="padding: 0 32px 60px;">
         <div class="stats-grid">
-            <div class="stat-item">
-                <div class="stat-number">6</div>
-                <div class="stat-label">Компонентов экосистемы</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">2</div>
-                <div class="stat-label">Уровня управления (Arduino + RPi)</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">0.35с</div>
-                <div class="stat-label">Время реакции системы</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">1.2°</div>
-                <div class="stat-label">Точность стабилизации</div>
-            </div>
+            <div class="stat-item"><div class="number">6</div><div class="label">Компонентов экосистемы</div></div>
+            <div class="stat-item"><div class="number">4</div><div class="label">Курса для начинающих</div></div>
+            <div class="stat-item"><div class="number">12+</div><div class="label">Лабораторных работ</div></div>
+            <div class="stat-item"><div class="number">100%</div><div class="label">Открытый код</div></div>
         </div>
     </section>
 
-    <!-- ======== ЦИКЛ ОБУЧЕНИЯ ======== -->
-    <section id="cycle">
+    <!-- ======== КУРСЫ ======== -->
+    <section id="courses">
         <div class="section-container">
             <div class="section-header">
-                <span class="section-label">🔄 Образовательный цикл</span>
-                <h2 class="section-title">Как работает экосистема</h2>
-                <p class="section-subtitle">Пользователь проходит полный цикл: от изучения теории до проверки на реальном объекте.</p>
+                <span class="section-label">🎓 Образовательная программа</span>
+                <h2 class="section-title">Инженерный трек</h2>
+                <p class="section-subtitle">От основ программирования до управления реальным БПЛА. Выбери свой путь.</p>
             </div>
-            <div class="cycle-container">
-                <div class="cycle-step"><span class="icon">📖</span><span class="label">Изучи</span></div>
-                <span class="cycle-arrow">→</span>
-                <div class="cycle-step"><span class="icon">🧪</span><span class="label">Попробуй</span></div>
-                <span class="cycle-arrow">→</span>
-                <div class="cycle-step"><span class="icon">💻</span><span class="label">Симулируй</span></div>
-                <span class="cycle-arrow">→</span>
-                <div class="cycle-step"><span class="icon">🛠️</span><span class="label">Собери</span></div>
-                <span class="cycle-arrow">→</span>
-                <div class="cycle-step"><span class="icon">🛩️</span><span class="label">Проверь</span></div>
-                <span class="cycle-arrow">→</span>
-                <div class="cycle-step"><span class="icon">📊</span><span class="label">Проанализируй</span></div>
+
+            <div class="course-grid">
+                <!-- Python -->
+                <a href="/articles.html?course=python" class="course-card">
+                    <span class="badge-new">Новый</span>
+                    <span class="icon">🐍</span>
+                    <h3>Python для инженеров</h3>
+                    <p>Основы программирования на Python. Переменные, функции, циклы, работа с данными.</p>
+                    <div class="meta">
+                        <span>📚 8 уроков</span>
+                        <span>⏱ 4 часа</span>
+                        <span>🏷️ Базовый</span>
+                    </div>
+                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                </a>
+
+                <!-- Arduino -->
+                <a href="/articles.html?course=arduino" class="course-card">
+                    <span class="badge-new">Новый</span>
+                    <span class="icon">⚡</span>
+                    <h3>Arduino для начинающих</h3>
+                    <p>Микроконтроллеры, датчики, сервоприводы. Написание первых скетчей на C++.</p>
+                    <div class="meta">
+                        <span>📚 10 уроков</span>
+                        <span>⏱ 5 часов</span>
+                        <span>🏷️ Базовый</span>
+                    </div>
+                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                </a>
+
+                <!-- Электроника -->
+                <a href="/articles.html?course=electronics" class="course-card">
+                    <span class="icon">🔌</span>
+                    <h3>Основы электроники</h3>
+                    <p>Закон Ома, схемы, компоненты. Чтение принципиальных схем и пайка.</p>
+                    <div class="meta">
+                        <span>📚 6 уроков</span>
+                        <span>⏱ 3 часа</span>
+                        <span>🏷️ Базовый</span>
+                    </div>
+                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                </a>
+
+                <!-- БПЛА -->
+                <a href="/uav-project.html" class="course-card">
+                    <span class="icon">✈️</span>
+                    <h3>Введение в БПЛА</h3>
+                    <p>Устройство и управление дронами. ПИД-регуляторы, телеметрия, полётные контроллеры.</p>
+                    <div class="meta">
+                        <span>📚 12 уроков</span>
+                        <span>⏱ 6 часов</span>
+                        <span>🏷️ Средний</span>
+                    </div>
+                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                </a>
+
+                <!-- ПИД -->
+                <a href="/simulator.html" class="course-card">
+                    <span class="icon">🎯</span>
+                    <h3>ПИД-регуляторы на практике</h3>
+                    <p>Теория и настройка ПИД-регулятора в симуляторе. Отладка коэффициентов.</p>
+                    <div class="meta">
+                        <span>📚 5 уроков</span>
+                        <span>⏱ 3 часа</span>
+                        <span>🏷️ Средний</span>
+                    </div>
+                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                </a>
+
+                <!-- Программирование дронов -->
+                <a href="/drone-sim.html" class="course-card">
+                    <span class="icon">💻</span>
+                    <h3>Программирование дронов</h3>
+                    <p>Пиши код на Python, управляй виртуальным дроном. Взлёт, маршруты, миссии.</p>
+                    <div class="meta">
+                        <span>📚 7 уроков</span>
+                        <span>⏱ 4 часа</span>
+                        <span>🏷️ Продвинутый</span>
+                    </div>
+                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                </a>
             </div>
-            <p style="text-align:center;color:var(--gray-light);font-size:0.9em;margin-top:16px;">
-                Каждый этап связан с другими — это позволяет учиться на ошибках и улучшать решения.
-            </p>
         </div>
     </section>
 
-    <!-- ======== КОМПОНЕНТЫ ЭКОСИСТЕМЫ ======== -->
-    <section id="components">
+    <!-- ======== ЭКОСИСТЕМА ======== -->
+    <section id="ecosystem" style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div class="section-container">
             <div class="section-header">
-                <span class="section-label">🧩 Компоненты</span>
-                <h2 class="section-title">Шесть частей экосистемы</h2>
-                <p class="section-subtitle">Каждый компонент решает свою задачу и связан с другими в единую систему.</p>
+                <span class="section-label">🧩 Экосистема</span>
+                <h2 class="section-title">Все инструменты в одном месте</h2>
+                <p class="section-subtitle">От теории к практике — каждый компонент решает свою задачу.</p>
             </div>
-            <div class="eco-cards">
-                <a href="/docs.html" class="eco-card">
-                    <div class="eco-card-icon">📚</div>
-                    <h3>Документация</h3>
-                    <p>Полное руководство по сборке, настройке и эксплуатации БПЛА. Схемы, 3D-модели, код.</p>
-                </a>
-                <!-- Lab -->
-                <a href="/lab.html" class="eco-card">
-                    <div class="eco-card-icon">🧪</div>
-                    <h3>Lab</h3>
-                    <p>Интерактивные эксперименты с параметрами полёта. Найди устойчивую конфигурацию самолёта.</p>
-                </a>
-                <!-- Simulator -->
-                <a href="/simulator.html" class="eco-card">
-                    <div class="eco-card-icon">💻</div>
-                    <h3>Simulator</h3>
-                    <p>Инженерный симулятор полёта. Настраивай ПИД-регулятор и проверяй алгоритмы управления.</p>
-                </a>
-                <!-- Builder -->
-                <a href="/builder.html" class="eco-card">
-                    <div class="eco-card-icon">🛠️</div>
-                    <h3>Builder</h3>
-                    <p>Виртуальный конструктор БПЛА. Собирай конфигурацию и получай расчёт параметров.</p>
-                </a>
-                <!-- VRD FC -->
-                <a href="/article.html?file=vrd-flight-controller.md" class="eco-card">
-                    <div class="eco-card-icon">🧠</div>
-                    <h3>VRD FC</h3>
-                    <p>Полётный контроллер с гибридной архитектурой: Arduino (C++) для реального времени и Raspberry Pi (Python) для планирования.</p>
-                </a>
-                <!-- Real UAV -->
-                <a href="#" class="eco-card" onclick="alert('🛩️ Реальный прототип — это физическая модель БПЛА с установленным контроллером VRD. Ожидайте подробностей!'); return false;">
-                    <div class="eco-card-icon">🛩️</div>
-                    <h3>Real UAV</h3>
-                    <p>Физический прототип. Проверяй алгоритмы на реальном объекте и анализируй телеметрию.</p>
-                </a>
 
-                <a href="/drone-sim.html" class="eco-card">
-                    <div class="eco-card-icon">🛠️</div>
-                    <h3>Симулятор дрона</h3>
-                    <p>Виртуальный симулятор БПЛА.</p>
+            <div class="ecosystem-grid">
+                <a href="/articles.html" class="eco-link">
+                    <span class="icon">📖</span>
+                    <span class="name">Academy</span>
+                    <span class="desc">Уроки и теория</span>
+                </a>
+                <a href="/lab.html" class="eco-link">
+                    <span class="icon">🧪</span>
+                    <span class="name">Lab</span>
+                    <span class="desc">Эксперименты</span>
+                </a>
+                <a href="/simulator.html" class="eco-link">
+                    <span class="icon">💻</span>
+                    <span class="name">Simulator</span>
+                    <span class="desc">ПИД-симулятор</span>
+                </a>
+                <a href="/builder.html" class="eco-link">
+                    <span class="icon">🛠️</span>
+                    <span class="name">Builder</span>
+                    <span class="desc">Конструктор БПЛА</span>
+                </a>
+                <a href="/docs.html" class="eco-link">
+                    <span class="icon">📚</span>
+                    <span class="name">Документация</span>
+                    <span class="desc">Технические материалы</span>
+                </a>
+                <a href="/drone-sim.html" class="eco-link">
+                    <span class="icon">✈️</span>
+                    <span class="name">Drone Sim</span>
+                    <span class="desc">Программирование дронов</span>
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- ======== ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ ======== -->
-    <section id="tech" style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <!-- ======== КАРТА ПУТИ ======== -->
+    <section id="roadmap">
         <div class="section-container">
             <div class="section-header">
-                <span class="section-label">⚙️ Технические характеристики</span>
-                <h2 class="section-title">VRD Flight Controller</h2>
-                <p class="section-subtitle">Гибридная двухуровневая архитектура, объединяющая надёжность и гибкость.</p>
+                <span class="section-label">🗺️ Карта обучения</span>
+                <h2 class="section-title">Твой путь в инженерии</h2>
+                <p class="section-subtitle">Пошаговая программа для освоения профессии инженера БПЛА.</p>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;">
-                <div style="background:rgba(15,23,42,0.6);border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
-                    <h4 style="color:#a5b4fc;margin-bottom:12px;">📟 Нижний уровень (Low_LV)</h4>
-                    <ul style="list-style:none;color:var(--gray-light);font-size:0.95em;line-height:2;">
-                        <li>• Платформа: <strong style="color:var(--light);">Arduino Nano</strong> (ATmega328P)</li>
-                        <li>• Язык: <strong style="color:var(--light);">C++</strong></li>
-                        <li>• Датчик: <strong style="color:var(--light);">IMU MPU-6050</strong></li>
-                        <li>• Задачи: стабилизация, управление сервоприводами</li>
-                        <li>• Режим: <strong style="color:#10b981;">жёсткое реальное время</strong></li>
-                    </ul>
-                </div>
-                <div style="background:rgba(15,23,42,0.6);border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
-                    <h4 style="color:#c084fc;margin-bottom:12px;">🧠 Верхний уровень (Hight_LV)</h4>
-                    <ul style="list-style:none;color:var(--gray-light);font-size:0.95em;line-height:2;">
-                        <li>• Платформа: <strong style="color:var(--light);">Raspberry Pi 3</strong></li>
-                        <li>• Язык: <strong style="color:var(--light);">Python</strong></li>
-                        <li>• Задачи: планирование траектории, диагностика</li>
-                        <li>• Визуализация: <strong style="color:var(--light);">телеметрия в реальном времени</strong></li>
-                        <li>• Потенциал: <strong style="color:#f59e0b;">нейросети для распознавания ситуаций</strong></li>
-                    </ul>
-                </div>
-                <div style="background:rgba(15,23,42,0.6);border:1px solid var(--border);border-radius:var(--radius);padding:24px;">
-                    <h4 style="color:#06b6d4;margin-bottom:12px;">📊 Результаты испытаний</h4>
-                    <ul style="list-style:none;color:var(--gray-light);font-size:0.95em;line-height:2;">
-                        <li>• Ошибка стабилизации: <strong style="color:#10b981;">≤ 1.2°</strong> (требование 2°)</li>
-                        <li>• Время отклика: <strong style="color:#10b981;">0.35 с</strong> (требование 0.5 с)</li>
-                        <li>• Время восстановления: <strong style="color:#10b981;">0.7 с</strong> (требование 1.0 с)</li>
-                        <li>• Отклонение от траектории: <strong style="color:#10b981;">0.82%</strong> (требование 1%)</li>
-                        <li style="margin-top:8px;font-size:0.85em;color:var(--gray);">✅ Все требования выполнены с запасом</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- ======== ОТКРЫТЫЙ ПРОЕКТ ======== -->
-    <section id="open-source">
-        <div class="section-container" style="text-align:center;">
-            <div style="background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:var(--radius);padding:48px 32px;">
-                <span style="font-size:3em;display:block;margin-bottom:16px;">📂</span>
-                <h2 class="section-title" style="font-size:2em;">Открытый проект на GitHub</h2>
-                <p style="color:var(--gray-light);max-width:600px;margin:0 auto 32px;font-size:1.05em;">
-                    Исходные коды, 3D-модели, схемы подключения и методические материалы доступны для всех. Присоединяйтесь к разработке!
-                </p>
-                <a href="https://github.com/LightRain-K/ThunderLight" target="_blank" style="display:inline-flex;align-items:center;gap:12px;background:#333;color:white;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:600;transition:var(--transition);">
-                    <i class="fab fa-github"></i> Перейти в репозиторий
-                </a>
-                <div style="margin-top:24px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
-                    <span style="background:rgba(79,70,229,0.1);padding:4px 16px;border-radius:50px;font-size:0.8em;color:#a5b4fc;">#OpenSource</span>
-                    <span style="background:rgba(79,70,229,0.1);padding:4px 16px;border-radius:50px;font-size:0.8em;color:#a5b4fc;">#Образование</span>
-                    <span style="background:rgba(79,70,229,0.1);padding:4px 16px;border-radius:50px;font-size:0.8em;color:#a5b4fc;">#БПЛА</span>
-                    <span style="background:rgba(79,70,229,0.1);padding:4px 16px;border-radius:50px;font-size:0.8em;color:#a5b4fc;">#DIY</span>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:20px; max-width:1000px; margin:0 auto;">
+                <div style="background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+                    <span style="font-size:2em;display:block;">📖</span>
+                    <h4 style="font-weight:700;font-size:1em;margin:8px 0;">Уровень 1</h4>
+                    <p style="font-size:0.8em;color:var(--gray-light);">Основы Python и электроники</p>
+                    <span style="font-size:0.7em;color:var(--gray);">4 урока</span>
+                </div>
+                <div style="background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+                    <span style="font-size:2em;display:block;">⚡</span>
+                    <h4 style="font-weight:700;font-size:1em;margin:8px 0;">Уровень 2</h4>
+                    <p style="font-size:0.8em;color:var(--gray-light);">Arduino и схемотехника</p>
+                    <span style="font-size:0.7em;color:var(--gray);">5 уроков</span>
+                </div>
+                <div style="background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+                    <span style="font-size:2em;display:block;">✈️</span>
+                    <h4 style="font-weight:700;font-size:1em;margin:8px 0;">Уровень 3</h4>
+                    <p style="font-size:0.8em;color:var(--gray-light);">Управление БПЛА</p>
+                    <span style="font-size:0.7em;color:var(--gray);">6 уроков</span>
+                </div>
+                <div style="background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+                    <span style="font-size:2em;display:block;">🎯</span>
+                    <h4 style="font-weight:700;font-size:1em;margin:8px 0;">Уровень 4</h4>
+                    <p style="font-size:0.8em;color:var(--gray-light);">ПИД и программирование</p>
+                    <span style="font-size:0.7em;color:var(--gray);">7 уроков</span>
                 </div>
             </div>
         </div>
@@ -805,40 +836,15 @@
     <section style="background:radial-gradient(ellipse at center, rgba(79,70,229,0.1), transparent 70%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div class="section-container" style="text-align:center;">
             <div style="max-width:600px;margin:0 auto;">
-                <h2 style="font-size:2.2em;font-weight:900;margin-bottom:16px;">Начните свой путь</h2>
+                <h2 style="font-size:2.2em;font-weight:900;margin-bottom:16px;">Начни учиться сегодня</h2>
                 <p style="color:var(--gray-light);font-size:1.1em;margin-bottom:32px;">
-                    Выберите один из компонентов экосистемы и начните изучать управление БПЛА уже сегодня.
+                    Весь контент бесплатный, с открытым исходным кодом. Присоединяйся к сообществу инженеров.
                 </p>
-                <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
-                    <a href="/articles.html" class="btn" style="background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:600;transition:var(--transition);display:inline-flex;align-items:center;gap:10px;">
-                        <i class="fas fa-graduation-cap"></i> Начать обучение
+                <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                    <a href="#courses" class="btn btn-primary">🎓 Выбрать курс</a>
+                    <a href="https://github.com/LightRain-K/ThunderLight" target="_blank" class="btn btn-outline">
+                        <i class="fab fa-github"></i> GitHub
                     </a>
-                    <a href="https://github.com/LightRain-K/VRD_flight_controller" target="_blank" class="btn" style="border:2px solid rgba(255,255,255,0.15);color:var(--light);padding:14px 32px;border-radius:12px;text-decoration:none;font-weight:600;transition:var(--transition);display:inline-flex;align-items:center;gap:10px;">
-                        <i class="fab fa-github"></i> Код на GitHub
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ======== СТАТУС СЕРВЕРОВ ======== -->
-    <section class="py-8 bg-slate-950 border-t border-slate-900" style="padding:24px 32px;">
-        <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-            <div class="flex items-center gap-3">
-                <span class="relative flex h-3 w-3">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                </span>
-                <span class="text-sm font-medium text-slate-300">Наши сервера: <span class="text-emerald-400 font-bold">Running</span></span>
-            </div>
-            <div class="flex flex-wrap gap-6 text-xs text-slate-400">
-                <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
-                    <span class="font-semibold text-slate-300">Москва 1:</span>
-                    <span class="ping-srv-1 font-mono text-emerald-400">замер...</span>
-                </div>
-                <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
-                    <span class="font-semibold text-slate-300">Европа 1:</span>
-                    <span class="ping-srv-2 font-mono text-emerald-400">замер...</span>
                 </div>
             </div>
         </div>
@@ -852,16 +858,17 @@
                     <span class="nav-logo-icon">⚡</span>
                     ThunderLight
                 </a>
-                <p>Образовательная экосистема БПЛА. От цифровой теории к реальному полёту.</p>
+                <p>Образовательная экосистема БПЛА. Проектируй, собирай, летай.</p>
             </div>
             <div class="footer-col">
                 <h4>Экосистема</h4>
                 <ul>
                     <li><a href="/articles.html">Academy</a></li>
-                    <li><a href="#" onclick="alert('🧪 Lab в разработке'); return false;">Lab</a></li>
-                    <li><a href="#" onclick="alert('💻 Simulator в разработке'); return false;">Simulator</a></li>
-                    <li><a href="#" onclick="alert('🛠️ Builder в разработке'); return false;">Builder</a></li>
-                    <li><a href="/article.html?file=vrd-flight-controller.md">VRD FC</a></li>
+                    <li><a href="/lab.html">Lab</a></li>
+                    <li><a href="/simulator.html">Simulator</a></li>
+                    <li><a href="/builder.html">Builder</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                    <li><a href="/drone-sim.html">Drone Sim</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -890,7 +897,6 @@
         </div>
     </footer>
 
-    <!-- ======== СКРИПТЫ ======== -->
     <script>
         // Предзагрузчик
         window.addEventListener('load', () => {
@@ -910,22 +916,22 @@
         function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 25; i++) {
                 const p = document.createElement('div');
                 p.classList.add('particle');
-                const size = Math.random() * 4 + 2;
+                const size = Math.random() * 3 + 1;
                 p.style.width = size + 'px';
                 p.style.height = size + 'px';
                 p.style.left = Math.random() * 100 + '%';
                 p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                p.style.animationDuration = (Math.random() * 15 + 10) + 's';
-                p.style.animationDelay = Math.random() * 10 + 's';
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = Math.random() * 15 + 's';
                 container.appendChild(p);
             }
         }
         createParticles();
 
-        // Навбар скролл
+        // Навбар
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
@@ -947,11 +953,9 @@
                 navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
                 navLinks.style.padding = '20px 32px';
                 navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-                navLinks.style.animation = 'slideDown 0.3s ease';
                 mobileMenuBtn.textContent = '✕';
             } else {
-                navLinks.style.animation = 'slideUp 0.3s ease';
-                setTimeout(() => { navLinks.style.display = 'none'; }, 280);
+                navLinks.style.display = 'none';
                 mobileMenuBtn.textContent = '☰';
             }
         });
@@ -966,16 +970,7 @@
             });
         });
 
-        // Эффект мыши для карточек
-        document.querySelectorAll('.eco-card').forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                card.style.setProperty('--mouse-x', ((e.clientX - rect.left) / rect.width) * 100 + '%');
-                card.style.setProperty('--mouse-y', ((e.clientY - rect.top) / rect.height) * 100 + '%');
-            });
-        });
-
-        // Анимация появления при скролле
+        // Анимация появления
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -985,34 +980,12 @@
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.eco-card, .stat-item, .cycle-step, .section-header').forEach(el => {
+        document.querySelectorAll('.course-card, .eco-link, .stat-item').forEach(el => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
             el.style.transition = 'all 0.6s ease';
             observer.observe(el);
         });
-
-        // Пинги
-        async function pingServer(url) {
-            const start = performance.now();
-            try {
-                await fetch(url + '?t=' + Math.random(), { method: 'HEAD', mode: 'no-cors' });
-                return Math.round(performance.now() - start) + ' ms';
-            } catch {
-                return 'offline';
-            }
-        }
-
-        async function updatePings() {
-            const srv1 = document.querySelectorAll('.ping-srv-1');
-            const srv2 = document.querySelectorAll('.ping-srv-2');
-            const p1 = await pingServer('https://thuderlight.online/favicon.ico');
-            const p2 = await pingServer('https://thuderlight.online/favicon.ico');
-            srv1.forEach(el => { el.textContent = p1; el.className = 'ping-srv-1 font-mono ' + (p1 === 'offline' ? 'text-red-500' : 'text-emerald-400'); });
-            srv2.forEach(el => { el.textContent = p2; el.className = 'ping-srv-2 font-mono ' + (p2 === 'offline' ? 'text-red-500' : 'text-emerald-400'); });
-        }
-        updatePings();
-        setInterval(updatePings, 15000);
 
         // Убираем якорь из URL
         if (window.location.hash) {
