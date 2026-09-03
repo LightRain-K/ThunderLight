@@ -6,7 +6,6 @@
     <title>ThunderLight — Профессиональный Симулятор БПЛА</title>
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --primary: #4f46e5;
@@ -37,7 +36,6 @@
             -webkit-font-smoothing: antialiased;
         }
         
-        /* Прелоадер */
         .preloader {
             position: fixed;
             top: 0;
@@ -53,7 +51,6 @@
         }
         .preloader.hidden { opacity: 0; visibility: hidden; }
         
-        /* Навигация */
         .navbar {
             position: fixed;
             top: 0;
@@ -62,20 +59,17 @@
             backdrop-filter: blur(24px) saturate(180%);
             z-index: 1000;
             border-bottom: 1px solid var(--border);
-            transition: var(--transition);
         }
         
-        /* Основной контейнер симулятора */
         .simulator-container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 100px 20px 40px;
             display: grid;
-            grid-template-columns: 1fr 340px;
+            grid-template-columns: 1fr 380px;
             gap: 20px;
         }
         
-        /* Панель визуализации */
         .visualization-panel {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border);
@@ -87,18 +81,18 @@
         .canvas-container {
             position: relative;
             width: 100%;
-            height: 600px;
-            background: linear-gradient(180deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%);
+            height: 650px;
+            background: linear-gradient(180deg, #0a0e27 0%, #1a1a3e 40%, #2d1b4e 70%, #1a0f2a 100%);
+            overflow: hidden;
         }
         
         #simCanvas {
             width: 100%;
             height: 100%;
             display: block;
-            cursor: crosshair;
         }
         
-        /* HUD оверлей */
+        /* HUD - улучшенный */
         .hud-overlay {
             position: absolute;
             top: 20px;
@@ -106,34 +100,35 @@
             display: flex;
             gap: 15px;
             pointer-events: none;
+            z-index: 10;
         }
         
         .hud-box {
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px 18px;
             backdrop-filter: blur(10px);
-            min-width: 120px;
+            min-width: 130px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
         
         .hud-label {
             font-size: 0.7em;
-            color: var(--gray-light);
+            color: #94a3b8;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
         
         .hud-value {
-            font-size: 1.3em;
+            font-size: 1.4em;
             font-weight: 700;
             font-family: 'Courier New', monospace;
             color: #00ff88;
             text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
         }
         
-        /* Панель управления */
         .control-panel {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border);
@@ -147,11 +142,11 @@
         .panel-section {
             background: rgba(0, 0, 0, 0.2);
             border-radius: 12px;
-            padding: 15px;
+            padding: 18px;
         }
         
         .panel-section h3 {
-            font-size: 0.9em;
+            font-size: 1em;
             font-weight: 700;
             margin-bottom: 15px;
             display: flex;
@@ -160,65 +155,107 @@
             color: #a5b4fc;
         }
         
-        /* Слайдеры */
         .slider-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
         
         .slider-group label {
             display: flex;
             justify-content: space-between;
             font-size: 0.85em;
-            color: var(--gray-light);
-            margin-bottom: 5px;
+            color: #94a3b8;
+            margin-bottom: 8px;
         }
         
         .slider-group input[type="range"] {
             width: 100%;
             height: 6px;
             -webkit-appearance: none;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(90deg, #4f46e5, #7c3aed);
             border-radius: 3px;
             outline: none;
         }
         
         .slider-group input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             background: white;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.6);
+            transition: all 0.2s;
         }
         
-        /* Кнопки */
+        .slider-group input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
         .btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 10px;
             font-weight: 600;
-            font-size: 0.85em;
+            font-size: 0.9em;
             border: none;
             cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
+            transition: all 0.3s;
+            display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             width: 100%;
-            justify-content: center;
+            letter-spacing: 1px;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
         }
         
-        /* График */
+        .btn-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .telemetry-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .telemetry-value {
+            font-size: 1.1em;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 4px;
+        }
+        
+        .telemetry-label {
+            font-size: 0.7em;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
         .chart-container {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
@@ -232,33 +269,18 @@
             display: block;
         }
         
-        /* Телеметрия */
-        .telemetry-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .telemetry-item {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            padding: 10px;
+        .status-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px 18px;
+            z-index: 10;
             text-align: center;
         }
         
-        .telemetry-value {
-            font-size: 1.2em;
-            font-weight: 700;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .telemetry-label {
-            font-size: 0.7em;
-            color: var(--gray-light);
-            text-transform: uppercase;
-        }
-        
-        /* Адаптивность */
         @media (max-width: 1024px) {
             .simulator-container {
                 grid-template-columns: 1fr;
@@ -273,23 +295,31 @@
             .canvas-container {
                 height: 400px;
             }
+            
+            .hud-overlay {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .hud-box {
+                min-width: 100px;
+                padding: 8px 12px;
+            }
+        }
+        
+        @keyframes spin { 
+            to { transform: rotate(360deg); } 
         }
     </style>
 </head>
 <body>
-    <!-- Прелоадер -->
     <div class="preloader" id="preloader">
         <div style="text-align: center;">
             <span style="font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">⚡ ThunderLight</span>
             <div style="width: 40px; height: 40px; margin: 20px auto; border: 3px solid rgba(255,255,255,0.1); border-top-color: #4f46e5; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
         </div>
     </div>
-    
-    <style>
-        @keyframes spin { to { transform: rotate(360deg); } }
-    </style>
 
-    <!-- Навигация -->
     <nav class="navbar">
         <div style="max-width: 1400px; margin: 0 auto; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
             <a href="/" style="font-size: 1.5em; font-weight: 800; background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;">⚡ ThunderLight</a>
@@ -302,14 +332,11 @@
         </div>
     </nav>
 
-    <!-- Основной контейнер -->
     <div class="simulator-container">
-        <!-- Визуализация -->
         <div class="visualization-panel">
             <div class="canvas-container">
                 <canvas id="simCanvas"></canvas>
                 
-                <!-- HUD -->
                 <div class="hud-overlay">
                     <div class="hud-box">
                         <div class="hud-label">Высота</div>
@@ -320,99 +347,88 @@
                         <div class="hud-value" id="hudSpeed">0.0 м/с</div>
                     </div>
                     <div class="hud-box">
-                        <div class="hud-label">Тангаж</div>
-                        <div class="hud-value" id="hudPitch">0.0°</div>
+                        <div class="hud-label">Вертикальная</div>
+                        <div class="hud-value" id="hudVertical" style="color: #6bcfff;">0.0 м/с</div>
                     </div>
                 </div>
                 
-                <!-- Индикатор режима -->
-                <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px;">
-                    <div style="font-size: 0.7em; color: #94a3b8; text-transform: uppercase;">Режим</div>
-                    <div style="font-size: 1em; font-weight: 700;" id="modeIndicator">ГОТОВ</div>
+                <div class="status-indicator">
+                    <div style="font-size: 0.7em; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Режим</div>
+                    <div style="font-size: 1.1em; font-weight: 700;" id="modeIndicator">ГОТОВ</div>
                 </div>
             </div>
         </div>
 
-        <!-- Панель управления -->
         <div class="control-panel">
-            <!-- Параметры полёта -->
             <div class="panel-section">
                 <h3>🎛️ Параметры полёта</h3>
                 
                 <div class="slider-group">
-                    <label>Скорость <span id="speedVal" style="color: #00ff88;">18 м/с</span></label>
-                    <input type="range" id="speedSlider" min="5" max="40" value="18" step="0.5">
+                    <label>Горизонтальная скорость <span id="speedVal" style="color: #00ff88;">15 м/с</span></label>
+                    <input type="range" id="speedSlider" min="5" max="30" value="15" step="0.5">
                 </div>
                 
                 <div class="slider-group">
-                    <label>Угол атаки <span id="aoaVal" style="color: #00ff88;">4°</span></label>
-                    <input type="range" id="aoaSlider" min="-5" max="20" value="4" step="0.5">
+                    <label>Угол атаки <span id="aoaVal" style="color: #00ff88;">5°</span></label>
+                    <input type="range" id="aoaSlider" min="-5" max="15" value="5" step="0.5">
                 </div>
                 
                 <div class="slider-group">
                     <label>Масса <span id="massVal" style="color: #00ff88;">850 г</span></label>
-                    <input type="range" id="massSlider" min="300" max="1500" value="850" step="10">
+                    <input type="range" id="massSlider" min="500" max="1200" value="850" step="10">
                 </div>
                 
                 <div class="slider-group">
-                    <label>Центр тяжести <span id="cgVal" style="color: #00ff88;">32%</span></label>
-                    <input type="range" id="cgSlider" min="20" max="45" value="32" step="0.5">
-                </div>
-                
-                <div class="slider-group">
-                    <label>Ветер <span id="windVal" style="color: #00ff88;">0 м/с</span></label>
-                    <input type="range" id="windSlider" min="-10" max="10" value="0" step="0.5">
+                    <label>Тяга двигателя <span id="thrustVal" style="color: #00ff88;">50%</span></label>
+                    <input type="range" id="thrustSlider" min="0" max="100" value="50" step="1">
                 </div>
             </div>
 
-            <!-- Управление -->
             <div class="panel-section">
                 <h3>🎮 Управление</h3>
                 <div style="display: grid; gap: 10px;">
                     <button class="btn btn-primary" id="btnRun">▶ ЗАПУСК</button>
-                    <button class="btn" id="btnPause" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">⏸ ПАУЗА</button>
-                    <button class="btn" id="btnReset" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">⟳ СБРОС</button>
+                    <button class="btn btn-warning" id="btnPause">⏸ ПАУЗА</button>
+                    <button class="btn btn-danger" id="btnReset">⟳ СБРОС</button>
                 </div>
             </div>
 
-            <!-- Телеметрия -->
             <div class="panel-section">
                 <h3>📊 Телеметрия</h3>
                 <div class="telemetry-grid">
                     <div class="telemetry-item">
                         <div class="telemetry-value" id="telLift" style="color: #00ff88;">0 Н</div>
-                        <div class="telemetry-label">Подъёмная сила</div>
+                        <div class="telemetry-label">Подъёмная</div>
                     </div>
                     <div class="telemetry-item">
                         <div class="telemetry-value" id="telDrag" style="color: #ff6b6b;">0 Н</div>
-                        <div class="telemetry-label">Сопротивление</div>
+                        <div class="telemetry-label">Лобовое</div>
                     </div>
                     <div class="telemetry-item">
                         <div class="telemetry-value" id="telThrust" style="color: #ffd93d;">0 Н</div>
                         <div class="telemetry-label">Тяга</div>
                     </div>
                     <div class="telemetry-item">
-                        <div class="telemetry-value" id="telAccel" style="color: #6bcfff;">0 м/с²</div>
-                        <div class="telemetry-label">Ускорение</div>
+                        <div class="telemetry-value" id="telWeight" style="color: #ff9f43;">0 Н</div>
+                        <div class="telemetry-label">Вес</div>
                     </div>
                 </div>
             </div>
 
-            <!-- График -->
             <div class="panel-section">
                 <h3>📈 Профиль полёта</h3>
                 <div class="chart-container">
                     <canvas id="chartCanvas"></canvas>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px; font-size: 0.7em; color: #94a3b8;">
+                    <span>Высота (м)</span>
+                    <span>Время (с)</span>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // ============================================
-        // ПРОФЕССИОНАЛЬНЫЙ СИМУЛЯТОР БПЛА
-        // ============================================
-
         class FlightSimulator {
             constructor() {
                 this.canvas = document.getElementById('simCanvas');
@@ -420,20 +436,16 @@
                 this.chartCanvas = document.getElementById('chartCanvas');
                 this.chartCtx = this.chartCanvas.getContext('2d');
                 
-                // Параметры
                 this.params = {
-                    speed: 18,
-                    aoa: 4,
+                    speed: 15,
+                    aoa: 5,
                     mass: 850,
-                    cg: 32,
-                    wind: 0
+                    thrust: 50
                 };
                 
-                // Состояние
                 this.state = {
                     altitude: 0,
-                    velocity: 0,
-                    acceleration: 0,
+                    verticalVelocity: 0,
                     pitch: 0,
                     time: 0,
                     running: false,
@@ -442,20 +454,17 @@
                     lift: 0,
                     drag: 0,
                     thrust: 0,
-                    weight: 0,
-                    cameraOffset: 0
+                    weight: 0
                 };
                 
-                // Физические константы
                 this.constants = {
                     g: 9.81,
                     rho: 1.225,
-                    wingArea: 0.5,
-                    clMax: 1.5,
-                    cd0: 0.04,
-                    k: 0.08
+                    wingArea: 0.4,
+                    timeScale: 0.3 // Замедление времени для наглядности
                 };
                 
+                this.lastTimestamp = 0;
                 this.init();
             }
             
@@ -475,18 +484,15 @@
             }
             
             setupEventListeners() {
-                // Кнопки
                 document.getElementById('btnRun').addEventListener('click', () => this.toggleRun());
                 document.getElementById('btnPause').addEventListener('click', () => this.togglePause());
                 document.getElementById('btnReset').addEventListener('click', () => this.reset());
                 
-                // Слайдеры
                 const sliders = [
                     { id: 'speedSlider', valId: 'speedVal', param: 'speed', unit: ' м/с' },
                     { id: 'aoaSlider', valId: 'aoaVal', param: 'aoa', unit: '°' },
                     { id: 'massSlider', valId: 'massVal', param: 'mass', unit: ' г' },
-                    { id: 'cgSlider', valId: 'cgVal', param: 'cg', unit: '%' },
-                    { id: 'windSlider', valId: 'windVal', param: 'wind', unit: ' м/с' }
+                    { id: 'thrustSlider', valId: 'thrustVal', param: 'thrust', unit: '%' }
                 ];
                 
                 sliders.forEach(({ id, valId, param, unit }) => {
@@ -497,7 +503,6 @@
                     });
                 });
                 
-                // Ресайз
                 window.addEventListener('resize', () => this.resizeCanvas());
             }
             
@@ -510,8 +515,9 @@
                     document.getElementById('modeIndicator').style.color = '#00ff88';
                     
                     if (this.state.history.length === 0) {
-                        this.state.altitude = 0.5;
-                        this.state.velocity = 0;
+                        this.state.altitude = 1;
+                        this.state.verticalVelocity = 0;
+                        this.state.pitch = 0;
                     }
                 } else {
                     this.state.running = false;
@@ -533,8 +539,7 @@
             reset() {
                 this.state = {
                     altitude: 0,
-                    velocity: 0,
-                    acceleration: 0,
+                    verticalVelocity: 0,
                     pitch: 0,
                     time: 0,
                     running: false,
@@ -543,8 +548,7 @@
                     lift: 0,
                     drag: 0,
                     thrust: 0,
-                    weight: 0,
-                    cameraOffset: 0
+                    weight: 0
                 };
                 
                 document.getElementById('btnRun').textContent = '▶ ЗАПУСК';
@@ -556,55 +560,54 @@
             }
             
             updatePhysics(dt) {
-                const { g, rho, wingArea, clMax, cd0, k } = this.constants;
-                const mass = this.params.mass / 1000; // в кг
-                const speed = this.params.speed + this.params.wind;
+                const { g, rho, wingArea, timeScale } = this.constants;
+                const mass = this.params.mass / 1000;
+                const speed = this.params.speed;
                 const aoaRad = this.params.aoa * Math.PI / 180;
+                const thrustPercent = this.params.thrust / 100;
                 
                 // Аэродинамические коэффициенты
-                const cl = Math.min(2 * Math.PI * aoaRad, clMax);
-                const cd = cd0 + k * Math.abs(aoaRad);
+                const cl = 1.2 * Math.sin(2 * aoaRad); // Более реалистичная модель
+                const cd = 0.03 + 0.05 * Math.abs(aoaRad);
                 
                 // Силы
                 this.state.lift = 0.5 * rho * speed * speed * wingArea * cl;
                 this.state.drag = 0.5 * rho * speed * speed * wingArea * cd;
                 this.state.weight = mass * g;
-                this.state.thrust = this.state.drag + 0.15 * this.state.weight;
+                this.state.thrust = thrustPercent * this.state.weight * 2; // Максимальная тяга = 2x веса
                 
-                // Ускорение
-                const netForce = this.state.lift - this.state.weight;
-                this.state.acceleration = netForce / mass;
+                // Вертикальное ускорение
+                const netForce = this.state.lift + this.state.thrust * Math.sin(aoaRad) - this.state.weight;
+                const acceleration = netForce / mass;
                 
-                // Интеграция
-                this.state.velocity += this.state.acceleration * dt;
-                this.state.altitude += this.state.velocity * dt;
+                // Интеграция с замедлением времени
+                this.state.verticalVelocity += acceleration * dt * timeScale;
+                this.state.altitude += this.state.verticalVelocity * dt * timeScale;
                 
                 // Ограничения
                 if (this.state.altitude < 0) {
                     this.state.altitude = 0;
-                    if (this.state.velocity < 0) this.state.velocity = 0;
+                    if (this.state.verticalVelocity < 0) this.state.verticalVelocity = 0;
                 }
                 
                 // Угол тангажа
-                const cg = this.params.cg / 100;
-                const targetPitch = this.params.aoa * 0.7 + (cg - 0.32) * 30;
-                this.state.pitch += (targetPitch - this.state.pitch) * dt * 2;
-                this.state.pitch = Math.max(-30, Math.min(30, this.state.pitch));
+                const targetPitch = this.params.aoa * 0.6;
+                this.state.pitch += (targetPitch - this.state.pitch) * dt * 3;
+                this.state.pitch = Math.max(-20, Math.min(20, this.state.pitch));
                 
-                // История
+                // История для графика
                 this.state.history.push({
                     altitude: this.state.altitude,
                     time: this.state.time,
-                    pitch: this.state.pitch,
-                    lift: this.state.lift,
-                    velocity: this.state.velocity
+                    verticalVelocity: this.state.verticalVelocity,
+                    lift: this.state.lift
                 });
                 
-                if (this.state.history.length > 200) {
+                if (this.state.history.length > 300) {
                     this.state.history.shift();
                 }
                 
-                this.state.time += dt;
+                this.state.time += dt * timeScale;
             }
             
             draw() {
@@ -615,45 +618,53 @@
                 // Очистка
                 ctx.clearRect(0, 0, W, H);
                 
-                // Небо
+                // Небо с градиентом
                 const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
                 skyGrad.addColorStop(0, '#0a0e27');
-                skyGrad.addColorStop(0.3, '#1a1a3e');
-                skyGrad.addColorStop(0.6, '#2d1b4e');
-                skyGrad.addColorStop(1, '#1a0f2a');
+                skyGrad.addColorStop(0.4, '#1a1a3e');
+                skyGrad.addColorStop(0.7, '#2d1b4e');
+                skyGrad.addColorStop(1, '#3d2b5e');
                 ctx.fillStyle = skyGrad;
                 ctx.fillRect(0, 0, W, H);
                 
-                // Звёзды
-                if (state.altitude > 10) {
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-                    for (let i = 0; i < 20; i++) {
-                        const x = (i * 137) % W;
-                        const y = (i * 89) % (H * 0.5);
-                        ctx.fillRect(x, y, 1, 1);
+                // Облака (движутся медленно)
+                this.drawClouds(W, H);
+                
+                // Земля (движется вниз при наборе высоты)
+                const groundOffset = state.altitude * 5;
+                const groundY = H * 0.7 + groundOffset;
+                
+                // Ограничиваем, чтобы земля не уходила слишком далеко
+                const maxGroundY = Math.min(groundY, H * 0.95);
+                
+                // Земля
+                const groundGrad = ctx.createLinearGradient(0, maxGroundY, 0, H);
+                groundGrad.addColorStop(0, '#2d5a27');
+                groundGrad.addColorStop(1, '#1a3a1a');
+                ctx.fillStyle = groundGrad;
+                ctx.fillRect(0, maxGroundY, W, H - maxGroundY);
+                
+                // Линия горизонта
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, maxGroundY);
+                ctx.lineTo(W, maxGroundY);
+                ctx.stroke();
+                
+                // Трава/деревья на земле
+                if (maxGroundY < H) {
+                    ctx.fillStyle = 'rgba(34, 197, 94, 0.3)';
+                    for (let i = 0; i < W; i += 20) {
+                        const treeHeight = 5 + Math.sin(i * 0.3) * 3;
+                        ctx.fillRect(i, maxGroundY - treeHeight, 2, treeHeight);
                     }
                 }
                 
-                // Обновление камеры
-                const targetCameraOffset = -state.altitude * 3;
-                state.cameraOffset += (targetCameraOffset - state.cameraOffset) * 0.1;
+                // Самолёт (всегда в центре, с учётом высоты)
+                const planeX = W * 0.5;
+                const planeY = H * 0.4 - Math.min(state.altitude * 0.5, 100); // Самолёт поднимается вверх при наборе высоты
                 
-                // Земля
-                const groundY = H * 0.75 + state.cameraOffset;
-                ctx.fillStyle = 'rgba(34, 197, 94, 0.15)';
-                ctx.fillRect(0, groundY, W, H - groundY);
-                
-                // Горизонт
-                ctx.strokeStyle = 'rgba(34, 197, 94, 0.3)';
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(0, groundY);
-                ctx.lineTo(W, groundY);
-                ctx.stroke();
-                
-                // Самолёт
-                const planeX = W / 2;
-                const planeY = H / 2;
                 this.drawAirplane(planeX, planeY, state.pitch);
                 
                 // Векторы сил
@@ -661,126 +672,304 @@
                     this.drawForceVectors(planeX, planeY);
                 }
                 
-                // Индикаторы на канвасе
-                this.drawCanvasIndicators();
+                // Шкала высоты справа
+                this.drawAltitudeScale(W, H);
+            }
+            
+            drawClouds(W, H) {
+                const { ctx, state } = this;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+                
+                for (let i = 0; i < 5; i++) {
+                    const x = (i * 200 + state.time * 2) % (W + 100) - 50;
+                    const y = 50 + i * 50 + Math.sin(i * 2 + state.time) * 20;
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 30 + i * 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(x + 25, y + 5, 25 + i * 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(x - 20, y + 8, 20 + i * 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
             
             drawAirplane(x, y, pitch) {
-                const { ctx } = this;
+                const { ctx, state } = this;
                 
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate(pitch * Math.PI / 180);
                 
-                // Фюзеляж
+                // Масштаб самолёта
+                const scale = 1.2;
+                ctx.scale(scale, scale);
+                
+                // Тень
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = 20;
+                ctx.shadowOffsetX = 5;
+                ctx.shadowOffsetY = 5;
+                
+                // Фюзеляж - более реалистичная форма
                 ctx.beginPath();
-                ctx.moveTo(60, 0);
-                ctx.quadraticCurveTo(80, -8, 70, -12);
-                ctx.lineTo(-40, -9);
-                ctx.lineTo(-50, -2);
-                ctx.lineTo(-50, 2);
-                ctx.lineTo(-40, 9);
-                ctx.lineTo(70, 12);
-                ctx.quadraticCurveTo(80, 8, 60, 0);
+                ctx.moveTo(50, 0); // Нос
+                ctx.quadraticCurveTo(60, -6, 40, -12); // Верх носа
+                ctx.lineTo(-30, -10); // Верх фюзеляжа
+                ctx.quadraticCurveTo(-45, -8, -50, -3); // Хвост верх
+                ctx.lineTo(-50, 3); // Хвост низ
+                ctx.quadraticCurveTo(-45, 8, -30, 10); // Низ хвоста
+                ctx.lineTo(40, 12); // Низ фюзеляжа
+                ctx.quadraticCurveTo(60, 6, 50, 0); // Низ носа
                 ctx.closePath();
                 
-                const fuselageGrad = ctx.createLinearGradient(-50, 0, 80, 0);
-                fuselageGrad.addColorStop(0, '#64748b');
-                fuselageGrad.addColorStop(0.5, '#94a3b8');
-                fuselageGrad.addColorStop(1, '#64748b');
+                // Градиент фюзеляжа
+                const fuselageGrad = ctx.createLinearGradient(-50, 0, 60, 0);
+                fuselageGrad.addColorStop(0, '#475569');
+                fuselageGrad.addColorStop(0.3, '#64748b');
+                fuselageGrad.addColorStop(0.7, '#94a3b8');
+                fuselageGrad.addColorStop(1, '#cbd5e1');
                 ctx.fillStyle = fuselageGrad;
                 ctx.fill();
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
                 ctx.lineWidth = 1;
                 ctx.stroke();
                 
-                // Крылья
-                ctx.fillStyle = '#4f46e5';
-                ctx.beginPath();
-                ctx.moveTo(10, -5);
-                ctx.quadraticCurveTo(0, -50, -30, -45);
-                ctx.lineTo(-38, -38);
-                ctx.lineTo(-10, -8);
-                ctx.closePath();
-                ctx.fill();
+                // Крылья - более реалистичные
+                ctx.shadowBlur = 15;
+                ctx.shadowOffsetX = 3;
+                ctx.shadowOffsetY = 3;
                 
+                // Правое крыло
+                ctx.beginPath();
+                ctx.moveTo(10, -5); // Корень крыла
+                ctx.quadraticCurveTo(5, -40, -25, -45); // Верхняя кромка
+                ctx.lineTo(-35, -38); // Законцовка
+                ctx.quadraticCurveTo(-15, -15, -10, -8); // Нижняя кромка
+                ctx.closePath();
+                
+                const wingGrad = ctx.createLinearGradient(10, -45, -35, -5);
+                wingGrad.addColorStop(0, '#4f46e5');
+                wingGrad.addColorStop(1, '#7c3aed');
+                ctx.fillStyle = wingGrad;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+                
+                // Левое крыло (зеркально)
                 ctx.beginPath();
                 ctx.moveTo(10, 5);
-                ctx.quadraticCurveTo(0, 50, -30, 45);
-                ctx.lineTo(-38, 38);
-                ctx.lineTo(-10, 8);
+                ctx.quadraticCurveTo(5, 40, -25, 45);
+                ctx.lineTo(-35, 38);
+                ctx.quadraticCurveTo(-15, 15, -10, 8);
                 ctx.closePath();
-                ctx.fill();
                 
-                // Хвост
-                ctx.fillStyle = '#7c3aed';
+                const wingGrad2 = ctx.createLinearGradient(10, 45, -35, 5);
+                wingGrad2.addColorStop(0, '#4f46e5');
+                wingGrad2.addColorStop(1, '#7c3aed');
+                ctx.fillStyle = wingGrad2;
+                ctx.fill();
+                ctx.stroke();
+                
+                // Хвостовое оперение
+                ctx.shadowBlur = 10;
+                
+                // Вертикальный стабилизатор
                 ctx.beginPath();
-                ctx.moveTo(-40, -2);
-                ctx.lineTo(-55, -20);
-                ctx.lineTo(-50, -17);
-                ctx.lineTo(-42, -3);
+                ctx.moveTo(-35, -3);
+                ctx.quadraticCurveTo(-40, -25, -48, -22);
+                ctx.lineTo(-50, -15);
+                ctx.quadraticCurveTo(-42, -8, -38, -4);
                 ctx.closePath();
-                ctx.fill();
                 
+                const tailGrad = ctx.createLinearGradient(-35, -25, -50, 0);
+                tailGrad.addColorStop(0, '#7c3aed');
+                tailGrad.addColorStop(1, '#a855f7');
+                ctx.fillStyle = tailGrad;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+                
+                // Горизонтальный стабилизатор
                 ctx.beginPath();
-                ctx.moveTo(-40, 2);
-                ctx.lineTo(-55, 20);
-                ctx.lineTo(-50, 17);
-                ctx.lineTo(-42, 3);
+                ctx.moveTo(-38, -2);
+                ctx.quadraticCurveTo(-45, -12, -52, -10);
+                ctx.lineTo(-53, -7);
+                ctx.quadraticCurveTo(-46, -5, -40, -1);
                 ctx.closePath();
+                ctx.fillStyle = '#6b7280';
                 ctx.fill();
+                ctx.stroke();
                 
-                // Кабина
-                ctx.fillStyle = '#06b6d4';
+                // Кабина пилота
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = 'rgba(6, 182, 212, 0.3)';
+                
                 ctx.beginPath();
-                ctx.ellipse(35, 0, 15, 6, 0, 0, Math.PI * 2);
+                ctx.moveTo(25, -4);
+                ctx.quadraticCurveTo(35, -10, 42, -6);
+                ctx.quadraticCurveTo(40, -2, 35, 0);
+                ctx.quadraticCurveTo(28, 0, 25, 2);
+                ctx.closePath();
+                
+                const cockpitGrad = ctx.createLinearGradient(25, -10, 42, 0);
+                cockpitGrad.addColorStop(0, '#06b6d4');
+                cockpitGrad.addColorStop(1, '#0891b2');
+                ctx.fillStyle = cockpitGrad;
                 ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+                
+                // Пропеллер
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = 'rgba(255, 255, 255, 0.2)';
+                
+                if (state.running && !state.paused) {
+                    const propAngle = state.time * 20;
+                    ctx.save();
+                    ctx.translate(52, 0);
+                    ctx.rotate(propAngle);
+                    
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 15, 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 2, 15, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.restore();
+                } else {
+                    // Неподвижный пропеллер
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.beginPath();
+                    ctx.ellipse(52, 0, 12, 2, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Сброс тени
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
                 
                 ctx.restore();
             }
             
             drawForceVectors(x, y) {
                 const { ctx, state } = this;
-                const scale = 2;
+                const scale = 3;
                 
-                // Подъёмная сила
-                ctx.strokeStyle = '#00ff88';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([5, 5]);
+                // Подъёмная сила (зелёная стрелка вверх)
+                if (state.lift > 0.1) {
+                    ctx.strokeStyle = '#00ff88';
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(x - 30, y);
+                    ctx.lineTo(x - 30, y - state.lift * scale);
+                    ctx.stroke();
+                    
+                    // Наконечник стрелки
+                    ctx.fillStyle = '#00ff88';
+                    ctx.beginPath();
+                    ctx.moveTo(x - 35, y - state.lift * scale);
+                    ctx.lineTo(x - 25, y - state.lift * scale);
+                    ctx.lineTo(x - 30, y - state.lift * scale - 10);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#00ff88';
+                    ctx.font = '10px Arial';
+                    ctx.fillText('Lift', x - 45, y - state.lift * scale / 2);
+                }
+                
+                // Вес (красная стрелка вниз)
+                ctx.strokeStyle = '#ff6b6b';
+                ctx.lineWidth = 3;
                 ctx.beginPath();
                 ctx.moveTo(x + 30, y);
-                ctx.lineTo(x + 30, y - state.lift * scale);
+                ctx.lineTo(x + 30, y + state.weight * scale);
                 ctx.stroke();
-                ctx.setLineDash([]);
                 
-                // Вес
-                ctx.strokeStyle = '#ff6b6b';
-                ctx.lineWidth = 2;
+                // Наконечник стрелки
+                ctx.fillStyle = '#ff6b6b';
                 ctx.beginPath();
-                ctx.moveTo(x - 30, y);
-                ctx.lineTo(x - 30, y + state.weight * scale);
-                ctx.stroke();
+                ctx.moveTo(x + 25, y + state.weight * scale);
+                ctx.lineTo(x + 35, y + state.weight * scale);
+                ctx.lineTo(x + 30, y + state.weight * scale + 10);
+                ctx.closePath();
+                ctx.fill();
                 
-                // Тяга
+                ctx.fillStyle = '#ff6b6b';
+                ctx.font = '10px Arial';
+                ctx.fillText('Weight', x + 40, y + state.weight * scale / 2);
+                
+                // Тяга (жёлтая стрелка вправо)
                 ctx.strokeStyle = '#ffd93d';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 3;
                 ctx.beginPath();
                 ctx.moveTo(x + 50, y);
                 ctx.lineTo(x + 50 + state.thrust * scale, y);
                 ctx.stroke();
+                
+                ctx.setLineDash([]);
             }
             
-            drawCanvasIndicators() {
-                const { ctx, canvas } = this;
+            drawAltitudeScale(W, H) {
+                const { ctx, state } = this;
                 
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                ctx.fillRect(10, 10, 200, 80);
+                // Шкала высоты
+                const scaleX = W - 30;
+                const scaleTop = 50;
+                const scaleBottom = H - 50;
+                const scaleHeight = scaleBottom - scaleTop;
                 
-                ctx.fillStyle = '#00ff88';
-                ctx.font = '12px monospace';
-                ctx.fillText(`Высота: ${this.state.altitude.toFixed(1)} м`, 20, 30);
-                ctx.fillText(`Скорость: ${(this.params.speed + this.params.wind).toFixed(1)} м/с`, 20, 50);
-                ctx.fillText(`Тангаж: ${this.state.pitch.toFixed(1)}°`, 20, 70);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(scaleX, scaleTop);
+                ctx.lineTo(scaleX, scaleBottom);
+                ctx.stroke();
+                
+                // Метки
+                const maxDisplayAlt = 20;
+                const numMarks = 10;
+                
+                for (let i = 0; i <= numMarks; i++) {
+                    const alt = (i / numMarks) * maxDisplayAlt;
+                    const y = scaleBottom - (alt / maxDisplayAlt) * scaleHeight;
+                    
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+                    ctx.beginPath();
+                    ctx.moveTo(scaleX - 5, y);
+                    ctx.lineTo(scaleX, y);
+                    ctx.stroke();
+                    
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.font = '9px Arial';
+                    ctx.fillText(alt.toFixed(0), scaleX - 25, y + 3);
+                }
+                
+                // Текущая высота
+                if (state.altitude <= maxDisplayAlt) {
+                    const currentY = scaleBottom - (state.altitude / maxDisplayAlt) * scaleHeight;
+                    
+                    ctx.fillStyle = '#00ff88';
+                    ctx.beginPath();
+                    ctx.arc(scaleX, currentY, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
             
             drawChart() {
@@ -793,7 +982,7 @@
                 if (state.history.length < 2) return;
                 
                 // Сетка
-                chartCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                chartCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
                 chartCtx.lineWidth = 1;
                 for (let i = 0; i < 5; i++) {
                     const y = (i / 4) * H;
@@ -804,12 +993,10 @@
                 }
                 
                 // График высоты
-                const maxAlt = Math.max(...state.history.map(d => d.altitude)) * 1.1;
+                const maxAlt = Math.max(...state.history.map(d => d.altitude), 1) * 1.2;
                 
-                chartCtx.strokeStyle = '#00ff88';
-                chartCtx.lineWidth = 2;
+                // Заливка под графиком
                 chartCtx.beginPath();
-                
                 state.history.forEach((d, i) => {
                     const x = (i / (state.history.length - 1)) * W;
                     const y = H - (d.altitude / maxAlt) * (H - 20) - 10;
@@ -820,40 +1007,71 @@
                         chartCtx.lineTo(x, y);
                     }
                 });
-                
-                chartCtx.stroke();
-                
-                // Заполнение
                 chartCtx.lineTo(W, H);
                 chartCtx.lineTo(0, H);
                 chartCtx.closePath();
-                chartCtx.fillStyle = 'rgba(0, 255, 136, 0.1)';
+                
+                const fillGrad = chartCtx.createLinearGradient(0, 0, 0, H);
+                fillGrad.addColorStop(0, 'rgba(0, 255, 136, 0.3)');
+                fillGrad.addColorStop(1, 'rgba(0, 255, 136, 0.02)');
+                chartCtx.fillStyle = fillGrad;
+                chartCtx.fill();
+                
+                // Линия графика
+                chartCtx.strokeStyle = '#00ff88';
+                chartCtx.lineWidth = 2;
+                chartCtx.beginPath();
+                state.history.forEach((d, i) => {
+                    const x = (i / (state.history.length - 1)) * W;
+                    const y = H - (d.altitude / maxAlt) * (H - 20) - 10;
+                    
+                    if (i === 0) {
+                        chartCtx.moveTo(x, y);
+                    } else {
+                        chartCtx.lineTo(x, y);
+                    }
+                });
+                chartCtx.stroke();
+                
+                // Текущая точка
+                const lastData = state.history[state.history.length - 1];
+                const lastX = W - 1;
+                const lastY = H - (lastData.altitude / maxAlt) * (H - 20) - 10;
+                
+                chartCtx.fillStyle = '#00ff88';
+                chartCtx.beginPath();
+                chartCtx.arc(lastX, lastY, 4, 0, Math.PI * 2);
                 chartCtx.fill();
                 
                 // Метки
-                chartCtx.fillStyle = '#94a3b8';
-                chartCtx.font = '10px monospace';
-                chartCtx.fillText(`${maxAlt.toFixed(1)} м`, 5, 15);
+                chartCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                chartCtx.font = '9px Arial';
+                chartCtx.fillText(`${maxAlt.toFixed(1)} м`, 5, 12);
                 chartCtx.fillText('0 м', 5, H - 5);
+                chartCtx.fillText(`${state.time.toFixed(1)} с`, W - 30, H - 5);
             }
             
             updateDisplays() {
-                // HUD
                 document.getElementById('hudAltitude').textContent = this.state.altitude.toFixed(1) + ' м';
-                document.getElementById('hudSpeed').textContent = (this.params.speed + this.params.wind).toFixed(1) + ' м/с';
-                document.getElementById('hudPitch').textContent = this.state.pitch.toFixed(1) + '°';
+                document.getElementById('hudSpeed').textContent = this.params.speed.toFixed(1) + ' м/с';
+                document.getElementById('hudVertical').textContent = this.state.verticalVelocity.toFixed(1) + ' м/с';
                 
-                // Телеметрия
                 document.getElementById('telLift').textContent = this.state.lift.toFixed(1) + ' Н';
                 document.getElementById('telDrag').textContent = this.state.drag.toFixed(1) + ' Н';
                 document.getElementById('telThrust').textContent = this.state.thrust.toFixed(1) + ' Н';
-                document.getElementById('telAccel').textContent = this.state.acceleration.toFixed(2) + ' м/с²';
+                document.getElementById('telWeight').textContent = this.state.weight.toFixed(1) + ' Н';
             }
             
             animate() {
                 const loop = (timestamp) => {
+                    if (this.lastTimestamp === 0) {
+                        this.lastTimestamp = timestamp;
+                    }
+                    
+                    const dt = (timestamp - this.lastTimestamp) / 1000;
+                    this.lastTimestamp = timestamp;
+                    
                     if (this.state.running && !this.state.paused) {
-                        const dt = 0.016; // ~60 FPS
                         this.updatePhysics(dt);
                     }
                     
@@ -868,7 +1086,6 @@
             }
         }
         
-        // Инициализация
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
