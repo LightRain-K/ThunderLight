@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Стили — такие же как в прошлой версии, оставляем без изменений */
+        /* Все стили остаются без изменений — используйте те же, что и в прошлой версии */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -704,7 +704,7 @@
 
     <script>
         // ============================================================
-        // ИСПРАВЛЕННАЯ СИМУЛЯЦИЯ — камера следует за самолётом
+        // ИСПРАВЛЕННАЯ СИМУЛЯЦИЯ — камера ПРАВИЛЬНО следует вверх
         // ============================================================
 
         const canvas = document.getElementById('simCanvas');
@@ -725,7 +725,7 @@
 
         // Состояние
         let state = {
-            altitude: 5,        // начальная высота (чтобы не лежать на земле)
+            altitude: 5,
             pitch: 0,
             verticalSpeed: 0,
             horizontalSpeed: 18,
@@ -737,9 +737,8 @@
             weight: 0,
             drag: 0,
             thrust: 0,
-            // Для плавного движения камеры
-            cameraY: 0,
-            targetCameraY: 0,
+            // Камера — теперь смещение вверх (отрицательное значение = подъём)
+            cameraOffset: 0,
         };
 
         const G = 9.81;
@@ -748,11 +747,10 @@
         const MAX_HISTORY = 100;
 
         // ============================================================
-        // ФИЗИКА (замедленная)
+        // ФИЗИКА
         // ============================================================
 
         function calculatePhysics(dt) {
-            // Ограничиваем шаг, чтобы симуляция не "улетала"
             dt = Math.min(dt, 0.03);
 
             const speed = params.speed;
@@ -772,24 +770,24 @@
             const drag = 0.5 * RHO * speed * speed * WING_AREA * cd;
             state.drag = drag;
 
-            // Тяга (немного больше, чтобы компенсировать сопротивление)
+            // Тяга
             const thrust = drag + 0.1 * mass * G;
             state.thrust = thrust;
 
-            // Вертикальное ускорение (подъёмная сила - вес)
+            // Вертикальное ускорение
             const liftForce = lift - weight;
             const verticalAccel = liftForce / mass;
 
             state.verticalSpeed += verticalAccel * dt;
             state.altitude += state.verticalSpeed * dt;
 
-            // Жёсткое ограничение — не уходим ниже земли
+            // Ограничение — не уходим ниже земли
             if (state.altitude < 0.3) {
                 state.altitude = 0.3;
                 if (state.verticalSpeed < 0) state.verticalSpeed = 0;
             }
 
-            // Угол тангажа (зависит от угла атаки и центровки)
+            // Угол тангажа
             const cg = params.cg / 100;
             const pitchTarget = params.aoa * 0.5 + (cg - 0.32) * 20;
             state.pitch += (pitchTarget - state.pitch) * dt * 1.5;
@@ -797,7 +795,6 @@
 
             state.horizontalSpeed = speed;
 
-            // Сохраняем историю для графика
             state.history.push({
                 altitude: state.altitude,
                 time: state.time,
@@ -810,7 +807,7 @@
         }
 
         // ============================================================
-        // ОТРИСОВКА САМОЛЁТА (узнаваемый)
+        // РИСУЕМ САМОЛЁТ (такой же, узнаваемый)
         // ============================================================
 
         function drawAirplane(cx, cy, pitch, scale) {
@@ -822,7 +819,7 @@
             ctx.shadowColor = 'rgba(79, 70, 229, 0.2)';
             ctx.shadowBlur = 25;
 
-            // === ФЮЗЕЛЯЖ ===
+            // Фюзеляж
             ctx.beginPath();
             ctx.moveTo(50, 0);
             ctx.quadraticCurveTo(70, -6, 58, -10);
@@ -843,7 +840,7 @@
             ctx.lineWidth = 0.5;
             ctx.stroke();
 
-            // === КРЫЛО (верхнее) ===
+            // Крыло верхнее
             ctx.shadowBlur = 20;
             ctx.shadowColor = 'rgba(99, 102, 241, 0.2)';
             ctx.beginPath();
@@ -861,7 +858,7 @@
             ctx.lineWidth = 0.5;
             ctx.stroke();
 
-            // === КРЫЛО (нижнее) ===
+            // Крыло нижнее
             ctx.beginPath();
             ctx.moveTo(8, 4);
             ctx.quadraticCurveTo(-2, 38, -24, 34);
@@ -875,7 +872,7 @@
             ctx.fill();
             ctx.stroke();
 
-            // === ЭЛЕРОНЫ ===
+            // Элероны
             ctx.shadowBlur = 10;
             ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
             ctx.strokeStyle = 'rgba(255,255,255,0.05)';
@@ -897,7 +894,7 @@
             ctx.fill();
             ctx.stroke();
 
-            // === ХВОСТ ===
+            // Хвост
             ctx.shadowBlur = 15;
             ctx.fillStyle = 'rgba(100, 116, 139, 0.5)';
             ctx.strokeStyle = 'rgba(255,255,255,0.1)';
@@ -919,7 +916,7 @@
             ctx.fill();
             ctx.stroke();
 
-            // === КАБИНА ===
+            // Кабина
             ctx.shadowBlur = 10;
             ctx.shadowColor = 'rgba(6, 182, 212, 0.15)';
             ctx.fillStyle = 'rgba(6, 182, 212, 0.2)';
@@ -934,7 +931,7 @@
             ctx.ellipse(32, -1, 6, 3, 0.05, 0, Math.PI * 2);
             ctx.fill();
 
-            // === ВИНТ ===
+            // Винт
             ctx.shadowBlur = 15;
             ctx.shadowColor = 'rgba(255,255,255,0.05)';
             const propAngle = state.running ? Date.now() / 60 : 0;
@@ -962,7 +959,7 @@
         }
 
         // ============================================================
-        // ОТРИСОВКА СЦЕНЫ — камера следует за самолётом
+        // ОТРИСОВКА СЦЕНЫ — камера ПОДНИМАЕТСЯ при наборе высоты
         // ============================================================
 
         function drawScene() {
@@ -977,18 +974,19 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
-            // === РАСЧЁТ КАМЕРЫ ===
-            // Камера плавно следует за самолётом, но не выходит за границы
-            const targetCamY = -state.altitude * 2.0;
-            state.cameraY += (targetCamY - state.cameraY) * 0.05;
+            // === КАМЕРА: чем выше altitude, тем выше камера (отрицательное смещение) ===
+            // Целевое смещение: при altitude=0 камера на месте, при росте высоты — уходит вверх
+            const targetOffset = -state.altitude * 2.0;
+            state.cameraOffset += (targetOffset - state.cameraOffset) * 0.06;
 
-            // Ограничиваем камеру, чтобы самолёт не улетел за край
-            const maxCamY = 50;
-            const minCamY = -200;
-            const camY = Math.max(minCamY, Math.min(maxCamY, state.cameraY));
+            // Ограничиваем, чтобы не улететь слишком далеко
+            const maxOffset = 150;
+            const minOffset = -300;
+            const camOffset = Math.max(minOffset, Math.min(maxOffset, state.cameraOffset));
 
-            // Горизонт (земля) с учётом камеры
-            const groundY = H - 50 + camY;
+            // Горизонт: изначально на 70% экрана, смещается вниз при подъёме камеры
+            const baseGroundY = H * 0.72;
+            const groundY = baseGroundY + camOffset;
 
             // === ЗЕМЛЯ ===
             ctx.fillStyle = 'rgba(34, 197, 94, 0.08)';
@@ -1014,11 +1012,11 @@
                 ctx.stroke();
             }
 
-            // Облака (на разных высотах)
+            // Облака (на разных высотах, смещаются вместе с камерой)
             ctx.fillStyle = 'rgba(255,255,255,0.03)';
             for (let i = 0; i < 5; i++) {
                 const cx = (i * 130 + state.time * 2.5) % (W + 100) - 50;
-                const cy = 30 + i * 35 + Math.sin(i * 2 + state.time * 0.2) * 15 + camY * 0.2;
+                const cy = 30 + i * 35 + Math.sin(i * 2 + state.time * 0.2) * 15 + camOffset * 0.15;
                 if (cy > 0 && cy < H - 30) {
                     ctx.beginPath();
                     ctx.arc(cx, cy, 40 + i * 5, 0, Math.PI * 2);
@@ -1029,9 +1027,8 @@
                 }
             }
 
-            // === САМОЛЁТ (всегда в центре по X, сдвиг по Y от камеры) ===
+            // === САМОЛЁТ (всегда в центре по вертикали) ===
             const planeX = W / 2;
-            // Самолёт рисуется в центре экрана, но с учётом высоты
             const planeY = H / 2 - 10;
 
             // Конденсационный след
@@ -1046,8 +1043,8 @@
                 ctx.setLineDash([]);
             }
 
-            // Рисуем самолёт
-            const scale = 0.8 + Math.min(state.altitude / 150, 0.3);
+            // Масштаб самолёта (немного уменьшается с высотой)
+            const scale = 0.8 + Math.min(state.altitude / 150, 0.2);
             drawAirplane(planeX, planeY, state.pitch, scale);
 
             // === ВЕКТОРЫ СИЛ ===
@@ -1087,10 +1084,12 @@
                 ctx.fillText('Thrust', planeX + 92, planeY + 4);
             }
 
-            // === ИНДИКАТОР ВЫСОТЫ НА ЭКРАНЕ ===
-            ctx.fillStyle = 'rgba(0,0,0,0.4)';
-            ctx.roundRect(10, 10, 110, 50, 8);
+            // === ИНДИКАТОРЫ ===
+            // Фон для индикаторов
+            ctx.fillStyle = 'rgba(0,0,0,0.5)';
+            ctx.roundRect(10, 10, 130, 44, 8);
             ctx.fill();
+
             ctx.fillStyle = 'rgba(255,255,255,0.2)';
             ctx.font = '10px monospace';
             ctx.fillText(`ALT ${state.altitude.toFixed(1)} m`, 16, 28);
@@ -1166,7 +1165,7 @@
         }
 
         // ============================================================
-        // ЦИКЛ СИМУЛЯЦИИ
+        // ЦИКЛ
         // ============================================================
 
         let lastTime = 0;
@@ -1219,6 +1218,7 @@
                     state.verticalSpeed = 0;
                     state.horizontalSpeed = params.speed;
                     state.pitch = 0;
+                    state.cameraOffset = 0;
                 }
             } else if (state.paused) {
                 state.paused = false;
@@ -1242,7 +1242,7 @@
             state.pitch = 0;
             state.history = [];
             state.time = 0;
-            state.cameraY = 0;
+            state.cameraOffset = 0;
             document.getElementById('btnRun').textContent = '▶ Запустить';
             document.getElementById('btnRun').style.opacity = '1';
             document.getElementById('btnPause').textContent = '⏸ Пауза';
@@ -1377,7 +1377,7 @@
         // ИНИЦИАЛИЗАЦИЯ
         // ============================================================
 
-        // roundRect polyfill для старых браузеров
+        // roundRect polyfill
         if (!CanvasRenderingContext2D.prototype.roundRect) {
             CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
                 if (typeof r === 'number') r = [r, r, r, r];
