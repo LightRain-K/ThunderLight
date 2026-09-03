@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThunderLight — Профессиональный Симулятор БПЛА</title>
+    <title>ThunderLight — Образовательный Симулятор БПЛА</title>
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -139,11 +139,6 @@
             text-shadow: 0 0 10px rgba(107, 207, 255, 0.5);
         }
         
-        .hud-value.red {
-            color: #ff6b6b;
-            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
-        }
-        
         .control-panel {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border);
@@ -152,6 +147,8 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
         }
         
         .panel-section {
@@ -234,6 +231,11 @@
             color: #ef4444;
         }
         
+        .btn-info {
+            background: rgba(6, 182, 212, 0.2);
+            color: #06b6d4;
+        }
+        
         .telemetry-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -287,9 +289,85 @@
             text-align: center;
         }
         
+        /* Образовательные блоки */
+        .education-panel {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .education-panel h4 {
+            color: #a5b4fc;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .education-panel p {
+            color: #94a3b8;
+            font-size: 0.8em;
+            line-height: 1.6;
+        }
+        
+        .formula {
+            background: rgba(79, 70, 229, 0.1);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+            color: #a5b4fc;
+            text-align: center;
+        }
+        
+        .task-box {
+            background: rgba(79, 70, 229, 0.08);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .task-title {
+            color: #a5b4fc;
+            font-weight: 600;
+            font-size: 0.85em;
+            margin-bottom: 4px;
+        }
+        
+        .task-desc {
+            color: #94a3b8;
+            font-size: 0.8em;
+            margin-bottom: 8px;
+        }
+        
+        .task-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .task-status.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .task-status.done {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
         @media (max-width: 1024px) {
             .simulator-container {
                 grid-template-columns: 1fr;
+            }
+            
+            .control-panel {
+                max-height: none;
             }
         }
         
@@ -359,6 +437,33 @@
         </div>
 
         <div class="control-panel">
+            <!-- Образовательная информация -->
+            <div class="panel-section">
+                <h3>📚 Теория полёта</h3>
+                
+                <div class="education-panel">
+                    <h4>Подъёмная сила</h4>
+                    <p>Подъёмная сила возникает благодаря разнице давления над и под крылом. Она зависит от:</p>
+                    <div class="formula">L = ½ × ρ × V² × S × Cl</div>
+                    <p>где: ρ — плотность воздуха, V — скорость, S — площадь крыла, Cl — коэффициент подъёмной силы</p>
+                </div>
+                
+                <div class="education-panel">
+                    <h4>Коэффициент подъёмной силы</h4>
+                    <p>Для малых углов атаки коэффициент подъёмной силы линейно зависит от угла:</p>
+                    <div class="formula">Cl ≈ 2π × α</div>
+                    <p>где α — угол атаки в радианах. При отрицательном угле атаки подъёмная сила направлена вниз!</p>
+                </div>
+                
+                <div class="education-panel">
+                    <h4>Условия горизонтального полёта</h4>
+                    <p>Для установившегося горизонтального полёта необходимо:</p>
+                    <div class="formula">L = W (Подъёмная сила = Вес)</div>
+                    <p>Если L > W — самолёт набирает высоту, если L < W — снижается</p>
+                </div>
+            </div>
+
+            <!-- Параметры -->
             <div class="panel-section">
                 <h3>🎛️ Параметры полёта</h3>
                 
@@ -383,15 +488,18 @@
                 </div>
             </div>
 
+            <!-- Управление -->
             <div class="panel-section">
                 <h3>🎮 Управление</h3>
                 <div style="display: grid; gap: 10px;">
                     <button class="btn btn-primary" id="btnRun">▶ ЗАПУСК</button>
                     <button class="btn btn-warning" id="btnPause">⏸ ПАУЗА</button>
                     <button class="btn btn-danger" id="btnReset">⟳ СБРОС</button>
+                    <button class="btn btn-info" id="btnExport">📊 ЭКСПОРТ ДАННЫХ</button>
                 </div>
             </div>
 
+            <!-- Телеметрия -->
             <div class="panel-section">
                 <h3>📊 Телеметрия</h3>
                 <div class="telemetry-grid">
@@ -422,6 +530,38 @@
                 </div>
             </div>
 
+            <!-- Задания -->
+            <div class="panel-section">
+                <h3>🎯 Лабораторные задания</h3>
+                
+                <div class="task-box">
+                    <div class="task-title">Задание 1: Горизонтальный полёт</div>
+                    <div class="task-desc">Найдите параметры для установившегося горизонтального полёта (высота не меняется)</div>
+                    <span class="task-status pending" id="task1Status">⏳ Не выполнено</span>
+                </div>
+                
+                <div class="task-box">
+                    <div class="task-title">Задание 2: Набор высоты</div>
+                    <div class="task-desc">Достигните высоты 100 метров, не превышая вертикальную скорость 3 м/с</div>
+                    <span class="task-status pending" id="task2Status">⏳ Не выполнено</span>
+                </div>
+                
+                <div class="task-box">
+                    <div class="task-title">Задание 3: Сваливание</div>
+                    <div class="task-desc">Найдите угол атаки, при котором начинается сваливание (отрицательная подъёмная сила)</div>
+                    <span class="task-status pending" id="task3Status">⏳ Не выполнено</span>
+                </div>
+                
+                <div class="task-box">
+                    <div class="task-title">Задание 4: Эффективность</div>
+                    <div class="task-desc">Достигните максимальной высоты при минимальной тяге (не более 50%)</div>
+                    <span class="task-status pending" id="task4Status">⏳ Не выполнено</span>
+                </div>
+                
+                <button class="btn btn-warning" onclick="resetAllTasks()" style="margin-top: 10px;">🔄 СБРОСИТЬ ЗАДАНИЯ</button>
+            </div>
+
+            <!-- График -->
             <div class="panel-section">
                 <h3>📈 Профиль полёта</h3>
                 <div class="chart-container">
@@ -451,7 +591,7 @@
                 };
                 
                 this.state = {
-                    altitude: 50, // Начинаем с высоты 50м
+                    altitude: 50,
                     verticalVelocity: 0,
                     acceleration: 0,
                     horizontalDistance: 0,
@@ -469,11 +609,26 @@
                     backgroundOffset: 0
                 };
                 
+                this.tasks = {
+                    task1: false,
+                    task2: false,
+                    task3: false,
+                    task4: false
+                };
+                
                 this.constants = {
                     g: 9.81,
                     rho: 1.225,
                     wingArea: 0.3,
-                    timeScale: 0.5
+                    timeScale: 0.5,
+                    // Улучшенные аэродинамические коэффициенты
+                    clAlpha: 5.73, // dCl/dα в радианах (более реалистично)
+                    clMax: 1.8,
+                    clMin: -1.2,
+                    cd0: 0.025, // Коэффициент сопротивления при нулевой подъёмной силе
+                    k: 0.045, // Индуктивное сопротивление
+                    oswaldEfficiency: 0.85,
+                    aspectRatio: 6
                 };
                 
                 this.lastTimestamp = 0;
@@ -484,6 +639,7 @@
                 this.resizeCanvas();
                 this.setupEventListeners();
                 this.animate();
+                this.checkTasks();
             }
             
             resizeCanvas() {
@@ -499,6 +655,7 @@
                 document.getElementById('btnRun').addEventListener('click', () => this.toggleRun());
                 document.getElementById('btnPause').addEventListener('click', () => this.togglePause());
                 document.getElementById('btnReset').addEventListener('click', () => this.reset());
+                document.getElementById('btnExport').addEventListener('click', () => this.exportData());
                 
                 const sliders = [
                     { id: 'speedSlider', valId: 'speedVal', param: 'speed', unit: ' м/с' },
@@ -571,30 +728,39 @@
             }
             
             updatePhysics(dt) {
-                const { g, rho, wingArea, timeScale } = this.constants;
+                const { g, rho, wingArea, timeScale, clAlpha, clMax, clMin, cd0, k, oswaldEfficiency, aspectRatio } = this.constants;
                 const mass = this.params.mass / 1000;
                 const speed = this.params.speed;
                 const aoaRad = this.params.aoa * Math.PI / 180;
                 const thrustPercent = this.params.thrust / 100;
                 
-                // Коэффициент подъёмной силы (реалистичная модель)
-                // При отрицательном угле атаки - отрицательная подъёмная сила
-                this.state.cl = 2 * Math.PI * aoaRad; // Линейная модель для малых углов
+                // Улучшенная модель коэффициента подъёмной силы
+                // Линейная часть + учёт сваливания
+                let cl = clAlpha * aoaRad;
                 
-                // Ограничение коэффициента
-                const clMax = 1.5;
-                const clMin = -1.0;
-                this.state.cl = Math.max(clMin, Math.min(clMax, this.state.cl));
+                // Моделирование сваливания (плавное уменьшение после критического угла)
+                const criticalAoa = 15 * Math.PI / 180; // Критический угол атаки
+                if (Math.abs(aoaRad) > criticalAoa) {
+                    const stallFactor = Math.max(0, 1 - (Math.abs(aoaRad) - criticalAoa) * 5);
+                    cl *= stallFactor;
+                }
+                
+                // Ограничение
+                this.state.cl = Math.max(clMin, Math.min(clMax, cl));
+                
+                // Улучшенная модель сопротивления
+                const cd = cd0 + (this.state.cl * this.state.cl) / (Math.PI * oswaldEfficiency * aspectRatio);
                 
                 // Силы
                 this.state.lift = 0.5 * rho * speed * speed * wingArea * this.state.cl;
-                this.state.drag = 0.5 * rho * speed * speed * wingArea * (0.03 + 0.05 * Math.abs(this.state.cl));
+                this.state.drag = 0.5 * rho * speed * speed * wingArea * cd;
                 this.state.weight = mass * g;
-                this.state.thrust = thrustPercent * mass * g * 1.5; // Максимальная тяга = 1.5x веса
+                this.state.thrust = thrustPercent * mass * g * 1.5;
+                
+                // Вертикальная составляющая тяги
+                const thrustVertical = this.state.thrust * Math.sin(aoaRad);
                 
                 // Суммарная вертикальная сила
-                // Тяга может создавать вертикальную составляющую
-                const thrustVertical = this.state.thrust * Math.sin(aoaRad);
                 this.state.netForce = this.state.lift + thrustVertical - this.state.weight;
                 
                 // Ускорение
@@ -608,7 +774,7 @@
                 this.state.horizontalDistance += speed * dt * timeScale;
                 this.state.backgroundOffset += speed * dt * timeScale * 10;
                 
-                // Ограничение - не уходим ниже земли
+                // Ограничение
                 if (this.state.altitude < 0) {
                     this.state.altitude = 0;
                     if (this.state.verticalVelocity < 0) {
@@ -628,7 +794,9 @@
                     verticalVelocity: this.state.verticalVelocity,
                     acceleration: this.state.acceleration,
                     lift: this.state.lift,
-                    cl: this.state.cl
+                    cl: this.state.cl,
+                    drag: this.state.drag,
+                    thrust: this.state.thrust
                 });
                 
                 if (this.state.history.length > 300) {
@@ -949,10 +1117,10 @@
                 const { ctx, state } = this;
                 const scale = 3;
                 
-                // Подъёмная сила (может быть отрицательной)
+                // Подъёмная сила
                 if (Math.abs(state.lift) > 0.1) {
                     const liftColor = state.lift > 0 ? '#00ff88' : '#ff6b6b';
-                    const liftDirection = state.lift > 0 ? -1 : 1; // Вверх или вниз
+                    const liftDirection = state.lift > 0 ? -1 : 1;
                     
                     ctx.strokeStyle = liftColor;
                     ctx.lineWidth = 3;
@@ -962,7 +1130,6 @@
                     ctx.lineTo(x - 30, y + liftDirection * Math.abs(state.lift) * scale);
                     ctx.stroke();
                     
-                    // Наконечник
                     ctx.fillStyle = liftColor;
                     ctx.beginPath();
                     const arrowY = y + liftDirection * Math.abs(state.lift) * scale;
@@ -1004,12 +1171,10 @@
             drawStallWarning(W, H) {
                 const { ctx } = this;
                 
-                // Красная рамка
                 ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
                 ctx.lineWidth = 3;
                 ctx.strokeRect(10, 10, W - 20, H - 20);
                 
-                // Текст предупреждения
                 ctx.fillStyle = 'rgba(255, 0, 0, 0.8)';
                 ctx.font = 'bold 24px Arial';
                 ctx.textAlign = 'center';
@@ -1050,7 +1215,6 @@
                     ctx.fillText(alt.toFixed(0), scaleX - 25, y + 3);
                 }
                 
-                // Текущая высота
                 if (state.altitude <= maxDisplayAlt) {
                     const currentY = scaleBottom - (state.altitude / maxDisplayAlt) * scaleHeight;
                     
@@ -1111,7 +1275,6 @@
                 
                 if (state.history.length < 2) return;
                 
-                // Сетка
                 chartCtx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
                 chartCtx.lineWidth = 1;
                 for (let i = 0; i < 5; i++) {
@@ -1122,10 +1285,8 @@
                     chartCtx.stroke();
                 }
                 
-                // График высоты
                 const maxAlt = Math.max(...state.history.map(d => d.altitude), 1) * 1.2;
                 
-                // Заливка
                 chartCtx.beginPath();
                 state.history.forEach((d, i) => {
                     const x = (i / (state.history.length - 1)) * W;
@@ -1147,7 +1308,6 @@
                 chartCtx.fillStyle = fillGrad;
                 chartCtx.fill();
                 
-                // Линия
                 chartCtx.strokeStyle = '#00ff88';
                 chartCtx.lineWidth = 2;
                 chartCtx.beginPath();
@@ -1163,7 +1323,6 @@
                 });
                 chartCtx.stroke();
                 
-                // Текущая точка
                 const lastData = state.history[state.history.length - 1];
                 const lastX = W - 1;
                 const lastY = H - (lastData.altitude / maxAlt) * (H - 20) - 10;
@@ -1173,7 +1332,6 @@
                 chartCtx.arc(lastX, lastY, 4, 0, Math.PI * 2);
                 chartCtx.fill();
                 
-                // Метки
                 chartCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                 chartCtx.font = '9px Arial';
                 chartCtx.fillText(`${maxAlt.toFixed(1)} м`, 5, 12);
@@ -1193,6 +1351,69 @@
                 document.getElementById('telThrust').textContent = this.state.thrust.toFixed(1) + ' Н';
                 document.getElementById('telNetForce').textContent = this.state.netForce.toFixed(1) + ' Н';
                 document.getElementById('telCl').textContent = this.state.cl.toFixed(2);
+            }
+            
+            checkTasks() {
+                // Проверка заданий каждые 500мс
+                setInterval(() => {
+                    if (!this.state.running) return;
+                    
+                    // Задание 1: Горизонтальный полёт
+                    if (!this.tasks.task1 && 
+                        Math.abs(this.state.verticalVelocity) < 0.5 && 
+                        this.state.altitude > 40 && 
+                        this.state.altitude < 60) {
+                        this.tasks.task1 = true;
+                        document.getElementById('task1Status').textContent = '✅ Выполнено!';
+                        document.getElementById('task1Status').className = 'task-status done';
+                    }
+                    
+                    // Задание 2: Набор высоты
+                    if (!this.tasks.task2 && 
+                        this.state.altitude >= 100 && 
+                        Math.abs(this.state.verticalVelocity) <= 3) {
+                        this.tasks.task2 = true;
+                        document.getElementById('task2Status').textContent = '✅ Выполнено!';
+                        document.getElementById('task2Status').className = 'task-status done';
+                    }
+                    
+                    // Задание 3: Сваливание
+                    if (!this.tasks.task3 && 
+                        this.state.cl < 0) {
+                        this.tasks.task3 = true;
+                        document.getElementById('task3Status').textContent = '✅ Выполнено!';
+                        document.getElementById('task3Status').className = 'task-status done';
+                    }
+                    
+                    // Задание 4: Эффективность
+                    if (!this.tasks.task4 && 
+                        this.state.altitude >= 80 && 
+                        this.params.thrust <= 50) {
+                        this.tasks.task4 = true;
+                        document.getElementById('task4Status').textContent = '✅ Выполнено!';
+                        document.getElementById('task4Status').className = 'task-status done';
+                    }
+                }, 500);
+            }
+            
+            exportData() {
+                if (this.state.history.length === 0) {
+                    alert('Нет данных для экспорта. Запустите симуляцию.');
+                    return;
+                }
+                
+                let csv = 'Время,Высота,Скорость,Верт.скорость,Ускорение,Подъёмная сила,Лобовое сопротивление,Тяга,Cl\n';
+                this.state.history.forEach(d => {
+                    csv += `${d.time.toFixed(2)},${d.altitude.toFixed(2)},${this.params.speed.toFixed(2)},${d.verticalVelocity.toFixed(2)},${d.acceleration.toFixed(2)},${d.lift.toFixed(2)},${d.drag.toFixed(2)},${d.thrust.toFixed(2)},${d.cl.toFixed(3)}\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'flight_data.csv';
+                a.click();
+                URL.revokeObjectURL(url);
             }
             
             animate() {
@@ -1219,12 +1440,29 @@
             }
         }
         
+        // Глобальная функция для сброса заданий
+        function resetAllTasks() {
+            if (window.simulator) {
+                window.simulator.tasks = {
+                    task1: false,
+                    task2: false,
+                    task3: false,
+                    task4: false
+                };
+                
+                document.querySelectorAll('.task-status').forEach(el => {
+                    el.textContent = '⏳ Не выполнено';
+                    el.className = 'task-status pending';
+                });
+            }
+        }
+        
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
             }, 500);
             
-            const simulator = new FlightSimulator();
+            window.simulator = new FlightSimulator();
         });
     </script>
 </body>
