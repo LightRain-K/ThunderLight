@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ThunderLight — Образовательная экосистема БПЛА</title>
-    <meta name="description" content="ThunderLight — образовательная экосистема для изучения БПЛА, программирования и инженерии.">
+    <meta name="description" content="ThunderLight — открытая образовательная экосистема для изучения БПЛА, программирования и инженерии. Всё для школ и кружков.">
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
     <style>
-        /* Все ваши стили остаются без изменений */
+        /* Стили те же, что в предыдущей версии, оставляем без изменений */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -302,10 +301,11 @@
             100% { background-position: 0% 50%; }
         }
         .hero p {
-            font-size: 1.2em;
+            font-size: 1.25em;
             color: var(--gray-light);
-            max-width: 650px;
+            max-width: 700px;
             margin: 0 auto 40px;
+            line-height: 1.6;
         }
         .hero-buttons {
             display: flex;
@@ -386,6 +386,28 @@
             margin: 0 auto;
         }
 
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+        .benefit-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .benefit-card:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: translateY(-4px);
+        }
+        .benefit-card .icon { font-size: 2.5em; display: block; margin-bottom: 12px; }
+        .benefit-card h3 { font-size: 1.1em; font-weight: 700; margin-bottom: 8px; }
+        .benefit-card p { color: var(--gray-light); font-size: 0.9em; line-height: 1.6; }
+
         .course-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -444,17 +466,6 @@
             border-radius: 20px;
             font-weight: 600;
         }
-        .course-card .badge-done {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: var(--success);
-            color: white;
-            font-size: 0.6em;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
 
         .ecosystem-grid {
             display: grid;
@@ -501,6 +512,31 @@
             -webkit-text-fill-color: transparent;
         }
         .stat-item .label { color: var(--gray-light); font-size: 0.85em; }
+
+        .testimonial {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px 36px;
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .testimonial .quote {
+            font-size: 1.1em;
+            color: var(--gray-light);
+            font-style: italic;
+            line-height: 1.8;
+        }
+        .testimonial .author {
+            margin-top: 16px;
+            font-weight: 600;
+            color: var(--light);
+        }
+        .testimonial .author span {
+            color: var(--gray);
+            font-weight: 400;
+        }
 
         .footer {
             padding: 60px 32px 40px;
@@ -583,8 +619,10 @@
             section { padding: 60px 20px; }
             .section-title { font-size: 2em; }
             .course-grid { grid-template-columns: 1fr; }
+            .benefits-grid { grid-template-columns: 1fr; }
             .ecosystem-grid { grid-template-columns: 1fr 1fr; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
+            .testimonial { padding: 20px; }
             .footer-grid { grid-template-columns: 1fr; gap: 24px; }
             .footer { padding: 40px 20px 24px; }
             .footer-bottom { flex-direction: column; text-align: center; }
@@ -618,7 +656,6 @@
             <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="/" class="active">Главная</a></li>
-                <!-- ⬇️ НОВАЯ ССЫЛКА НА ACADEMY ⬇️ -->
                 <li><a href="/articles/">Academy</a></li>
                 <li><a href="/uav-project.html">БПЛА</a></li>
                 <li><a href="/lab.html">Lab</a></li>
@@ -639,14 +676,19 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <span class="hero-badge-dot"></span>
-                Образовательная экосистема БПЛА
+                Открытая образовательная экосистема
             </div>
-            <h1>Изучай <span class="hero-gradient">инженерию и программирование</span> через БПЛА</h1>
-            <p>ThunderLight — это открытая образовательная среда, где ты можешь изучить основы Python, Arduino, схемотехники и управления БПЛА.</p>
+            <h1>От <span class="hero-gradient">теории</span> к реальному <span class="hero-gradient">полёту</span></h1>
+            <p>
+                ThunderLight — это открытая образовательная платформа для изучения БПЛА, программирования и инженерии.
+                Всё, что нужно для школ и кружков: от первых строк кода до управления реальным дроном.
+            </p>
             <div class="hero-buttons">
                 <a href="#courses" class="btn btn-primary">🎓 Начать обучение</a>
-                <a href="/articles/" class="btn btn-outline">📖 Перейти в Academy</a>
-                <a href="/uav-project.html" class="btn btn-outline">🚀 Перейти к БПЛА</a>
+                <a href="/uav-project.html" class="btn btn-outline">🚀 Исследовать БПЛА</a>
+                <a href="https://github.com/LightRain-K/ThunderLight" target="_blank" class="btn btn-outline">
+                    <i class="fab fa-github"></i> Открытый код
+                </a>
             </div>
         </div>
     </section>
@@ -661,8 +703,42 @@
         </div>
     </section>
 
+    <!-- ======== О ПРОЕКТЕ ======== -->
+    <section id="about">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">⚡ О проекте</span>
+                <h2 class="section-title">Образовательная экосистема нового поколения</h2>
+                <p class="section-subtitle">ThunderLight — это не просто конструктор БПЛА. Это полноценная среда для обучения, где теория соединяется с практикой.</p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <span class="icon">🧩</span>
+                    <h3>Открытая архитектура</h3>
+                    <p>Гибридная система управления на Arduino + Raspberry Pi. Полностью открытый код и схемы — всё доступно на GitHub.</p>
+                </div>
+                <div class="benefit-card">
+                    <span class="icon">💡</span>
+                    <h3>Образовательная методика</h3>
+                    <p>Структурированные курсы, интерактивные лаборатории и симуляторы. От изучения Python до программирования дронов.</p>
+                </div>
+                <div class="benefit-card">
+                    <span class="icon">🛠️</span>
+                    <h3>Доступность и ремонт</h3>
+                    <p>Все детали можно распечатать на 3D-принтере. Стоимость комплекта ~12 000 ₽, а замена деталей — без инструментов.</p>
+                </div>
+                <div class="benefit-card">
+                    <span class="icon">🔒</span>
+                    <h3>Безопасность</h3>
+                    <p>Критические компоненты защищены корпусом. Li-Po аккумуляторы и полётный контроллер — в надёжном кожухе.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- ======== КУРСЫ ======== -->
-    <section id="courses">
+    <section id="courses" style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div class="section-container">
             <div class="section-header">
                 <span class="section-label">🎓 Образовательная программа</span>
@@ -671,8 +747,6 @@
             </div>
 
             <div class="course-grid">
-                <!-- ⬇️ ВСЕ ССЫЛКИ ВЕДУТ НА /articles/ ⬇️ -->
-                <!-- Python -->
                 <a href="/articles/" class="course-card">
                     <span class="badge-new">Новый</span>
                     <span class="icon">🐍</span>
@@ -686,7 +760,6 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <!-- Arduino -->
                 <a href="/articles/" class="course-card">
                     <span class="badge-new">Новый</span>
                     <span class="icon">⚡</span>
@@ -700,7 +773,6 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <!-- Электроника -->
                 <a href="/articles/" class="course-card">
                     <span class="icon">🔌</span>
                     <h3>Основы электроники</h3>
@@ -713,7 +785,6 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <!-- БПЛА -->
                 <a href="/articles/" class="course-card">
                     <span class="icon">✈️</span>
                     <h3>Введение в БПЛА</h3>
@@ -726,7 +797,6 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <!-- ПИД -->
                 <a href="/articles/" class="course-card">
                     <span class="icon">🎯</span>
                     <h3>ПИД-регуляторы на практике</h3>
@@ -739,7 +809,6 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <!-- Программирование дронов -->
                 <a href="/articles/" class="course-card">
                     <span class="icon">💻</span>
                     <h3>Программирование дронов</h3>
@@ -756,7 +825,7 @@
     </section>
 
     <!-- ======== ЭКОСИСТЕМА ======== -->
-    <section id="ecosystem" style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <section id="ecosystem">
         <div class="section-container">
             <div class="section-header">
                 <span class="section-label">🧩 Экосистема</span>
@@ -765,7 +834,6 @@
             </div>
 
             <div class="ecosystem-grid">
-                <!-- ⬇️ ИСПРАВЛЕННАЯ ССЫЛКА НА ACADEMY ⬇️ -->
                 <a href="/articles/" class="eco-link">
                     <span class="icon">📖</span>
                     <span class="name">Academy</span>
@@ -800,55 +868,29 @@
         </div>
     </section>
 
-    <!-- ======== КАРТА ПУТИ ======== -->
-    <section id="roadmap">
+    <!-- ======== ОТЗЫВ / ЦИТАТА ======== -->
+    <section style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div class="section-container">
-            <div class="section-header">
-                <span class="section-label">🗺️ Карта обучения</span>
-                <h2 class="section-title">Твой путь в инженерии</h2>
-                <p class="section-subtitle">Пошаговая программа для освоения профессии инженера БПЛА.</p>
-            </div>
-
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:20px; max-width:1000px; margin:0 auto;">
-                <div style="background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
-                    <span style="font-size:2em;display:block;">📖</span>
-                    <h4 style="font-weight:700;font-size:1em;margin:8px 0;">Уровень 1</h4>
-                    <p style="font-size:0.8em;color:var(--gray-light);">Основы Python и электроники</p>
-                    <span style="font-size:0.7em;color:var(--gray);">4 урока</span>
+            <div class="testimonial">
+                <div class="quote">
+                    «ThunderLight — это не просто конструктор. Это полноценная образовательная среда, где ученики проходят путь от теории к реальной инженерии. Всё открыто, доступно и безопасно.»
                 </div>
-                <div style="background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
-                    <span style="font-size:2em;display:block;">⚡</span>
-                    <h4 style="font-weight:700;font-size:1em;margin:8px 0;">Уровень 2</h4>
-                    <p style="font-size:0.8em;color:var(--gray-light);">Arduino и схемотехника</p>
-                    <span style="font-size:0.7em;color:var(--gray);">5 уроков</span>
-                </div>
-                <div style="background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
-                    <span style="font-size:2em;display:block;">✈️</span>
-                    <h4 style="font-weight:700;font-size:1em;margin:8px 0;">Уровень 3</h4>
-                    <p style="font-size:0.8em;color:var(--gray-light);">Управление БПЛА</p>
-                    <span style="font-size:0.7em;color:var(--gray);">6 уроков</span>
-                </div>
-                <div style="background:rgba(15,23,42,0.4);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
-                    <span style="font-size:2em;display:block;">🎯</span>
-                    <h4 style="font-weight:700;font-size:1em;margin:8px 0;">Уровень 4</h4>
-                    <p style="font-size:0.8em;color:var(--gray-light);">ПИД и программирование</p>
-                    <span style="font-size:0.7em;color:var(--gray);">7 уроков</span>
-                </div>
+                <div class="author">Команда ThunderLight <span>— образовательная экосистема БПЛА</span></div>
             </div>
         </div>
     </section>
 
     <!-- ======== CTA ======== -->
-    <section style="background:radial-gradient(ellipse at center, rgba(79,70,229,0.1), transparent 70%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <section>
         <div class="section-container" style="text-align:center;">
             <div style="max-width:600px;margin:0 auto;">
-                <h2 style="font-size:2.2em;font-weight:900;margin-bottom:16px;">Начни учиться сегодня</h2>
+                <h2 style="font-size:2.2em;font-weight:900;margin-bottom:16px;">Готов начать?</h2>
                 <p style="color:var(--gray-light);font-size:1.1em;margin-bottom:32px;">
-                    Весь контент бесплатный, с открытым исходным кодом. Присоединяйся к сообществу инженеров.
+                    Всё, что нужно для старта, уже есть на сайте. Бесплатно, с открытым кодом и документацией.
                 </p>
                 <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
                     <a href="#courses" class="btn btn-primary">🎓 Выбрать курс</a>
-                    <a href="/articles/" class="btn btn-outline">📖 Перейти в Academy</a>
+                    <a href="/docs.html" class="btn btn-outline">📚 Техническая документация</a>
                     <a href="https://github.com/LightRain-K/ThunderLight" target="_blank" class="btn btn-outline">
                         <i class="fab fa-github"></i> GitHub
                     </a>
@@ -865,12 +907,16 @@
                     <span class="nav-logo-icon">⚡</span>
                     ThunderLight
                 </a>
-                <p>Образовательная экосистема БПЛА. Проектируй, собирай, летай.</p>
+                <p>Открытая образовательная экосистема БПЛА. Проектируй, собирай, летай.</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+                    <span style="background:rgba(79,70,229,0.1);padding:2px 12px;border-radius:20px;font-size:0.7em;color:#a5b4fc;">#OpenSource</span>
+                    <span style="background:rgba(79,70,229,0.1);padding:2px 12px;border-radius:20px;font-size:0.7em;color:#a5b4fc;">#Образование</span>
+                    <span style="background:rgba(79,70,229,0.1);padding:2px 12px;border-radius:20px;font-size:0.7em;color:#a5b4fc;">#БПЛА</span>
+                </div>
             </div>
             <div class="footer-col">
                 <h4>Экосистема</h4>
                 <ul>
-                    <!-- ⬇️ ИСПРАВЛЕННАЯ ССЫЛКА НА ACADEMY ⬇️ -->
                     <li><a href="/articles/">Academy</a></li>
                     <li><a href="/lab.html">Lab</a></li>
                     <li><a href="/simulator.html">Simulator</a></li>
@@ -906,7 +952,7 @@
     </footer>
 
     <script>
-        // Все ваши скрипты остаются без изменений
+        // Все скрипты остаются без изменений
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
@@ -983,7 +1029,7 @@
             });
         }, { threshold: 0.1 });
 
-        document.querySelectorAll('.course-card, .eco-link, .stat-item').forEach(el => {
+        document.querySelectorAll('.course-card, .eco-link, .stat-item, .benefit-card').forEach(el => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
             el.style.transition = 'all 0.6s ease';
