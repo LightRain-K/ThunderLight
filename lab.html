@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Все стили остаются без изменений — используйте те же, что и в прошлой версии */
+        /* Все стили — такие же, как в предыдущей версии */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -704,7 +704,8 @@
 
     <script>
         // ============================================================
-        // ИСПРАВЛЕННАЯ СИМУЛЯЦИЯ — камера ПРАВИЛЬНО следует вверх
+        // ФИНАЛЬНАЯ ИСПРАВЛЕННАЯ СИМУЛЯЦИЯ
+        // Камера ПРАВИЛЬНО двигается: при подъёме — вверх, при снижении — вниз
         // ============================================================
 
         const canvas = document.getElementById('simCanvas');
@@ -737,8 +738,8 @@
             weight: 0,
             drag: 0,
             thrust: 0,
-            // Камера — теперь смещение вверх (отрицательное значение = подъём)
-            cameraOffset: 0,
+            // Камера: смещение по Y (положительное = вниз, отрицательное = вверх)
+            cameraY: 0,
         };
 
         const G = 9.81;
@@ -807,7 +808,7 @@
         }
 
         // ============================================================
-        // РИСУЕМ САМОЛЁТ (такой же, узнаваемый)
+        // РИСУЕМ САМОЛЁТ
         // ============================================================
 
         function drawAirplane(cx, cy, pitch, scale) {
@@ -959,7 +960,7 @@
         }
 
         // ============================================================
-        // ОТРИСОВКА СЦЕНЫ — камера ПОДНИМАЕТСЯ при наборе высоты
+        // ОТРИСОВКА СЦЕНЫ — КАМЕРА ПРАВИЛЬНО ДВИГАЕТСЯ
         // ============================================================
 
         function drawScene() {
@@ -974,24 +975,28 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
-            // === КАМЕРА: чем выше altitude, тем выше камера (отрицательное смещение) ===
-            // Целевое смещение: при altitude=0 камера на месте, при росте высоты — уходит вверх
-            const targetOffset = -state.altitude * 2.0;
-            state.cameraOffset += (targetOffset - state.cameraOffset) * 0.06;
+            // === КАМЕРА ===
+            // Целевое смещение: при altitude=0 камера на месте, при росте высоты — уходит ВВЕРХ (отрицательное)
+            // но в координатах canvas "вверх" — это уменьшение Y
+            const targetCamY = -state.altitude * 2.0;
+            state.cameraY += (targetCamY - state.cameraY) * 0.06;
 
-            // Ограничиваем, чтобы не улететь слишком далеко
-            const maxOffset = 150;
-            const minOffset = -300;
-            const camOffset = Math.max(minOffset, Math.min(maxOffset, state.cameraOffset));
-
-            // Горизонт: изначально на 70% экрана, смещается вниз при подъёме камеры
-            const baseGroundY = H * 0.72;
-            const groundY = baseGroundY + camOffset;
+            // Ограничиваем, чтобы камера не улетела слишком далеко
+            const camY = Math.max(-250, Math.min(50, state.cameraY));
 
             // === ЗЕМЛЯ ===
+            // Базовое положение земли — 72% экрана
+            const baseGroundY = H * 0.72;
+            // Земля смещается ВНИЗ (увеличиваем Y) при подъёме камеры
+            // camY отрицательное => groundY уменьшается => земля поднимается
+            // Это правильное поведение: при наборе высоты земля уходит вниз
+            const groundY = baseGroundY + camY;
+
+            // Закрашиваем землю
             ctx.fillStyle = 'rgba(34, 197, 94, 0.08)';
             ctx.fillRect(0, groundY, W, H - groundY);
 
+            // Линия горизонта
             ctx.strokeStyle = 'rgba(34, 197, 94, 0.2)';
             ctx.lineWidth = 1;
             ctx.setLineDash([6, 8]);
@@ -1016,18 +1021,19 @@
             ctx.fillStyle = 'rgba(255,255,255,0.03)';
             for (let i = 0; i < 5; i++) {
                 const cx = (i * 130 + state.time * 2.5) % (W + 100) - 50;
-                const cy = 30 + i * 35 + Math.sin(i * 2 + state.time * 0.2) * 15 + camOffset * 0.15;
-                if (cy > 0 && cy < H - 30) {
+                // Облака двигаются вместе с камерой, но медленнее (эффект параллакса)
+                const cloudY = 30 + i * 35 + Math.sin(i * 2 + state.time * 0.2) * 15 + camY * 0.15;
+                if (cloudY > 0 && cloudY < H - 30) {
                     ctx.beginPath();
-                    ctx.arc(cx, cy, 40 + i * 5, 0, Math.PI * 2);
+                    ctx.arc(cx, cloudY, 40 + i * 5, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.beginPath();
-                    ctx.arc(cx + 35, cy + 5, 30 + i * 3, 0, Math.PI * 2);
+                    ctx.arc(cx + 35, cloudY + 5, 30 + i * 3, 0, Math.PI * 2);
                     ctx.fill();
                 }
             }
 
-            // === САМОЛЁТ (всегда в центре по вертикали) ===
+            // === САМОЛЁТ (всегда в центре экрана) ===
             const planeX = W / 2;
             const planeY = H / 2 - 10;
 
@@ -1043,7 +1049,7 @@
                 ctx.setLineDash([]);
             }
 
-            // Масштаб самолёта (немного уменьшается с высотой)
+            // Масштаб самолёта
             const scale = 0.8 + Math.min(state.altitude / 150, 0.2);
             drawAirplane(planeX, planeY, state.pitch, scale);
 
@@ -1103,6 +1109,12 @@
             ctx.fillStyle = state.running ? (state.paused ? '#f59e0b' : '#10b981') : '#64748b';
             ctx.font = '9px monospace';
             ctx.fillText(statusText, W - 88, 27);
+
+            // Маленькая стрелка направления камеры
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            ctx.font = '8px monospace';
+            const camDir = camY < -5 ? '▲' : (camY > 5 ? '▼' : '—');
+            ctx.fillText(`Cam ${camDir}`, 16, 64);
         }
 
         // ============================================================
@@ -1218,7 +1230,7 @@
                     state.verticalSpeed = 0;
                     state.horizontalSpeed = params.speed;
                     state.pitch = 0;
-                    state.cameraOffset = 0;
+                    state.cameraY = 0;
                 }
             } else if (state.paused) {
                 state.paused = false;
@@ -1242,7 +1254,7 @@
             state.pitch = 0;
             state.history = [];
             state.time = 0;
-            state.cameraOffset = 0;
+            state.cameraY = 0;
             document.getElementById('btnRun').textContent = '▶ Запустить';
             document.getElementById('btnRun').style.opacity = '1';
             document.getElementById('btnPause').textContent = '⏸ Пауза';
@@ -1377,7 +1389,6 @@
         // ИНИЦИАЛИЗАЦИЯ
         // ============================================================
 
-        // roundRect polyfill
         if (!CanvasRenderingContext2D.prototype.roundRect) {
             CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
                 if (typeof r === 'number') r = [r, r, r, r];
@@ -1405,14 +1416,12 @@
             updateDisplays();
         });
 
-        // Курсор
         const cursorGlow = document.getElementById('cursorGlow');
         document.addEventListener('mousemove', (e) => {
             cursorGlow.style.left = e.clientX + 'px';
             cursorGlow.style.top = e.clientY + 'px';
         });
 
-        // Частицы
         function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
@@ -1431,12 +1440,10 @@
         }
         createParticles();
 
-        // Навбар
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
 
-        // Мобильное меню
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
         let menuOpen = false;
@@ -1470,7 +1477,6 @@
             });
         });
 
-        // Запуск
         requestAnimationFrame(loop);
 
         if (window.location.hash) {
