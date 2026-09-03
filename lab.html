@@ -3,28 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>ThunderLight — Лаборатория БПЛА</title>
-    <meta name="description" content="Интерактивная лаборатория ThunderLight — экспериментируй с параметрами полёта.">
-    
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-
-    <!-- Yandex.Metrika -->
-    <script type="text/javascript">
-        (function(m,e,t,r,i,k,a){
-            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111722204', 'ym');
-        ym(111722204, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/111722204" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-
     <style>
+        /* Стили — такие же как в прошлой версии, оставляем без изменений */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -41,7 +25,6 @@
             --radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
@@ -52,7 +35,6 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
-
         .cursor-glow {
             position: fixed;
             width: 300px;
@@ -64,7 +46,6 @@
             transform: translate(-50%, -50%);
             transition: opacity 0.3s;
         }
-
         .particles-container {
             position: fixed;
             top: 0;
@@ -86,7 +67,6 @@
             90% { opacity: 0.5; }
             100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
-
         .preloader {
             position: fixed;
             top: 0;
@@ -124,7 +104,6 @@
             50% { opacity: 0.5; transform: scale(0.95); }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .navbar {
             position: fixed;
             top: 0;
@@ -235,9 +214,8 @@
             0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
             50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
         }
-
         .hero {
-            padding: 160px 32px 60px;
+            padding: 160px 32px 40px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -302,11 +280,10 @@
             max-width: 600px;
             margin: 0 auto;
         }
-
         .lab-container {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 20px 32px 60px;
+            padding: 10px 32px 60px;
         }
         .lab-grid {
             display: grid;
@@ -327,7 +304,6 @@
             align-items: center;
             gap: 10px;
         }
-
         #simCanvas {
             width: 100%;
             height: 400px;
@@ -337,7 +313,6 @@
             display: block;
             cursor: crosshair;
         }
-
         .slider-group {
             margin-bottom: 14px;
         }
@@ -382,10 +357,9 @@
             background: var(--primary);
             cursor: pointer;
         }
-
         #chartContainer {
             width: 100%;
-            height: 150px;
+            height: 140px;
             position: relative;
             margin-top: 12px;
         }
@@ -396,7 +370,6 @@
             border-radius: 8px;
             border: 1px solid var(--border);
         }
-
         .task-box {
             background: rgba(79, 70, 229, 0.08);
             border: 1px solid rgba(79, 70, 229, 0.2);
@@ -431,7 +404,6 @@
             background: rgba(245, 158, 11, 0.2);
             color: var(--warning);
         }
-
         .btn {
             padding: 8px 20px;
             border-radius: 10px;
@@ -470,10 +442,8 @@
             box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
         }
         .btn-sm { padding: 4px 14px; font-size: 0.75em; }
-
         section { padding: 40px 32px; }
         .section-container { max-width: 1280px; margin: 0 auto; }
-
         .footer {
             padding: 50px 32px 30px;
             background: var(--darker);
@@ -541,7 +511,6 @@
             color: var(--light);
             transform: translateY(-2px);
         }
-
         @media (max-width: 1024px) {
             .lab-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -550,7 +519,7 @@
             .nav-links { display: none; }
             .mobile-menu-btn { display: block; }
             .nav-content { padding: 12px 20px; }
-            .hero { padding: 130px 20px 40px; }
+            .hero { padding: 130px 20px 30px; }
             .hero h1 { font-size: 2em; }
             .lab-container { padding: 16px; }
             .lab-panel { padding: 16px; }
@@ -647,9 +616,9 @@
                 </div>
 
                 <div id="chartContainer">
-                    <canvas id="chartCanvas" width="500" height="150"></canvas>
+                    <canvas id="chartCanvas" width="500" height="140"></canvas>
                 </div>
-                <div style="display:flex;justify-content:space-between;font-size:0.65em;color:var(--gray);margin-top:2px;">
+                <div style="display:flex;justify-content:space-between;font-size:0.6em;color:var(--gray);margin-top:2px;">
                     <span>Высота</span>
                     <span>Время</span>
                 </div>
@@ -734,20 +703,17 @@
     </footer>
 
     <script>
-        // ========================
-        // ИСПРАВЛЕННАЯ СИМУЛЯЦИЯ
-        // ========================
+        // ============================================================
+        // ИСПРАВЛЕННАЯ СИМУЛЯЦИЯ — камера следует за самолётом
+        // ============================================================
 
         const canvas = document.getElementById('simCanvas');
         const ctx = canvas.getContext('2d');
         const chartCanvas = document.getElementById('chartCanvas');
         const chartCtx = chartCanvas.getContext('2d');
 
-        // Размеры канваса
-        const W = 600;
-        const H = 400;
-        canvas.width = W;
-        canvas.height = H;
+        const W = 600, H = 400;
+        canvas.width = W; canvas.height = H;
 
         // Параметры
         let params = {
@@ -759,7 +725,7 @@
 
         // Состояние
         let state = {
-            altitude: 5,        // стартовая высота
+            altitude: 5,        // начальная высота (чтобы не лежать на земле)
             pitch: 0,
             verticalSpeed: 0,
             horizontalSpeed: 18,
@@ -771,6 +737,9 @@
             weight: 0,
             drag: 0,
             thrust: 0,
+            // Для плавного движения камеры
+            cameraY: 0,
+            targetCameraY: 0,
         };
 
         const G = 9.81;
@@ -778,27 +747,23 @@
         const WING_AREA = 0.5;
         const MAX_HISTORY = 100;
 
-        const speedDisplay = document.getElementById('speedDisplay');
-        const altitudeDisplay = document.getElementById('altitudeDisplay');
-        const pitchDisplay = document.getElementById('pitchDisplay');
-        const liftDisplay = document.getElementById('liftDisplay');
-
-        // ========================
-        // ФИЗИКА
-        // ========================
+        // ============================================================
+        // ФИЗИКА (замедленная)
+        // ============================================================
 
         function calculatePhysics(dt) {
+            // Ограничиваем шаг, чтобы симуляция не "улетала"
+            dt = Math.min(dt, 0.03);
+
             const speed = params.speed;
             const aoaRad = params.aoa * Math.PI / 180;
             const mass = params.mass / 1000;
-            const cg = params.cg / 100;
 
             // Подъёмная сила
             const cl = 2 * Math.PI * aoaRad;
             const lift = 0.5 * RHO * speed * speed * WING_AREA * Math.max(cl, -1);
             state.lift = lift;
 
-            // Вес
             const weight = mass * G;
             state.weight = weight;
 
@@ -807,46 +772,46 @@
             const drag = 0.5 * RHO * speed * speed * WING_AREA * cd;
             state.drag = drag;
 
-            // Тяга
-            const thrust = drag + 0.2 * mass * G;
+            // Тяга (немного больше, чтобы компенсировать сопротивление)
+            const thrust = drag + 0.1 * mass * G;
             state.thrust = thrust;
 
-            // Вертикальное ускорение
+            // Вертикальное ускорение (подъёмная сила - вес)
             const liftForce = lift - weight;
             const verticalAccel = liftForce / mass;
 
             state.verticalSpeed += verticalAccel * dt;
             state.altitude += state.verticalSpeed * dt;
-            
-            // Ограничение — не уходим ниже земли
-            if (state.altitude < 0.5) {
-                state.altitude = 0.5;
+
+            // Жёсткое ограничение — не уходим ниже земли
+            if (state.altitude < 0.3) {
+                state.altitude = 0.3;
                 if (state.verticalSpeed < 0) state.verticalSpeed = 0;
             }
 
-            // Угол тангажа
-            const pitchTarget = params.aoa * 0.6 + (cg - 0.32) * 25;
-            state.pitch += (pitchTarget - state.pitch) * dt * 1.8;
+            // Угол тангажа (зависит от угла атаки и центровки)
+            const cg = params.cg / 100;
+            const pitchTarget = params.aoa * 0.5 + (cg - 0.32) * 20;
+            state.pitch += (pitchTarget - state.pitch) * dt * 1.5;
             state.pitch = Math.max(-20, Math.min(20, state.pitch));
 
             state.horizontalSpeed = speed;
 
+            // Сохраняем историю для графика
             state.history.push({
                 altitude: state.altitude,
                 time: state.time,
                 pitch: state.pitch,
                 lift: lift,
             });
-            if (state.history.length > MAX_HISTORY) {
-                state.history.shift();
-            }
+            if (state.history.length > MAX_HISTORY) state.history.shift();
 
             state.time += dt;
         }
 
-        // ========================
-        // ОТРИСОВКА САМОЛЁТА
-        // ========================
+        // ============================================================
+        // ОТРИСОВКА САМОЛЁТА (узнаваемый)
+        // ============================================================
 
         function drawAirplane(cx, cy, pitch, scale) {
             ctx.save();
@@ -854,7 +819,6 @@
             ctx.rotate(pitch * Math.PI / 180);
             ctx.scale(scale, scale);
 
-            // Тени
             ctx.shadowColor = 'rgba(79, 70, 229, 0.2)';
             ctx.shadowBlur = 25;
 
@@ -869,7 +833,6 @@
             ctx.lineTo(58, 10);
             ctx.quadraticCurveTo(70, 6, 50, 0);
             ctx.closePath();
-            
             const fuselageGrad = ctx.createLinearGradient(-40, 0, 70, 0);
             fuselageGrad.addColorStop(0, 'rgba(100, 116, 139, 0.5)');
             fuselageGrad.addColorStop(0.3, 'rgba(148, 163, 184, 0.7)');
@@ -880,11 +843,9 @@
             ctx.lineWidth = 0.5;
             ctx.stroke();
 
-            // === КРЫЛО ===
+            // === КРЫЛО (верхнее) ===
             ctx.shadowBlur = 20;
             ctx.shadowColor = 'rgba(99, 102, 241, 0.2)';
-            
-            // Верхнее крыло
             ctx.beginPath();
             ctx.moveTo(8, -4);
             ctx.quadraticCurveTo(-2, -38, -24, -34);
@@ -900,7 +861,7 @@
             ctx.lineWidth = 0.5;
             ctx.stroke();
 
-            // Нижнее крыло
+            // === КРЫЛО (нижнее) ===
             ctx.beginPath();
             ctx.moveTo(8, 4);
             ctx.quadraticCurveTo(-2, 38, -24, 34);
@@ -914,12 +875,11 @@
             ctx.fill();
             ctx.stroke();
 
-            // === ЭЛЕРОНЫ (подвижные части крыла) ===
+            // === ЭЛЕРОНЫ ===
             ctx.shadowBlur = 10;
             ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
             ctx.strokeStyle = 'rgba(255,255,255,0.05)';
             ctx.lineWidth = 0.5;
-            
             ctx.beginPath();
             ctx.moveTo(-20, -28);
             ctx.lineTo(-28, -26);
@@ -928,7 +888,6 @@
             ctx.closePath();
             ctx.fill();
             ctx.stroke();
-
             ctx.beginPath();
             ctx.moveTo(-20, 28);
             ctx.lineTo(-28, 26);
@@ -943,8 +902,6 @@
             ctx.fillStyle = 'rgba(100, 116, 139, 0.5)';
             ctx.strokeStyle = 'rgba(255,255,255,0.1)';
             ctx.lineWidth = 0.5;
-
-            // Вертикальный стабилизатор
             ctx.beginPath();
             ctx.moveTo(-32, -1);
             ctx.lineTo(-48, -16);
@@ -953,31 +910,11 @@
             ctx.closePath();
             ctx.fill();
             ctx.stroke();
-
             ctx.beginPath();
             ctx.moveTo(-32, 1);
             ctx.lineTo(-48, 16);
             ctx.lineTo(-44, 13);
             ctx.lineTo(-34, 2);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            // Горизонтальный стабилизатор
-            ctx.beginPath();
-            ctx.moveTo(-34, -2);
-            ctx.lineTo(-48, -5);
-            ctx.lineTo(-46, -3);
-            ctx.lineTo(-36, -1);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(-34, 2);
-            ctx.lineTo(-48, 5);
-            ctx.lineTo(-46, 3);
-            ctx.lineTo(-36, 1);
             ctx.closePath();
             ctx.fill();
             ctx.stroke();
@@ -992,8 +929,6 @@
             ctx.ellipse(28, -1, 12, 5, 0.05, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
-
-            // Окно кабины
             ctx.fillStyle = 'rgba(6, 182, 212, 0.1)';
             ctx.beginPath();
             ctx.ellipse(32, -1, 6, 3, 0.05, 0, Math.PI * 2);
@@ -1002,39 +937,33 @@
             // === ВИНТ ===
             ctx.shadowBlur = 15;
             ctx.shadowColor = 'rgba(255,255,255,0.05)';
-            
-            const propAngle = state.running ? Date.now() / 50 : 0;
+            const propAngle = state.running ? Date.now() / 60 : 0;
             ctx.save();
             ctx.translate(58, 0);
             ctx.rotate(propAngle);
-            
             ctx.fillStyle = 'rgba(255,255,255,0.3)';
             ctx.strokeStyle = 'rgba(255,255,255,0.05)';
             ctx.lineWidth = 0.5;
-            
             ctx.beginPath();
             ctx.ellipse(0, 0, 12, 2, 0, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
-            
             ctx.beginPath();
             ctx.ellipse(0, 0, 2, 12, 0, 0, Math.PI * 2);
             ctx.fill();
             ctx.stroke();
-            
             ctx.fillStyle = 'rgba(255,255,255,0.15)';
             ctx.beginPath();
             ctx.arc(0, 0, 2, 0, Math.PI * 2);
             ctx.fill();
-            
             ctx.restore();
 
             ctx.restore();
         }
 
-        // ========================
-        // ОТРИСОВКА СЦЕНЫ
-        // ========================
+        // ============================================================
+        // ОТРИСОВКА СЦЕНЫ — камера следует за самолётом
+        // ============================================================
 
         function drawScene() {
             ctx.clearRect(0, 0, W, H);
@@ -1048,66 +977,77 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
+            // === РАСЧЁТ КАМЕРЫ ===
+            // Камера плавно следует за самолётом, но не выходит за границы
+            const targetCamY = -state.altitude * 2.0;
+            state.cameraY += (targetCamY - state.cameraY) * 0.05;
+
+            // Ограничиваем камеру, чтобы самолёт не улетел за край
+            const maxCamY = 50;
+            const minCamY = -200;
+            const camY = Math.max(minCamY, Math.min(maxCamY, state.cameraY));
+
+            // Горизонт (земля) с учётом камеры
+            const groundY = H - 50 + camY;
+
             // === ЗЕМЛЯ ===
-            // Горизонт в зависимости от высоты
-            const groundY = H - 40 - state.altitude * 2.5;
-            const clampedGroundY = Math.max(30, Math.min(H - 10, groundY));
-
             ctx.fillStyle = 'rgba(34, 197, 94, 0.08)';
-            ctx.fillRect(0, clampedGroundY, W, H - clampedGroundY);
+            ctx.fillRect(0, groundY, W, H - groundY);
 
-            // Линия горизонта
             ctx.strokeStyle = 'rgba(34, 197, 94, 0.2)';
             ctx.lineWidth = 1;
             ctx.setLineDash([6, 8]);
             ctx.beginPath();
-            ctx.moveTo(0, clampedGroundY);
-            ctx.lineTo(W, clampedGroundY);
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(W, groundY);
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Трава (штрихи)
+            // Трава
             ctx.strokeStyle = 'rgba(34, 197, 94, 0.05)';
             ctx.lineWidth = 1;
             for (let i = 0; i < W; i += 12) {
-                const h = 3 + Math.sin(i * 0.5 + state.time) * 2;
+                const h = 3 + Math.sin(i * 0.5 + state.time * 2) * 2;
                 ctx.beginPath();
-                ctx.moveTo(i, clampedGroundY);
-                ctx.lineTo(i + 2, clampedGroundY - h);
+                ctx.moveTo(i, groundY);
+                ctx.lineTo(i + 2, groundY - h);
                 ctx.stroke();
             }
 
-            // === ОБЛАКА ===
+            // Облака (на разных высотах)
             ctx.fillStyle = 'rgba(255,255,255,0.03)';
             for (let i = 0; i < 5; i++) {
-                const cx = (i * 130 + state.time * 2) % (W + 100) - 50;
-                const cy = 30 + i * 35 + Math.sin(i * 2) * 15;
-                ctx.beginPath();
-                ctx.arc(cx, cy, 40 + i * 5, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.beginPath();
-                ctx.arc(cx + 35, cy + 5, 30 + i * 3, 0, Math.PI * 2);
-                ctx.fill();
+                const cx = (i * 130 + state.time * 2.5) % (W + 100) - 50;
+                const cy = 30 + i * 35 + Math.sin(i * 2 + state.time * 0.2) * 15 + camY * 0.2;
+                if (cy > 0 && cy < H - 30) {
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, 40 + i * 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(cx + 35, cy + 5, 30 + i * 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
 
-            // === САМОЛЁТ ===
+            // === САМОЛЁТ (всегда в центре по X, сдвиг по Y от камеры) ===
             const planeX = W / 2;
-            const planeY = Math.max(50, Math.min(H - 60, clampedGroundY - 40));
+            // Самолёт рисуется в центре экрана, но с учётом высоты
+            const planeY = H / 2 - 10;
 
-            // След от самолёта (конденсационный след)
+            // Конденсационный след
             if (state.running && state.altitude > 3) {
                 ctx.strokeStyle = 'rgba(255,255,255,0.05)';
                 ctx.lineWidth = 2;
                 ctx.setLineDash([4, 8]);
                 ctx.beginPath();
-                ctx.moveTo(planeX - 80, planeY + 2);
-                ctx.lineTo(planeX - 200, planeY + 2 + Math.sin(state.time * 0.5) * 3);
+                ctx.moveTo(planeX - 60, planeY + 2);
+                ctx.lineTo(planeX - 160, planeY + 2 + Math.sin(state.time * 0.5) * 3);
                 ctx.stroke();
                 ctx.setLineDash([]);
             }
 
             // Рисуем самолёт
-            const scale = 0.8 + Math.min(state.altitude / 100, 0.3);
+            const scale = 0.8 + Math.min(state.altitude / 150, 0.3);
             drawAirplane(planeX, planeY, state.pitch, scale);
 
             // === ВЕКТОРЫ СИЛ ===
@@ -1115,7 +1055,6 @@
                 const liftScale = Math.min(state.lift / 20, 1);
                 const weightScale = Math.min(state.weight / 20, 1);
 
-                // Подъёмная сила (вверх)
                 ctx.strokeStyle = 'rgba(34, 197, 94, 0.4)';
                 ctx.lineWidth = 2;
                 ctx.setLineDash([3, 5]);
@@ -1125,9 +1064,8 @@
                 ctx.stroke();
                 ctx.fillStyle = 'rgba(34, 197, 94, 0.4)';
                 ctx.font = '9px monospace';
-                ctx.fillText('L', planeX + 34, planeY - 30 - liftScale * 20);
+                ctx.fillText('Lift', planeX + 34, planeY - 30 - liftScale * 20);
 
-                // Вес (вниз)
                 ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
                 ctx.lineWidth = 2;
                 ctx.setLineDash([3, 5]);
@@ -1136,10 +1074,9 @@
                 ctx.lineTo(planeX - 30, planeY + 30 + weightScale * 20);
                 ctx.stroke();
                 ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
-                ctx.fillText('W', planeX - 38, planeY + 30 + weightScale * 20);
+                ctx.fillText('Weight', planeX - 48, planeY + 30 + weightScale * 20);
                 ctx.setLineDash([]);
 
-                // Тяга
                 ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
@@ -1147,29 +1084,31 @@
                 ctx.lineTo(planeX + 90, planeY);
                 ctx.stroke();
                 ctx.fillStyle = 'rgba(251, 191, 36, 0.4)';
-                ctx.fillText('T', planeX + 92, planeY + 4);
+                ctx.fillText('Thrust', planeX + 92, planeY + 4);
             }
 
-            // === ВЫСОТОМЕР ===
-            ctx.fillStyle = 'rgba(255,255,255,0.06)';
-            ctx.fillRect(10, 10, 80, 40);
+            // === ИНДИКАТОР ВЫСОТЫ НА ЭКРАНЕ ===
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.roundRect(10, 10, 110, 50, 8);
+            ctx.fill();
             ctx.fillStyle = 'rgba(255,255,255,0.2)';
-            ctx.font = '9px monospace';
-            ctx.fillText(`ALT ${state.altitude.toFixed(1)} m`, 16, 26);
-            ctx.fillText(`SPD ${state.horizontalSpeed.toFixed(1)} m/s`, 16, 40);
+            ctx.font = '10px monospace';
+            ctx.fillText(`ALT ${state.altitude.toFixed(1)} m`, 16, 28);
+            ctx.fillText(`SPD ${state.horizontalSpeed.toFixed(1)} m/s`, 16, 44);
 
             // Индикатор состояния
             const statusText = state.running ? (state.paused ? '⏸ PAUSED' : '▶ RUNNING') : '⏹ STOPPED';
             ctx.fillStyle = state.running ? (state.paused ? 'rgba(245,158,11,0.3)' : 'rgba(16,185,129,0.3)') : 'rgba(100,116,139,0.2)';
-            ctx.fillRect(W - 90, 10, 80, 24);
+            ctx.roundRect(W - 95, 10, 85, 24, 8);
+            ctx.fill();
             ctx.fillStyle = state.running ? (state.paused ? '#f59e0b' : '#10b981') : '#64748b';
             ctx.font = '9px monospace';
-            ctx.fillText(statusText, W - 82, 27);
+            ctx.fillText(statusText, W - 88, 27);
         }
 
-        // ========================
+        // ============================================================
         // ГРАФИК
-        // ========================
+        // ============================================================
 
         function drawChart() {
             const w = chartCanvas.width;
@@ -1186,7 +1125,6 @@
             const data = state.history;
             const maxAlt = Math.max(10, ...data.map(d => d.altitude)) * 1.2;
 
-            // Сетка
             chartCtx.strokeStyle = 'rgba(255,255,255,0.03)';
             chartCtx.lineWidth = 0.5;
             for (let i = 0; i < 4; i++) {
@@ -1197,7 +1135,6 @@
                 chartCtx.stroke();
             }
 
-            // Линия высоты
             chartCtx.strokeStyle = 'rgba(34, 197, 94, 0.7)';
             chartCtx.lineWidth = 2;
             chartCtx.beginPath();
@@ -1209,7 +1146,6 @@
             }
             chartCtx.stroke();
 
-            // Заполнение под графиком
             const lastX = w;
             const lastY = h - (data[data.length - 1].altitude / maxAlt) * h * 0.85 - 5;
             chartCtx.lineTo(lastX, h);
@@ -1218,28 +1154,26 @@
             chartCtx.fillStyle = 'rgba(34, 197, 94, 0.05)';
             chartCtx.fill();
 
-            // Точка в конце
             chartCtx.fillStyle = 'rgba(34, 197, 94, 0.8)';
             chartCtx.beginPath();
             chartCtx.arc(lastX - 3, lastY, 3, 0, Math.PI * 2);
             chartCtx.fill();
 
-            // Подписи
             chartCtx.fillStyle = 'rgba(255,255,255,0.15)';
             chartCtx.font = '7px monospace';
             chartCtx.fillText(maxAlt.toFixed(0) + 'm', 2, 10);
             chartCtx.fillText('0m', 2, h - 2);
         }
 
-        // ========================
-        // ЦИКЛ
-        // ========================
+        // ============================================================
+        // ЦИКЛ СИМУЛЯЦИИ
+        // ============================================================
 
         let lastTime = 0;
 
         function loop(timestamp) {
             if (lastTime === 0) lastTime = timestamp;
-            const delta = Math.min((timestamp - lastTime) / 1000, 0.05);
+            let delta = (timestamp - lastTime) / 1000;
             lastTime = timestamp;
 
             if (state.running && !state.paused) {
@@ -1265,9 +1199,14 @@
             liftDisplay.textContent = state.lift.toFixed(1) + ' Н';
         }
 
-        // ========================
+        // ============================================================
         // УПРАВЛЕНИЕ
-        // ========================
+        // ============================================================
+
+        const altitudeDisplay = document.getElementById('altitudeDisplay');
+        const speedDisplay = document.getElementById('speedDisplay');
+        const pitchDisplay = document.getElementById('pitchDisplay');
+        const liftDisplay = document.getElementById('liftDisplay');
 
         document.getElementById('btnRun').addEventListener('click', () => {
             if (!state.running) {
@@ -1303,6 +1242,7 @@
             state.pitch = 0;
             state.history = [];
             state.time = 0;
+            state.cameraY = 0;
             document.getElementById('btnRun').textContent = '▶ Запустить';
             document.getElementById('btnRun').style.opacity = '1';
             document.getElementById('btnPause').textContent = '⏸ Пауза';
@@ -1339,9 +1279,9 @@
             if (!state.running) drawScene();
         });
 
-        // ========================
+        // ============================================================
         // ЗАДАНИЯ
-        // ========================
+        // ============================================================
 
         let tasks = { task1: false, task2: false, task3: false };
 
@@ -1433,9 +1373,28 @@
             URL.revokeObjectURL(url);
         }
 
-        // ========================
+        // ============================================================
         // ИНИЦИАЛИЗАЦИЯ
-        // ========================
+        // ============================================================
+
+        // roundRect polyfill для старых браузеров
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (typeof r === 'number') r = [r, r, r, r];
+                const [tl, tr, br, bl] = r;
+                this.moveTo(x + tl, y);
+                this.lineTo(x + w - tr, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + tr);
+                this.lineTo(x + w, y + h - br);
+                this.quadraticCurveTo(x + w, y + h, x + w - br, y + h);
+                this.lineTo(x + bl, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - bl);
+                this.lineTo(x, y + tl);
+                this.quadraticCurveTo(x, y, x + tl, y);
+                this.closePath();
+                return this;
+            };
+        }
 
         window.addEventListener('load', () => {
             setTimeout(() => {
