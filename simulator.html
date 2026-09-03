@@ -7,11 +7,8 @@
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Three.js для 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        /* Стили — используем те же, что и в Lab */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -325,7 +322,7 @@
         }
         .pid-control label {
             display: block;
-            font-size: 0.8em;
+            font-size: 0.75em;
             color: var(--gray-light);
             font-weight: 600;
         }
@@ -342,7 +339,7 @@
             background: var(--border);
             border-radius: 2px;
             outline: none;
-            margin: 6px 0;
+            margin: 4px 0;
         }
         .pid-control input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -355,7 +352,6 @@
         }
         .pid-control input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.2);
-            background: var(--secondary);
         }
         .pid-control.kp .value { color: #f59e0b; }
         .pid-control.kp input[type="range"]::-webkit-slider-thumb { background: #f59e0b; }
@@ -594,7 +590,6 @@
 
     <div class="sim-container">
         <div class="sim-grid">
-            <!-- 3D Вид -->
             <div class="sim-panel">
                 <h3>🛩️ 3D Модель</h3>
                 <div id="sim3DContainer"></div>
@@ -603,15 +598,16 @@
                     <button class="btn btn-outline" id="btnReset">⟳ Сброс</button>
                     <button class="btn btn-danger" id="btnDisturb">⚡ Возмущение</button>
                 </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; font-size:0.8em; color:var(--gray-light);">
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:14px; font-size:0.75em; color:var(--gray-light);">
                     <div>Угол: <span id="angleDisplay" style="color:var(--light);font-weight:600;">0°</span></div>
                     <div>Скорость: <span id="speedDisplay" style="color:var(--light);font-weight:600;">0 °/с</span></div>
                     <div>Ошибка: <span id="errorDisplay" style="color:var(--light);font-weight:600;">0°</span></div>
-                    <div>Статус: <span id="statusDisplay" style="color:var(--warning);font-weight:600;">Готов</span></div>
+                </div>
+                <div style="font-size:0.75em; color:var(--gray-light); margin-top:4px;">
+                    Статус: <span id="statusDisplay" style="color:var(--warning);font-weight:600;">Готов</span>
                 </div>
             </div>
 
-            <!-- Настройка ПИД -->
             <div class="sim-panel">
                 <h3>🎛️ Настройка ПИД</h3>
                 
@@ -624,12 +620,12 @@
                     <div class="pid-control ki">
                         <label>Ki (Интегральный)</label>
                         <input type="range" id="kiSlider" min="0" max="2" step="0.05" value="0.3">
-                        <span class="value" id="kiVal">0.3</span>
+                        <span class="value" id="kiVal">0.30</span>
                     </div>
                     <div class="pid-control kd">
                         <label>Kd (Дифференциальный)</label>
                         <input type="range" id="kdSlider" min="0" max="2" step="0.05" value="0.4">
-                        <span class="value" id="kdVal">0.4</span>
+                        <span class="value" id="kdVal">0.40</span>
                     </div>
                 </div>
 
@@ -644,13 +640,13 @@
                 </div>
 
                 <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
-                    <button class="btn btn-success btn-sm" id="btnOptimal">🎯 Оптимальные настройки</button>
+                    <button class="btn btn-success btn-sm" id="btnOptimal">🎯 Оптимальные</button>
                     <button class="btn btn-outline btn-sm" id="btnExport">📊 Экспорт</button>
+                    <button class="btn btn-outline btn-sm" id="btnBad">💩 Плохие</button>
                 </div>
             </div>
         </div>
 
-        <!-- Задания -->
         <div style="margin-top:20px;">
             <div class="sim-panel" style="margin-bottom:12px;">
                 <h3>📋 Задания</h3>
@@ -669,7 +665,7 @@
                     </div>
                     <div class="task-box">
                         <div class="task-title">Задание №3 — Быстрый отклик</div>
-                        <div class="task-desc">Настрой ПИД так, чтобы время реакции на возмущение было меньше 0.8 секунды.</div>
+                        <div class="task-desc">Настрой ПИД так, чтобы время реакции на возмущение было меньше 1.5 секунды.</div>
                         <span class="task-status pending" id="task3Status">⏳ Не выполнено</span>
                         <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask3()">Проверить</button>
                     </div>
@@ -729,14 +725,14 @@
 
     <script>
         // ============================================================
-        // SIMULATOR — ПИД-РЕГУЛЯТОР С 3D-ВИЗУАЛИЗАЦИЕЙ
+        // SIMULATOR — ЧЕСТНАЯ ФИЗИКА ПИД
         // ============================================================
 
-        // === ИНИЦИАЛИЗАЦИЯ THREE.JS ===
         const container = document.getElementById('sim3DContainer');
         const width = container.clientWidth || 600;
         const height = container.clientHeight || 400;
 
+        // === THREE.JS ===
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x0a0e27);
         scene.fog = new THREE.Fog(0x0a0e27, 20, 50);
@@ -752,28 +748,25 @@
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.appendChild(renderer.domElement);
 
-        // === СВЕТ ===
+        // Свет
         const ambientLight = new THREE.AmbientLight(0x222244, 0.5);
         scene.add(ambientLight);
-
         const dirLight = new THREE.DirectionalLight(0xffffff, 1);
         dirLight.position.set(10, 15, 10);
         dirLight.castShadow = true;
         scene.add(dirLight);
-
         const fillLight = new THREE.DirectionalLight(0x4444ff, 0.3);
         fillLight.position.set(-5, 0, 5);
         scene.add(fillLight);
 
-        // === ЗЕМЛЯ ===
+        // Земля
         const gridHelper = new THREE.GridHelper(20, 20, 0x4f46e5, 0x2d1b4e);
         gridHelper.position.y = -0.5;
         scene.add(gridHelper);
 
-        // === СОЗДАНИЕ САМОЛЁТА ===
+        // Самолёт
         const airplaneGroup = new THREE.Group();
 
-        // Фюзеляж
         const fuselageGeo = new THREE.CylinderGeometry(0.3, 0.15, 2.5, 8);
         const fuselageMat = new THREE.MeshPhongMaterial({ color: 0x94a3b8, metalness: 0.3, roughness: 0.7 });
         const fuselage = new THREE.Mesh(fuselageGeo, fuselageMat);
@@ -781,7 +774,6 @@
         fuselage.position.x = 0.2;
         airplaneGroup.add(fuselage);
 
-        // Нос
         const noseGeo = new THREE.ConeGeometry(0.3, 0.6, 8);
         const noseMat = new THREE.MeshPhongMaterial({ color: 0x818cf8, metalness: 0.2, roughness: 0.8 });
         const nose = new THREE.Mesh(noseGeo, noseMat);
@@ -789,7 +781,6 @@
         nose.position.x = 1.5;
         airplaneGroup.add(nose);
 
-        // Крыло
         const wingGeo = new THREE.BoxGeometry(3.0, 0.05, 0.6);
         const wingMat = new THREE.MeshPhongMaterial({ color: 0x4f46e5, metalness: 0.2, roughness: 0.6 });
         const wing = new THREE.Mesh(wingGeo, wingMat);
@@ -797,7 +788,6 @@
         wing.position.y = 0.05;
         airplaneGroup.add(wing);
 
-        // Хвост
         const tailGeo = new THREE.BoxGeometry(0.4, 0.4, 0.05);
         const tailMat = new THREE.MeshPhongMaterial({ color: 0x4f46e5, metalness: 0.2, roughness: 0.6 });
         const tail = new THREE.Mesh(tailGeo, tailMat);
@@ -805,7 +795,6 @@
         tail.position.y = 0.1;
         airplaneGroup.add(tail);
 
-        // Горизонтальный стабилизатор
         const stabGeo = new THREE.BoxGeometry(0.6, 0.05, 0.25);
         const stabMat = new THREE.MeshPhongMaterial({ color: 0x4f46e5, metalness: 0.2, roughness: 0.6 });
         const stab = new THREE.Mesh(stabGeo, stabMat);
@@ -813,7 +802,6 @@
         stab.position.y = 0;
         airplaneGroup.add(stab);
 
-        // Кабина
         const cockpitGeo = new THREE.SphereGeometry(0.2, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2);
         const cockpitMat = new THREE.MeshPhongMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.6 });
         const cockpit = new THREE.Mesh(cockpitGeo, cockpitMat);
@@ -821,7 +809,6 @@
         cockpit.rotation.x = 0.2;
         airplaneGroup.add(cockpit);
 
-        // Винт
         const propGroup = new THREE.Group();
         const propGeo = new THREE.BoxGeometry(0.05, 0.6, 0.05);
         const propMat = new THREE.MeshPhongMaterial({ color: 0x94a3b8 });
@@ -839,7 +826,6 @@
         propGroup.position.x = 1.8;
         airplaneGroup.add(propGroup);
 
-        // Маленькие крылышки
         const tipGeo = new THREE.BoxGeometry(0.3, 0.03, 0.1);
         const tipMat = new THREE.MeshPhongMaterial({ color: 0x818cf8 });
         const tip1 = new THREE.Mesh(tipGeo, tipMat);
@@ -849,14 +835,13 @@
         tip2.position.set(0, 0.05, -1.5);
         airplaneGroup.add(tip2);
 
-        // Добавляем самолёт в сцену
         airplaneGroup.position.y = 0;
         scene.add(airplaneGroup);
 
-        // === ФИЗИКА ПИД ===
+        // === СОСТОЯНИЕ ПИД ===
         let pidState = {
-            angle: 0,           // текущий угол
-            targetAngle: 0,     // целевой угол (0°)
+            angle: 0,
+            targetAngle: 0,
             angularSpeed: 0,
             integral: 0,
             lastError: 0,
@@ -869,7 +854,7 @@
             maxAngle: 45,
         };
 
-        // Получаем значения ПИД
+        // === DOM ===
         const kpSlider = document.getElementById('kpSlider');
         const kiSlider = document.getElementById('kiSlider');
         const kdSlider = document.getElementById('kdSlider');
@@ -881,7 +866,6 @@
         const errorDisplay = document.getElementById('errorDisplay');
         const statusDisplay = document.getElementById('statusDisplay');
 
-        // График
         const chartCanvas = document.getElementById('chartCanvas');
         const chartCtx = chartCanvas.getContext('2d');
 
@@ -899,7 +883,7 @@
         kiSlider.addEventListener('input', updatePID);
         kdSlider.addEventListener('input', updatePID);
 
-        // === ФИЗИКА ===
+        // === ЧЕСТНАЯ ФИЗИКА ПИД ===
         function calculatePID(dt) {
             if (!pidState.running) return;
 
@@ -910,32 +894,44 @@
 
             // Интегральный (с ограничением)
             pidState.integral += error * dt;
-            pidState.integral = Math.max(-10, Math.min(10, pidState.integral));
+            pidState.integral = Math.max(-5, Math.min(5, pidState.integral));
             const I = pidState.ki * pidState.integral;
 
             // Дифференциальный
             const derivative = (error - pidState.lastError) / dt;
             const D = pidState.kd * derivative;
 
-            // Управляющий сигнал (угловое ускорение)
+            // Управляющий сигнал
             const output = P + I + D;
-            pidState.angularSpeed += output * dt;
-            pidState.angularSpeed *= 0.98; // небольшое затухание
+
+            // === РЕАЛИСТИЧНАЯ ФИЗИКА ===
+            const inertia = 0.8;
+            const angularAccel = output / inertia;
+
+            pidState.angularSpeed += angularAccel * dt;
+
+            // Аэродинамическое затухание (реалистичное, маленькое)
+            const airDrag = 0.08;
+            pidState.angularSpeed *= (1 - airDrag * dt);
+
             pidState.angle += pidState.angularSpeed * dt;
 
             // Ограничение угла
             pidState.angle = Math.max(-pidState.maxAngle, Math.min(pidState.maxAngle, pidState.angle));
+            if (Math.abs(pidState.angle) >= pidState.maxAngle) {
+                pidState.angularSpeed *= 0.9;
+            }
 
             pidState.lastError = error;
 
-            // Сохраняем историю
             pidState.history.push({
                 angle: pidState.angle,
                 target: pidState.targetAngle,
                 time: pidState.time,
                 error: error,
+                output: output,
             });
-            if (pidState.history.length > 200) pidState.history.shift();
+            if (pidState.history.length > 300) pidState.history.shift();
 
             pidState.time += dt;
 
@@ -943,15 +939,19 @@
             angleDisplay.textContent = pidState.angle.toFixed(1) + '°';
             speedDisplay.textContent = pidState.angularSpeed.toFixed(1) + ' °/с';
             errorDisplay.textContent = error.toFixed(1) + '°';
-            if (Math.abs(error) < 0.5) {
+
+            if (Math.abs(error) < 0.5 && Math.abs(pidState.angularSpeed) < 2) {
                 statusDisplay.textContent = '✅ Стабильно';
                 statusDisplay.style.color = '#10b981';
-            } else if (Math.abs(error) < 2) {
+            } else if (Math.abs(error) < 3) {
                 statusDisplay.textContent = '🔄 Регулируется';
                 statusDisplay.style.color = '#f59e0b';
-            } else {
-                statusDisplay.textContent = '⚡ Нестабильно';
+            } else if (Math.abs(error) > 10) {
+                statusDisplay.textContent = '💥 НЕСТАБИЛЬНО!';
                 statusDisplay.style.color = '#ef4444';
+            } else {
+                statusDisplay.textContent = '⚡ Колебания';
+                statusDisplay.style.color = '#f59e0b';
             }
         }
 
@@ -961,18 +961,12 @@
         function animate3D() {
             requestAnimationFrame(animate3D);
 
-            // Вращение самолёта
             airplaneGroup.rotation.z = pidState.angle * Math.PI / 180;
-            // Небольшой наклон крыльев
             airplaneGroup.rotation.x = Math.sin(pidState.angle * Math.PI / 180) * 0.1;
 
-            // Вращение винта
-            if (pidState.running) {
-                propAngle += 0.5;
-            }
+            if (pidState.running) propAngle += 0.5;
             propGroup.rotation.z = propAngle;
 
-            // Лёгкое покачивание
             if (pidState.running) {
                 airplaneGroup.position.y = Math.sin(pidState.time * 0.5) * 0.05;
             }
@@ -996,7 +990,6 @@
             const data = pidState.history;
             const maxAngle = Math.max(15, ...data.map(d => Math.abs(d.angle))) * 1.2;
 
-            // Сетка
             chartCtx.strokeStyle = 'rgba(255,255,255,0.03)';
             chartCtx.lineWidth = 0.5;
             for (let i = 0; i < 4; i++) {
@@ -1007,7 +1000,6 @@
                 chartCtx.stroke();
             }
 
-            // Целевая линия (0°)
             const targetY = h / 2;
             chartCtx.strokeStyle = 'rgba(255,255,255,0.1)';
             chartCtx.lineWidth = 1;
@@ -1018,7 +1010,6 @@
             chartCtx.stroke();
             chartCtx.setLineDash([]);
 
-            // Линия угла
             chartCtx.strokeStyle = 'rgba(79, 70, 229, 0.8)';
             chartCtx.lineWidth = 2;
             chartCtx.beginPath();
@@ -1030,7 +1021,6 @@
             }
             chartCtx.stroke();
 
-            // Последняя точка
             const last = data[data.length - 1];
             const lastX = w;
             const lastY = h / 2 - (last.angle / maxAngle) * h * 0.45;
@@ -1039,7 +1029,6 @@
             chartCtx.arc(lastX - 3, lastY, 4, 0, Math.PI * 2);
             chartCtx.fill();
 
-            // Подписи
             chartCtx.fillStyle = 'rgba(255,255,255,0.15)';
             chartCtx.font = '7px monospace';
             chartCtx.fillText(maxAngle.toFixed(0) + '°', 2, 12);
@@ -1101,7 +1090,7 @@
 
         document.getElementById('btnDisturb').addEventListener('click', () => {
             if (pidState.running) {
-                pidState.angle += 15;
+                pidState.angle += 20;
                 statusDisplay.textContent = '⚡ Возмущение!';
                 statusDisplay.style.color = '#ef4444';
                 setTimeout(() => {
@@ -1120,14 +1109,23 @@
             updatePID();
         });
 
+        document.getElementById('btnBad').addEventListener('click', () => {
+            kpSlider.value = '4.5';
+            kiSlider.value = '1.5';
+            kdSlider.value = '0.0';
+            updatePID();
+            statusDisplay.textContent = '💩 Плохие настройки!';
+            statusDisplay.style.color = '#ef4444';
+        });
+
         document.getElementById('btnExport').addEventListener('click', () => {
             if (pidState.history.length === 0) {
                 alert('Нет данных для экспорта. Запустите симуляцию.');
                 return;
             }
-            let csv = 'Время,Угол,Ошибка\n';
+            let csv = 'Время,Угол,Ошибка,Выход\n';
             pidState.history.forEach(d => {
-                csv += `${d.time.toFixed(2)},${d.angle.toFixed(2)},${d.error.toFixed(2)}\n`;
+                csv += `${d.time.toFixed(2)},${d.angle.toFixed(2)},${d.error.toFixed(2)},${d.output ? d.output.toFixed(2) : '0'}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -1147,7 +1145,6 @@
                 alert('Недостаточно данных. Запустите симуляцию и подождите.');
                 return;
             }
-            // Проверяем, стабилизировался ли угол за 3 секунды
             const last30 = history.slice(-30);
             const avgError = last30.reduce((sum, d) => sum + Math.abs(d.error), 0) / last30.length;
             if (avgError < 0.5) {
@@ -1165,14 +1162,13 @@
                 alert('Недостаточно данных. Запустите симуляцию и подождите.');
                 return;
             }
-            // Проверяем перерегулирование
             let maxOvershoot = 0;
             for (let i = 10; i < history.length; i++) {
                 if (history[i].angle > 0 && history[i].angle > maxOvershoot) {
                     maxOvershoot = history[i].angle;
                 }
             }
-            if (maxOvershoot < 1.5) {
+            if (maxOvershoot < 2.0) {
                 tasks.task2 = true;
                 document.getElementById('task2Status').textContent = '✅ Выполнено!';
                 document.getElementById('task2Status').className = 'task-status done';
@@ -1187,7 +1183,6 @@
                 alert('Недостаточно данных. Запустите симуляцию и подождите.');
                 return;
             }
-            // Проверяем время реакции (когда угол впервые вошёл в зону ±0.5°)
             let reactionTime = 0;
             for (let i = 5; i < history.length; i++) {
                 if (Math.abs(history[i].angle) < 0.5) {
@@ -1195,12 +1190,12 @@
                     break;
                 }
             }
-            if (reactionTime > 0 && reactionTime < 2.0) {
+            if (reactionTime > 0 && reactionTime < 1.5) {
                 tasks.task3 = true;
                 document.getElementById('task3Status').textContent = '✅ Выполнено!';
                 document.getElementById('task3Status').className = 'task-status done';
             } else {
-                alert('❌ Не выполнено. Время реакции: ' + reactionTime.toFixed(2) + 'с. Настройте Kp для ускорения.');
+                alert('❌ Не выполнено. Время реакции: ' + (reactionTime > 0 ? reactionTime.toFixed(2) : '∞') + 'с. Настройте Kp для ускорения.');
             }
         }
 
@@ -1294,7 +1289,6 @@
             });
         });
 
-        // Запуск основного цикла
         requestAnimationFrame(loop);
 
         if (window.location.hash) {
