@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Все стили — такие же, как в предыдущей версии */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -325,7 +326,7 @@
             font-size: 0.8em;
             color: #a5b4fc;
             overflow-x: auto;
-            min-height: 260px;
+            min-height: 280px;
             white-space: pre-wrap;
             tab-size: 4;
             outline: none;
@@ -406,14 +407,6 @@
             box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
         }
         .btn-sm { padding: 4px 14px; font-size: 0.75em; }
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
-        }
 
         .log-panel {
             background: rgba(0, 0, 0, 0.3);
@@ -426,6 +419,7 @@
             font-size: 0.75em;
             color: var(--gray-light);
             margin-top: 10px;
+            line-height: 1.5;
         }
         .log-panel .log-success { color: var(--success); }
         .log-panel .log-error { color: var(--danger); }
@@ -584,7 +578,7 @@
 
     <div class="sim-container">
         <div class="sim-layout">
-            <!-- Левая панель — редактор кода и управление -->
+            <!-- Левая панель — редактор кода -->
             <div class="sim-panel">
                 <h3>💻 Редактор кода</h3>
 
@@ -606,9 +600,9 @@ from drone import Drone
 drone = Drone()
 
 def on_start():
-    drone.takeoff(5)  # взлёт на 5 метров
-    drone.hover(3)    # зависнуть на 3 секунды
-    drone.land()      # посадка
+    drone.takeoff(5)
+    drone.hover(3)
+    drone.land()
                 </textarea>
 
                 <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
@@ -690,7 +684,7 @@ def on_start():
 
     <script>
         // ================================================================
-        // СИМУЛЯТОР ПРОГРАММИРОВАНИЯ ДРОНОВ
+        // СИМУЛЯТОР ПРОГРАММИРОВАНИЯ ДРОНОВ — ИСПРАВЛЕННЫЙ ПАРСЕР
         // ================================================================
 
         const canvas = document.getElementById('simCanvas');
@@ -699,7 +693,7 @@ def on_start():
 
         // === СОСТОЯНИЕ ДРОНА ===
         let drone = {
-            x: 0, z: 0, y: 0,        // координаты (x, z — горизонталь, y — высота)
+            x: 0, z: 0, y: 0,
             targetX: 0, targetZ: 0, targetY: 0,
             speed: 0.8,
             flying: false,
@@ -720,6 +714,7 @@ def on_start():
             task: 'takeoff',
             completed: false,
             success: false,
+            waiting: false,
         };
 
         // === DOM ===
@@ -732,83 +727,83 @@ def on_start():
         const taskBadge = document.getElementById('taskBadge');
         const resultBadge = document.getElementById('resultBadge');
 
-        // === БИБЛИОТЕКА КОМАНД ===
+        // === ШАБЛОНЫ ЗАДАНИЙ ===
         const taskTemplates = {
             takeoff: `# ============================================================
-        # ВЗЛЁТ ДРОНА
-        # Задача: взлететь на высоту 5 метров и зависнуть
-        # ============================================================
+# ВЗЛЁТ ДРОНА
+# Задача: взлететь на высоту 5 метров и зависнуть
+# ============================================================
 
-        from drone import Drone
+from drone import Drone
 
-        drone = Drone()
+drone = Drone()
 
-        def on_start():
-            drone.takeoff(5)  # взлёт на 5 метров
-            drone.hover(3)    # зависнуть на 3 секунды
-            drone.land()      # посадка`,
+def on_start():
+    drone.takeoff(5)
+    drone.hover(3)
+    drone.land()`,
             waypoint: `# ============================================================
-        # ПУТЕВЫЕ ТОЧКИ
-        # Задача: пролететь через три точки
-        # ============================================================
+# ПУТЕВЫЕ ТОЧКИ
+# Задача: пролететь через три точки
+# ============================================================
 
-        from drone import Drone
+from drone import Drone
 
-        drone = Drone()
+drone = Drone()
 
-        def on_start():
-            drone.takeoff(3)
-            drone.go_to(2, 0, 3)   # точка 1
-            drone.go_to(0, 3, 3)   # точка 2
-            drone.go_to(-2, 0, 3)  # точка 3
-            drone.land()`,
+def on_start():
+    drone.takeoff(3)
+    drone.go_to(2, 0, 3)
+    drone.go_to(0, 3, 3)
+    drone.go_to(-2, 0, 3)
+    drone.land()`,
             circle: `# ============================================================
-        # ПОЛЁТ ПО КРУГУ
-        # Задача: описать круг радиусом 3 метра
-        # ============================================================
+# ПОЛЁТ ПО КРУГУ
+# Задача: описать круг радиусом 3 метра
+# ============================================================
 
-        from drone import Drone
-        import math
+from drone import Drone
+import math
 
-        drone = Drone()
+drone = Drone()
 
-        def on_start():
-            drone.takeoff(4)
-            for i in range(36):
-                angle = i * 10 * math.pi / 180
-                x = 3 * math.cos(angle)
-                z = 3 * math.sin(angle)
-                drone.go_to(x, z, 4)
-            drone.land()`,
+def on_start():
+    drone.takeoff(4)
+    for i in range(36):
+        angle = i * 10 * math.pi / 180
+        x = 3 * math.cos(angle)
+        z = 3 * math.sin(angle)
+        drone.go_to(x, z, 4)
+    drone.land()`,
             gate: `# ============================================================
-        # ПРОЛЁТ ЧЕРЕЗ ВОРОТА
-        # Задача: пролететь через ворота на высоте 3 метра
-        # ============================================================
+# ПРОЛЁТ ЧЕРЕЗ ВОРОТА
+# Задача: пролететь через ворота на высоте 3 метра
+# ============================================================
 
-        from drone import Drone
+from drone import Drone
 
-        drone = Drone()
+drone = Drone()
 
-        def on_start():
-            drone.takeoff(3)
-            drone.go_to(0, -2, 3)   # подход к воротам
-            drone.go_to(0, 2, 3)    # проход через ворота
-            drone.go_to(0, 0, 3)    # возврат в центр
-            drone.land()`,
+def on_start():
+    drone.takeoff(3)
+    drone.go_to(0, -2, 3)
+    drone.go_to(0, 2, 3)
+    drone.go_to(0, 0, 3)
+    drone.land()`,
             free: `# ============================================================
-        # СВОБОДНОЕ ПРОГРАММИРОВАНИЕ
-        # Напиши свой код управления дроном
-        # ============================================================
+# СВОБОДНОЕ ПРОГРАММИРОВАНИЕ
+# Напиши свой код управления дроном
+# ============================================================
 
-        from drone import Drone
+from drone import Drone
 
-        drone = Drone()
+drone = Drone()
 
-        def on_start():
-            # Напиши свой код здесь
-            drone.takeoff(3)
-            drone.hover(2)
-            drone.land()`
+def on_start():
+    # Напиши свой код здесь
+    drone.takeoff(3)
+    drone.hover(2)
+    drone.land()`
         };
 
         // === ЗАГРУЗКА ЗАДАНИЙ ===
@@ -856,6 +851,7 @@ def on_start():
             sim.currentCommand = 0;
             sim.completed = false;
             sim.success = false;
+            sim.waiting = false;
             resultBadge.textContent = 'Ожидание';
             resultBadge.className = 'badge badge-warning';
             statusDisplay.textContent = 'Готов';
@@ -885,7 +881,6 @@ def on_start():
         function drawScene() {
             ctx.clearRect(0, 0, W, H);
 
-            // Небо
             const grad = ctx.createLinearGradient(0, 0, 0, H);
             grad.addColorStop(0, '#0a0e27');
             grad.addColorStop(0.5, '#1a1a3e');
@@ -894,14 +889,11 @@ def on_start():
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
-            // Горизонт
             const groundY = H * 0.75;
 
-            // Земля
             ctx.fillStyle = 'rgba(34, 197, 94, 0.06)';
             ctx.fillRect(0, groundY, W, H - groundY);
 
-            // Линия горизонта
             ctx.strokeStyle = 'rgba(34, 197, 94, 0.15)';
             ctx.lineWidth = 1;
             ctx.setLineDash([6, 8]);
@@ -911,51 +903,29 @@ def on_start():
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Сетка на земле
-            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-            ctx.lineWidth = 0.5;
-            for (let i = -10; i <= 10; i++) {
-                const x = W/2 + i * 30 - drone.x * 6;
-                const z = groundY + i * 10 + drone.z * 4;
-                ctx.beginPath();
-                ctx.moveTo(x, groundY);
-                ctx.lineTo(x + 20, groundY + 20);
-                ctx.stroke();
-            }
-
-            // Масштаб
-            const scale = 1.2;
             const cx = W/2;
             const cy = groundY - 30 - drone.y * 4;
 
             // === ДРОН ===
-            if (drone.landed) {
-                // На земле
+            if (drone.landed && drone.y < 0.1) {
                 const bx = cx - drone.x * 6;
                 const by = groundY + drone.z * 4;
-                ctx.fillStyle = 'rgba(148, 163, 184, 0.3)';
-                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.arc(bx, by, 12 * scale, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.stroke();
-
                 ctx.fillStyle = 'rgba(148, 163, 184, 0.2)';
-                ctx.font = '8px monospace';
-                ctx.fillText('🛩', bx - 6, by + 4);
+                ctx.font = '20px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText('🛩', bx, by + 6);
+                ctx.textAlign = 'left';
             } else {
-                // В воздухе
                 const bx = cx - drone.x * 6;
                 const by = cy;
 
                 // Тень
                 ctx.fillStyle = 'rgba(0,0,0,0.2)';
                 ctx.beginPath();
-                ctx.ellipse(bx, groundY + drone.z * 4, 15 * scale, 5 * scale, 0, 0, Math.PI * 2);
+                ctx.ellipse(bx, groundY + drone.z * 4, 15, 5, 0, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Корпус
+                // Дрон
                 ctx.shadowColor = 'rgba(79, 70, 229, 0.2)';
                 ctx.shadowBlur = 20;
 
@@ -963,61 +933,42 @@ def on_start():
                 ctx.strokeStyle = 'rgba(255,255,255,0.1)';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.arc(bx, by, 14 * scale, 0, Math.PI * 2);
+                ctx.arc(bx, by, 14, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.stroke();
 
-                // Лучи
                 ctx.strokeStyle = 'rgba(100, 116, 139, 0.3)';
-                ctx.lineWidth = 2 * scale;
+                ctx.lineWidth = 2;
                 for (let i = 0; i < 4; i++) {
                     const a = i * Math.PI/2 + drone.time * 0.1;
                     ctx.beginPath();
-                    ctx.moveTo(bx + Math.cos(a) * 10 * scale, by + Math.sin(a) * 10 * scale);
-                    ctx.lineTo(bx + Math.cos(a) * 24 * scale, by + Math.sin(a) * 24 * scale);
+                    ctx.moveTo(bx + Math.cos(a) * 10, by + Math.sin(a) * 10);
+                    ctx.lineTo(bx + Math.cos(a) * 24, by + Math.sin(a) * 24);
                     ctx.stroke();
 
-                    // Винты
                     ctx.fillStyle = 'rgba(251, 191, 36, 0.15)';
                     ctx.strokeStyle = 'rgba(251, 191, 36, 0.05)';
                     ctx.beginPath();
-                    ctx.arc(bx + Math.cos(a) * 24 * scale, by + Math.sin(a) * 24 * scale, 8 * scale, 0, Math.PI * 2);
+                    ctx.arc(bx + Math.cos(a) * 24, by + Math.sin(a) * 24, 8, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.stroke();
                 }
 
-                // Кабина
                 ctx.fillStyle = 'rgba(6, 182, 212, 0.15)';
                 ctx.beginPath();
-                ctx.arc(bx, by - 2 * scale, 6 * scale, 0, Math.PI * 2);
+                ctx.arc(bx, by - 2, 6, 0, Math.PI * 2);
                 ctx.fill();
 
                 ctx.shadowBlur = 0;
             }
 
-            // === ОТОБРАЖЕНИЕ ИНФОРМАЦИИ ===
+            // Информация
             ctx.shadowBlur = 0;
             ctx.fillStyle = 'rgba(255,255,255,0.1)';
             ctx.font = '8px monospace';
             ctx.fillText(`Высота: ${drone.y.toFixed(1)} м`, 10, 16);
             ctx.fillText(`X: ${drone.x.toFixed(1)} м`, 10, 28);
             ctx.fillText(`Z: ${drone.z.toFixed(1)} м`, 10, 40);
-
-            // Цель (если есть)
-            if (drone.targetY > 0 || drone.targetX !== 0 || drone.targetZ !== 0) {
-                const tx = cx - drone.targetX * 6;
-                const ty = groundY - 30 - drone.targetY * 4 - drone.z * 0;
-                ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
-                ctx.strokeStyle = 'rgba(239, 68, 68, 0.1)';
-                ctx.setLineDash([3, 3]);
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.arc(tx, ty + drone.z * 4, 8 * scale, 0, Math.PI * 2);
-                ctx.stroke();
-                ctx.setLineDash([]);
-                ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
-                ctx.fillText('🎯', tx - 4, ty + 4 + drone.z * 4);
-            }
 
             // Индикатор высоты
             ctx.fillStyle = 'rgba(255,255,255,0.05)';
@@ -1031,49 +982,55 @@ def on_start():
             ctx.fillText('0м', W - 24, groundY - 6);
         }
 
-        // === ИНТЕРПРЕТАЦИЯ КОДА ===
+        // === ИСПРАВЛЕННЫЙ ПАРСЕР КОМАНД ===
         function parseCode(code) {
             const commands = [];
             const lines = code.split('\n');
             let inFunction = false;
-            let indentLevel = 0;
+            let functionIndent = -1;
 
             for (let line of lines) {
-                line = line.trim();
-                if (line.startsWith('#') || line === '') continue;
+                const trimmed = line.trim();
 
-                // Обнаружение функции on_start
-                if (line.includes('def on_start()')) {
+                // Пропускаем пустые строки и комментарии
+                if (trimmed === '' || trimmed.startsWith('#')) continue;
+
+                // Проверяем наличие def on_start()
+                if (trimmed.includes('def on_start()')) {
                     inFunction = true;
+                    functionIndent = line.length - trimmed.length;
                     continue;
                 }
 
+                // Если мы внутри функции
                 if (inFunction) {
-                    if (line === '') continue;
-                    const indent = line.length - line.trimStart().length;
-                    if (indent <= 0 && line.length > 0 && !line.startsWith('#')) {
+                    const currentIndent = line.length - trimmed.length;
+
+                    // Если строка с меньшим отступом — вышли из функции
+                    if (currentIndent <= functionIndent && trimmed !== '' && !trimmed.startsWith('#')) {
                         inFunction = false;
                         continue;
                     }
 
-                    // Парсинг команд
-                    const clean = line.trim();
-                    if (clean.startsWith('drone.')) {
-                        const parts = clean.replace('drone.', '').split('(');
-                        const cmd = parts[0];
-                        const args = parts[1] ? parts[1].replace(')', '').split(',').map(a => {
+                    // Проверяем команды, начинающиеся с drone.
+                    if (trimmed.startsWith('drone.')) {
+                        const parts = trimmed.replace('drone.', '').split('(');
+                        const cmd = parts[0].trim();
+                        const argsStr = parts[1] ? parts[1].replace(')', '').trim() : '';
+                        const args = argsStr ? argsStr.split(',').map(a => {
                             a = a.trim();
+                            if (a === '') return 0;
+                            // Поддержка math
                             if (a.includes('math.')) {
-                                // Простая поддержка math
                                 if (a.includes('pi')) return Math.PI;
-                                return eval(a.replace('math.', 'Math.')) || 0;
+                                try { return eval(a.replace('math.', 'Math.')); } catch { return 0; }
                             }
                             if (a.includes('*') || a.includes('/') || a.includes('+') || a.includes('-')) {
                                 try { return eval(a); } catch { return parseFloat(a) || 0; }
                             }
                             return parseFloat(a) || 0;
                         }) : [];
-                        commands.push({ cmd, args, line: clean });
+                        commands.push({ cmd, args, line: trimmed });
                     }
                 }
             }
@@ -1082,13 +1039,24 @@ def on_start():
         }
 
         // === ВЫПОЛНЕНИЕ КОМАНД ===
+        let commandTimer = null;
+
         function executeCommands(commands) {
             if (commands.length === 0) {
                 addLog('❌ Команды не найдены. Проверьте код.', 'error');
                 return;
             }
 
-            sim.commands = commands;
+            // Фильтруем только поддерживаемые команды
+            const supported = ['takeoff', 'land', 'hover', 'go_to'];
+            const validCommands = commands.filter(c => supported.includes(c.cmd));
+
+            if (validCommands.length === 0) {
+                addLog('❌ Нет поддерживаемых команд. Используйте: takeoff, land, hover, go_to', 'error');
+                return;
+            }
+
+            sim.commands = validCommands;
             sim.currentCommand = 0;
             sim.running = true;
             sim.completed = false;
@@ -1101,13 +1069,10 @@ def on_start():
             drone.maxY = 0;
 
             addLog('🚀 Запуск программы...', 'info');
-            addLog('📋 Найдено ' + commands.length + ' команд', 'info');
+            addLog('📋 Найдено ' + validCommands.length + ' команд', 'info');
 
-            // Первая команда
             processNextCommand();
         }
-
-        let commandTimer = null;
 
         function processNextCommand() {
             if (sim.currentCommand >= sim.commands.length) {
@@ -1116,7 +1081,7 @@ def on_start():
             }
 
             const cmd = sim.commands[sim.currentCommand];
-            addLog(`▶ Выполнение: ${cmd.line}`, 'info');
+            addLog(`▶ ${cmd.line}`, 'info');
 
             switch (cmd.cmd) {
                 case 'takeoff':
@@ -1124,23 +1089,24 @@ def on_start():
                     drone.targetY = height;
                     drone.flying = true;
                     drone.landed = false;
-                    addLog(`🛫 Взлёт на ${height} метров`, 'success');
+                    addLog(`🛫 Взлёт на ${height} м`, 'success');
+                    sim.currentCommand++;
+                    setTimeout(() => processNextCommand(), 600);
                     break;
 
                 case 'land':
                     drone.targetY = 0;
                     addLog('🛬 Посадка', 'warn');
+                    sim.currentCommand++;
+                    setTimeout(() => processNextCommand(), 600);
                     break;
 
                 case 'hover':
                     const seconds = cmd.args[0] || 2;
-                    addLog(`⏳ Зависание на ${seconds} секунд`, 'info');
-                    // Пауза
-                    setTimeout(() => {
-                        sim.currentCommand++;
-                        processNextCommand();
-                    }, seconds * 1000);
-                    return;
+                    addLog(`⏳ Зависание на ${seconds} с`, 'info');
+                    sim.currentCommand++;
+                    setTimeout(() => processNextCommand(), seconds * 1000);
+                    break;
 
                 case 'go_to':
                     const tx = cmd.args[0] || 0;
@@ -1149,18 +1115,16 @@ def on_start():
                     drone.targetX = tx;
                     drone.targetZ = tz;
                     drone.targetY = ty;
-                    addLog(`🎯 Перемещение к (${tx}, ${tz}, ${ty})`, 'info');
+                    addLog(`🎯 Перемещение к (${tx.toFixed(1)}, ${tz.toFixed(1)}, ${ty.toFixed(1)})`, 'info');
+                    sim.currentCommand++;
+                    setTimeout(() => processNextCommand(), 600);
                     break;
 
                 default:
                     addLog(`⚠️ Неизвестная команда: ${cmd.cmd}`, 'warn');
+                    sim.currentCommand++;
+                    setTimeout(() => processNextCommand(), 300);
             }
-
-            // Переход к следующей команде после выполнения
-            commandTimer = setTimeout(() => {
-                sim.currentCommand++;
-                processNextCommand();
-            }, 500);
         }
 
         function finishSimulation(success) {
@@ -1191,7 +1155,7 @@ def on_start():
             const commands = parseCode(code);
 
             if (commands.length === 0) {
-                addLog('❌ Не найдено команд. Убедитесь, что код написан правильно.', 'error');
+                addLog('❌ Не найдено команд. Убедитесь, что код содержит команды внутри on_start()', 'error');
                 return;
             }
 
@@ -1202,14 +1166,13 @@ def on_start():
         function simulationLoop() {
             // Обновление позиции дрона
             if (sim.running && !sim.paused) {
-                // Движение к целевой точке
                 const dx = drone.targetX - drone.x;
                 const dz = drone.targetZ - drone.z;
                 const dy = drone.targetY - drone.y;
 
                 const dist = Math.sqrt(dx*dx + dz*dz + dy*dy);
                 if (dist > 0.1) {
-                    const step = Math.min(drone.speed * 0.15, dist);
+                    const step = Math.min(drone.speed * 0.2, dist);
                     drone.x += (dx / dist) * step;
                     drone.z += (dz / dist) * step;
                     drone.y += (dy / dist) * step;
@@ -1219,11 +1182,9 @@ def on_start():
                     drone.y = drone.targetY;
                 }
 
-                // Ограничения
                 if (drone.y < 0) { drone.y = 0; drone.landed = true; drone.flying = false; }
                 if (drone.y > drone.maxY) drone.maxY = drone.y;
 
-                // Запись пути
                 if (drone.flying || drone.y > 0.1) {
                     drone.path.push({ x: drone.x, z: drone.z, y: drone.y });
                     if (drone.path.length > 200) drone.path.shift();
@@ -1231,7 +1192,6 @@ def on_start():
 
                 drone.time += 0.02;
 
-                // Проверка посадки
                 if (drone.y < 0.1 && drone.landed === false) {
                     drone.landed = true;
                     drone.flying = false;
