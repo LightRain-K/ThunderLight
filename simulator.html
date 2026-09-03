@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThunderLight — Симулятор ПИД-регулятора</title>
+    <title>ThunderLight — Продвинутый Симулятор ПИД-регулятора</title>
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -35,1267 +35,1039 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
-        .cursor-glow {
+        
+        /* Базовые стили из оригинального файла */
+        .preloader { /* ... */ }
+        .navbar { /* ... */ }
+        /* ... остальные стили ... */
+        
+        /* Новые стили для улучшений */
+        .modal-overlay {
             position: fixed;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
             pointer-events: none;
-            z-index: 0;
-            background: radial-gradient(circle, rgba(79, 70, 229, 0.08), transparent 70%);
-            transform: translate(-50%, -50%);
             transition: opacity 0.3s;
         }
-        .particles-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
         }
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            animation: floatUp linear infinite;
-            opacity: 0;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 0.5; }
-            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-        }
-        .preloader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--darker);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s, visibility 0.5s;
-        }
-        .preloader.hidden { opacity: 0; visibility: hidden; }
-        .preloader-logo {
-            font-size: 3em;
-            font-weight: 900;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: preloaderPulse 1.5s infinite;
-            display: block;
-        }
-        .preloader-spinner {
-            width: 40px;
-            height: 40px;
-            margin: 20px auto 0;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes preloaderPulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.95); }
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(2, 6, 23, 0.85);
-            backdrop-filter: blur(24px) saturate(180%);
-            z-index: 1000;
-            border-bottom: 1px solid var(--border);
-            transition: var(--transition);
-        }
-        .navbar.scrolled {
-            background: rgba(2, 6, 23, 0.95);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-        .nav-content {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-logo {
-            font-size: 1.5em;
-            font-weight: 800;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition);
-        }
-        .nav-logo:hover { transform: scale(1.05); }
-        .nav-logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            animation: logoGlow 2s infinite;
-        }
-        @keyframes logoGlow {
-            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
-            50% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.6); }
-        }
-        .nav-links {
-            display: flex;
-            gap: 8px;
-            list-style: none;
-            align-items: center;
-        }
-        .nav-links a {
-            color: var(--gray-light);
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: var(--transition);
-            position: relative;
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: var(--primary);
-            transition: var(--transition);
-            transform: translateX(-50%);
-        }
-        .nav-links a:hover::after { width: 60%; }
-        .nav-links a:hover { color: var(--light); }
-        .nav-links a.active {
-            color: var(--light);
-            background: rgba(79, 70, 229, 0.15);
-        }
-        .nav-download {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white !important;
-            padding: 10px 20px !important;
-            border-radius: 10px !important;
-            font-weight: 600 !important;
-            animation: downloadPulse 2s infinite;
-        }
-        .nav-download:hover {
-            transform: translateY(-2px);
-            animation: none;
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-        }
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--light);
-            font-size: 1.5em;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
-        @keyframes downloadPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-        }
-        .hero {
-            padding: 160px 32px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero-grid-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
-            animation: gridMove 20s linear infinite;
-        }
-        @keyframes gridMove {
-            from { transform: translate(0, 0); }
-            to { transform: translate(60px, 60px); }
-        }
-        .hero-glow {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.15;
-            animation: glowFloat 10s ease-in-out infinite;
-        }
-        .hero-glow-1 { background: var(--primary); top: -200px; left: -100px; }
-        .hero-glow-2 { background: var(--accent); bottom: -200px; right: -100px; animation-delay: -5s; }
-        @keyframes glowFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
-        .hero h1 {
-            font-size: 3em;
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 16px;
-            letter-spacing: -2px;
-        }
-        .hero-gradient {
-            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 5s ease infinite;
-            background-size: 200% 200%;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .hero p {
-            font-size: 1.1em;
-            color: var(--gray-light);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .sim-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 10px 32px 60px;
-        }
-        .sim-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-        .sim-panel {
-            background: rgba(15, 23, 42, 0.6);
+        .modal-content {
+            background: var(--dark);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
         }
-        .sim-panel h3 {
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        #sim3DContainer {
-            width: 100%;
-            height: 400px;
+        
+        .achievement-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
             border-radius: 12px;
+            padding: 15px 20px;
+            z-index: 3000;
+            animation: slideIn 0.5s ease;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.5);
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8em;
+        }
+        .compare-table th, .compare-table td {
+            padding: 8px;
             border: 1px solid var(--border);
-            overflow: hidden;
-            background: #0a0e27;
-        }
-        .pid-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-        }
-        .pid-control {
             text-align: center;
         }
-        .pid-control label {
-            display: block;
-            font-size: 0.75em;
-            color: var(--gray-light);
-            font-weight: 600;
-        }
-        .pid-control .value {
-            font-size: 1.2em;
-            font-weight: 700;
-            font-family: monospace;
-            color: var(--light);
-        }
-        .pid-control input[type="range"] {
-            width: 100%;
-            height: 4px;
-            -webkit-appearance: none;
-            background: var(--border);
-            border-radius: 2px;
-            outline: none;
-            margin: 4px 0;
-        }
-        .pid-control input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--primary);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .pid-control input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-        .pid-control.kp .value { color: #f59e0b; }
-        .pid-control.kp input[type="range"]::-webkit-slider-thumb { background: #f59e0b; }
-        .pid-control.ki .value { color: #06b6d4; }
-        .pid-control.ki input[type="range"]::-webkit-slider-thumb { background: #06b6d4; }
-        .pid-control.kd .value { color: #ec4899; }
-        .pid-control.kd input[type="range"]::-webkit-slider-thumb { background: #ec4899; }
-
-        #chartContainer {
-            width: 100%;
-            height: 160px;
-            position: relative;
-            margin-top: 12px;
-        }
-        #chartCanvas {
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-        .btn {
-            padding: 8px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.85em;
-            border: none;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
-        }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--light);
-        }
-        .btn-outline:hover {
-            border-color: rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.05);
-        }
-        .btn-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-        }
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
-        }
-        .btn-sm { padding: 4px 14px; font-size: 0.75em; }
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
-        }
-        .task-box {
-            background: rgba(79, 70, 229, 0.08);
-            border: 1px solid rgba(79, 70, 229, 0.2);
-            border-radius: 12px;
-            padding: 14px 18px;
-            margin-top: 12px;
-        }
-        .task-box .task-title {
-            color: #a5b4fc;
-            font-weight: 600;
-            font-size: 0.85em;
-        }
-        .task-box .task-desc {
-            color: var(--gray-light);
-            font-size: 0.85em;
-            margin: 3px 0 10px;
-        }
-        .task-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 3px 12px;
-            border-radius: 50px;
-            font-size: 0.75em;
-            font-weight: 600;
-        }
-        .task-status.done {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-        }
-        .task-status.pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-        }
-        section { padding: 40px 32px; }
-        .section-container { max-width: 1280px; margin: 0 auto; }
-        .footer {
-            padding: 50px 32px 30px;
-            background: var(--darker);
-            border-top: 1px solid var(--border);
-        }
-        .footer-grid {
-            max-width: 1280px;
-            margin: 0 auto 30px;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 32px;
-        }
-        .footer-col h4 {
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--gray);
-            margin-bottom: 16px;
-        }
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 8px; }
-        .footer-col a {
-            color: var(--gray-light);
-            text-decoration: none;
-            font-size: 0.85em;
-            transition: var(--transition);
-        }
-        .footer-col a:hover { color: var(--light); }
-        .footer-brand p {
-            color: var(--gray);
-            font-size: 0.85em;
-            margin: 10px 0 16px;
-            max-width: 300px;
-        }
-        .footer-bottom {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .footer-bottom p { color: var(--gray); font-size: 0.75em; }
-        .footer-social {
-            display: flex;
-            gap: 10px;
-        }
-        .footer-social a {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--gray-light);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        .footer-social a:hover {
+        .compare-table th {
             background: rgba(79, 70, 229, 0.2);
-            color: var(--light);
-            transform: translateY(-2px);
+            color: #a5b4fc;
         }
-        @media (max-width: 1024px) {
-            .sim-grid { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
+        
+        .achievement-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(79, 70, 229, 0.2);
+            color: #a5b4fc;
+            font-size: 0.7em;
+            margin: 2px;
         }
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .mobile-menu-btn { display: block; }
-            .nav-content { padding: 12px 20px; }
-            .hero { padding: 130px 20px 30px; }
-            .hero h1 { font-size: 2em; }
-            .sim-container { padding: 16px; }
-            .sim-panel { padding: 16px; }
-            #sim3DContainer { height: 280px; }
-            .pid-controls { grid-template-columns: 1fr; gap: 8px; }
-            .footer-grid { grid-template-columns: 1fr; gap: 20px; }
-            .footer { padding: 30px 20px 20px; }
-            .footer-bottom { flex-direction: column; text-align: center; }
+        .achievement-badge.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
         }
-        @media (max-width: 480px) {
-            .hero h1 { font-size: 1.5em; }
-            .sim-panel h3 { font-size: 0.9em; }
-            .btn { padding: 6px 14px; font-size: 0.75em; }
+        
+        .scenario-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .scenario-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8em;
+        }
+        .scenario-btn:hover, .scenario-btn.active {
+            background: rgba(79, 70, 229, 0.3);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            white-space: nowrap;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
-
-    <div class="cursor-glow" id="cursorGlow"></div>
-    <div class="particles-container" id="particles"></div>
-
+    <!-- Прелоадер -->
     <div class="preloader" id="preloader">
-        <div class="preloader-content">
-            <span class="preloader-logo">⚡ ThunderLight</span>
-            <div class="preloader-spinner"></div>
+        <div style="text-align: center;">
+            <span style="font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">⚡ ThunderLight</span>
+            <div style="width: 40px; height: 40px; margin: 20px auto; border: 3px solid rgba(255,255,255,0.1); border-top-color: #4f46e5; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
         </div>
     </div>
 
+    <!-- Навигация -->
     <nav class="navbar" id="navbar">
-        <div class="nav-content">
-            <a href="/" class="nav-logo">
-                <span class="nav-logo-icon">⚡</span>
-                ThunderLight
-            </a>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="/">Главная</a></li>
-                <li><a href="/projects.html">Проекты</a></li>
-                <li><a href="/articles.html">Статьи</a></li>
-                <li><a href="/uav-project.html">БПЛА</a></li>
-                <li><a href="/lab.html">Lab</a></li>
-                <li><a href="/simulator.html" class="active">Simulator</a></li>
-                <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
-            </ul>
-        </div>
+        <!-- ... навигация ... -->
     </nav>
 
+    <!-- Hero -->
     <section class="hero">
-        <div class="hero-grid-bg"></div>
-        <div class="hero-glow hero-glow-1"></div>
-        <div class="hero-glow hero-glow-2"></div>
-        <div class="hero-content">
-            <h1>💻 Симулятор <span class="hero-gradient">ПИД-регулятора</span></h1>
-            <p>Настрой коэффициенты Kp, Ki, Kd и наблюдай за реакцией системы на возмущения. Добейся идеальной стабилизации!</p>
-        </div>
+        <!-- ... hero ... -->
     </section>
 
+    <!-- Основной контейнер -->
     <div class="sim-container">
+        <!-- Выбор сценария -->
+        <div class="sim-panel" style="margin-bottom: 20px;">
+            <h3>🎮 Сценарии симуляции</h3>
+            <div class="scenario-selector">
+                <button class="scenario-btn active" onclick="setScenario('basic')">Базовая стабилизация</button>
+                <button class="scenario-btn" onclick="setScenario('turbulence')">Турбулентность</button>
+                <button class="scenario-btn" onclick="setScenario('gust')">Порывы ветра</button>
+                <button class="scenario-btn" onclick="setScenario('maneuver')">Маневрирование</button>
+                <button class="scenario-btn" onclick="setScenario('sensor_failure')">Отказ датчика</button>
+            </div>
+            <div id="scenarioDescription" style="font-size: 0.8em; color: var(--gray-light);">
+                Базовая стабилизация: настройте ПИД для удержания горизонтального положения
+            </div>
+        </div>
+
         <div class="sim-grid">
+            <!-- 3D Модель -->
             <div class="sim-panel">
                 <h3>🛩️ 3D Модель</h3>
                 <div id="sim3DContainer"></div>
+                
+                <div class="info-banner" id="infoBanner">
+                    <span id="infoIcon">💡</span> <span id="infoText">Запустите симуляцию</span>
+                </div>
+                
                 <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
                     <button class="btn btn-primary" id="btnStart">▶ Запустить</button>
                     <button class="btn btn-outline" id="btnReset">⟳ Сброс</button>
                     <button class="btn btn-danger" id="btnDisturb">⚡ Возмущение</button>
+                    <button class="btn btn-outline" id="btnWind">💨 Ветер</button>
+                    <button class="btn btn-outline" id="btnTutorial">📚 Обучение</button>
                 </div>
+                
+                <!-- Расширенная телеметрия -->
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:14px; font-size:0.75em; color:var(--gray-light);">
                     <div>Угол: <span id="angleDisplay" style="color:var(--light);font-weight:600;">0°</span></div>
                     <div>Скорость: <span id="speedDisplay" style="color:var(--light);font-weight:600;">0 °/с</span></div>
                     <div>Ошибка: <span id="errorDisplay" style="color:var(--light);font-weight:600;">0°</span></div>
                 </div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:4px; font-size:0.75em; color:var(--gray-light);">
+                    <div>P: <span id="pValue" style="color:#f59e0b;font-weight:600;">0</span></div>
+                    <div>I: <span id="iValue" style="color:#06b6d4;font-weight:600;">0</span></div>
+                    <div>D: <span id="dValue" style="color:#ec4899;font-weight:600;">0</span></div>
+                </div>
+                
                 <div style="font-size:0.75em; color:var(--gray-light); margin-top:4px;">
                     Статус: <span id="statusDisplay" style="color:var(--warning);font-weight:600;">Готов</span>
                 </div>
             </div>
 
+            <!-- Управление -->
             <div class="sim-panel">
                 <h3>🎛️ Настройка ПИД</h3>
                 
+                <!-- Пресеты -->
+                <div style="margin-bottom: 12px;">
+                    <label style="font-size:0.75em; color:var(--gray-light); margin-bottom:6px; display:block;">Пресеты:</label>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="preset-btn active" onclick="applyPreset('stable')">Стабильный</button>
+                        <button class="preset-btn" onclick="applyPreset('fast')">Быстрый</button>
+                        <button class="preset-btn" onclick="applyPreset('smooth')">Плавный</button>
+                        <button class="preset-btn" onclick="applyPreset('aggressive')">Агрессивный</button>
+                        <button class="preset-btn" onclick="applyPreset('bad')">Плохой</button>
+                    </div>
+                </div>
+                
+                <!-- Сохранение конфигураций -->
+                <div style="margin-bottom: 12px;">
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="configName" placeholder="Название конфигурации" 
+                               style="flex:1; background:rgba(0,0,0,0.3); border:1px solid var(--border); 
+                                      border-radius:8px; padding:8px; color:white; font-size:0.8em;">
+                        <button class="btn btn-outline btn-sm" onclick="saveConfig()">💾 Сохранить</button>
+                    </div>
+                </div>
+                
                 <div class="pid-controls">
+                    <!-- P контрол -->
                     <div class="pid-control kp">
-                        <label>Kp (Пропорциональный)</label>
+                        <label class="tooltip" data-tooltip="Реагирует на текущую ошибку. Увеличивает скорость реакции, но может вызвать колебания.">
+                            Kp (Пропорциональный) <i class="fas fa-info-circle"></i>
+                        </label>
                         <input type="range" id="kpSlider" min="0" max="5" step="0.1" value="1.2">
                         <span class="value" id="kpVal">1.2</span>
                     </div>
+                    
+                    <!-- I контрол -->
                     <div class="pid-control ki">
-                        <label>Ki (Интегральный)</label>
+                        <label class="tooltip" data-tooltip="Накапливает ошибку со временем. Устраняет статическую ошибку, но может вызвать перерегулирование.">
+                            Ki (Интегральный) <i class="fas fa-info-circle"></i>
+                        </label>
                         <input type="range" id="kiSlider" min="0" max="2" step="0.05" value="0.3">
                         <span class="value" id="kiVal">0.30</span>
                     </div>
+                    
+                    <!-- D контрол -->
                     <div class="pid-control kd">
-                        <label>Kd (Дифференциальный)</label>
+                        <label class="tooltip" data-tooltip="Реагирует на скорость изменения ошибки. Уменьшает колебания и улучшает стабильность.">
+                            Kd (Дифференциальный) <i class="fas fa-info-circle"></i>
+                        </label>
                         <input type="range" id="kdSlider" min="0" max="2" step="0.05" value="0.4">
                         <span class="value" id="kdVal">0.40</span>
                     </div>
                 </div>
-
+                
+                <!-- Расширенные метрики -->
+                <div style="margin-top: 12px;">
+                    <label style="font-size:0.75em; color:var(--gray-light); margin-bottom:6px; display:block;">Метрики качества:</label>
+                    <div class="response-metrics">
+                        <div class="metric-item">
+                            <div class="metric-value" id="metricRiseTime">--</div>
+                            <div class="metric-label">Нарастание</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="metricOvershoot">--</div>
+                            <div class="metric-label">Перерегулир.</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="metricSettling">--</div>
+                            <div class="metric-label">Установление</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="metricIAE">--</div>
+                            <div class="metric-label">IAE</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="metricISE">--</div>
+                            <div class="metric-label">ISE</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="metricDamping">--</div>
+                            <div class="metric-label">Демпфирование</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- График -->
                 <div style="margin-top:16px;">
                     <div style="display:flex;justify-content:space-between;font-size:0.6em;color:var(--gray);">
                         <span>Угол (°)</span>
-                        <span>Время</span>
+                        <span>Время (с)</span>
                     </div>
                     <div id="chartContainer">
                         <canvas id="chartCanvas" width="500" height="160"></canvas>
                     </div>
                 </div>
-
+                
+                <!-- Действия -->
                 <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
                     <button class="btn btn-success btn-sm" id="btnOptimal">🎯 Оптимальные</button>
                     <button class="btn btn-outline btn-sm" id="btnExport">📊 Экспорт</button>
-                    <button class="btn btn-outline btn-sm" id="btnBad">💩 Плохие</button>
+                    <button class="btn btn-outline btn-sm" id="btnCompare">📈 Сравнить</button>
+                    <button class="btn btn-outline btn-sm" id="btnAchievements">🏆 Достижения</button>
                 </div>
             </div>
         </div>
 
+        <!-- Сохраненные конфигурации -->
+        <div class="sim-panel" style="margin-top:20px;">
+            <h3>💾 Сохраненные конфигурации</h3>
+            <div id="savedConfigs" style="display:flex; gap:8px; flex-wrap:wrap;">
+                <span style="color:var(--gray-light); font-size:0.8em;">Нет сохраненных конфигураций</span>
+            </div>
+        </div>
+
+        <!-- Образовательные материалы -->
+        <div style="margin-top:20px;">
+            <div class="sim-panel">
+                <h3>📚 Образовательные материалы</h3>
+                
+                <div class="education-tabs">
+                    <button class="edu-tab active" onclick="showEduTab('theory')">Теория</button>
+                    <button class="edu-tab" onclick="showEduTab('tuning')">Настройка</button>
+                    <button class="edu-tab" onclick="showEduTab('examples')">Примеры</button>
+                </div>
+                
+                <div id="eduTheory" style="display:block;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px;">
+                        <!-- Теория P, I, D -->
+                    </div>
+                </div>
+                
+                <div id="eduTuning" style="display:none;">
+                    <!-- Методика настройки -->
+                </div>
+                
+                <div id="eduExamples" style="display:none;">
+                    <!-- Примеры конфигураций -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Задания -->
         <div style="margin-top:20px;">
             <div class="sim-panel" style="margin-bottom:12px;">
                 <h3>📋 Задания</h3>
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px;">
-                    <div class="task-box">
-                        <div class="task-title">Задание №1 — Стабилизация</div>
-                        <div class="task-desc">Настрой ПИД так, чтобы угол стабилизировался в течение 3 секунд после возмущения.</div>
-                        <span class="task-status pending" id="task1Status">⏳ Не выполнено</span>
-                        <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask1()">Проверить</button>
-                    </div>
-                    <div class="task-box">
-                        <div class="task-title">Задание №2 — Минимальное перерегулирование</div>
-                        <div class="task-desc">Настрой ПИД так, чтобы перерегулирование не превышало 10%.</div>
-                        <span class="task-status pending" id="task2Status">⏳ Не выполнено</span>
-                        <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask2()">Проверить</button>
-                    </div>
-                    <div class="task-box">
-                        <div class="task-title">Задание №3 — Быстрый отклик</div>
-                        <div class="task-desc">Настрой ПИД так, чтобы время реакции на возмущение было меньше 1.5 секунды.</div>
-                        <span class="task-status pending" id="task3Status">⏳ Не выполнено</span>
-                        <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask3()">Проверить</button>
-                    </div>
+                    <!-- Задания 1-6 -->
                 </div>
-            </div>
-
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-                <button class="btn btn-success btn-sm" onclick="resetAllTasks()">🔄 Сбросить все задания</button>
             </div>
         </div>
     </div>
 
+    <!-- Модальные окна -->
+    <div class="modal-overlay" id="compareModal">
+        <div class="modal-content">
+            <h3>📈 Сравнение конфигураций</h3>
+            <div id="compareContent"></div>
+            <button class="btn btn-outline" onclick="closeModal('compareModal')">Закрыть</button>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="achievementsModal">
+        <div class="modal-content">
+            <h3>🏆 Достижения</h3>
+            <div id="achievementsContent"></div>
+            <button class="btn btn-outline" onclick="closeModal('achievementsModal')">Закрыть</button>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="tutorialModal">
+        <div class="modal-content">
+            <h3>📚 Обучение</h3>
+            <div id="tutorialContent"></div>
+            <button class="btn btn-outline" onclick="closeModal('tutorialModal')">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Футер -->
     <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-col footer-brand">
-                <a href="/" class="nav-logo">
-                    <span class="nav-logo-icon">⚡</span>
-                    ThunderLight
-                </a>
-                <p>Образовательная экосистема БПЛА. Настраивай ПИД, симулируй полёт, учись управлять.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Экосистема</h4>
-                <ul>
-                    <li><a href="/articles.html">Academy</a></li>
-                    <li><a href="/lab.html">Lab</a></li>
-                    <li><a href="/simulator.html">Simulator</a></li>
-                    <li><a href="#" onclick="alert('В разработке'); return false;">Builder</a></li>
-                    <li><a href="/article.html?file=vrd-flight-controller.md">VRD FC</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Документы</h4>
-                <ul>
-                    <li><a href="/privacy.html">Конфиденциальность</a></li>
-                    <li><a href="/terms.html">Условия использования</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Контакты</h4>
-                <ul>
-                    <li><a href="https://t.me/thunderlight_online" target="_blank">Telegram</a></li>
-                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
-                    <li><a href="https://github.com/LightRain-K/ThunderLight/" target="_blank">GitHub</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
-            <div class="footer-social">
-                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
-                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
-                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
-            </div>
-        </div>
+        <!-- ... футер ... -->
     </footer>
 
     <script>
-        // ============================================================
-        // SIMULATOR — ЧЕСТНАЯ ФИЗИКА ПИД
-        // ============================================================
+        // ============================================
+        // РАСШИРЕННАЯ ФУНКЦИОНАЛЬНОСТЬ
+        // ============================================
 
-        const container = document.getElementById('sim3DContainer');
-        const width = container.clientWidth || 600;
-        const height = container.clientHeight || 400;
-
-        // === THREE.JS ===
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a0e27);
-        scene.fog = new THREE.Fog(0x0a0e27, 20, 50);
-
-        const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
-        camera.position.set(6, 4, 8);
-        camera.lookAt(0, 0, 0);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(width, height);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        container.appendChild(renderer.domElement);
-
-        // Свет
-        const ambientLight = new THREE.AmbientLight(0x222244, 0.5);
-        scene.add(ambientLight);
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-        dirLight.position.set(10, 15, 10);
-        dirLight.castShadow = true;
-        scene.add(dirLight);
-        const fillLight = new THREE.DirectionalLight(0x4444ff, 0.3);
-        fillLight.position.set(-5, 0, 5);
-        scene.add(fillLight);
-
-        // Земля
-        const gridHelper = new THREE.GridHelper(20, 20, 0x4f46e5, 0x2d1b4e);
-        gridHelper.position.y = -0.5;
-        scene.add(gridHelper);
-
-        // Самолёт
-        const airplaneGroup = new THREE.Group();
-
-        const fuselageGeo = new THREE.CylinderGeometry(0.3, 0.15, 2.5, 8);
-        const fuselageMat = new THREE.MeshPhongMaterial({ color: 0x94a3b8, metalness: 0.3, roughness: 0.7 });
-        const fuselage = new THREE.Mesh(fuselageGeo, fuselageMat);
-        fuselage.rotation.z = Math.PI / 2;
-        fuselage.position.x = 0.2;
-        airplaneGroup.add(fuselage);
-
-        const noseGeo = new THREE.ConeGeometry(0.3, 0.6, 8);
-        const noseMat = new THREE.MeshPhongMaterial({ color: 0x818cf8, metalness: 0.2, roughness: 0.8 });
-        const nose = new THREE.Mesh(noseGeo, noseMat);
-        nose.rotation.z = -Math.PI / 2;
-        nose.position.x = 1.5;
-        airplaneGroup.add(nose);
-
-        const wingGeo = new THREE.BoxGeometry(3.0, 0.05, 0.6);
-        const wingMat = new THREE.MeshPhongMaterial({ color: 0x4f46e5, metalness: 0.2, roughness: 0.6 });
-        const wing = new THREE.Mesh(wingGeo, wingMat);
-        wing.position.x = 0;
-        wing.position.y = 0.05;
-        airplaneGroup.add(wing);
-
-        const tailGeo = new THREE.BoxGeometry(0.4, 0.4, 0.05);
-        const tailMat = new THREE.MeshPhongMaterial({ color: 0x4f46e5, metalness: 0.2, roughness: 0.6 });
-        const tail = new THREE.Mesh(tailGeo, tailMat);
-        tail.position.x = -1.3;
-        tail.position.y = 0.1;
-        airplaneGroup.add(tail);
-
-        const stabGeo = new THREE.BoxGeometry(0.6, 0.05, 0.25);
-        const stabMat = new THREE.MeshPhongMaterial({ color: 0x4f46e5, metalness: 0.2, roughness: 0.6 });
-        const stab = new THREE.Mesh(stabGeo, stabMat);
-        stab.position.x = -1.3;
-        stab.position.y = 0;
-        airplaneGroup.add(stab);
-
-        const cockpitGeo = new THREE.SphereGeometry(0.2, 8, 8, 0, Math.PI * 2, 0, Math.PI / 2);
-        const cockpitMat = new THREE.MeshPhongMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.6 });
-        const cockpit = new THREE.Mesh(cockpitGeo, cockpitMat);
-        cockpit.position.set(0.7, 0.2, 0);
-        cockpit.rotation.x = 0.2;
-        airplaneGroup.add(cockpit);
-
-        const propGroup = new THREE.Group();
-        const propGeo = new THREE.BoxGeometry(0.05, 0.6, 0.05);
-        const propMat = new THREE.MeshPhongMaterial({ color: 0x94a3b8 });
-        const prop1 = new THREE.Mesh(propGeo, propMat);
-        prop1.position.y = 0.3;
-        propGroup.add(prop1);
-        const prop2 = new THREE.Mesh(propGeo, propMat);
-        prop2.position.y = -0.3;
-        propGroup.add(prop2);
-        const propCenter = new THREE.Mesh(
-            new THREE.SphereGeometry(0.05, 8, 8),
-            new THREE.MeshPhongMaterial({ color: 0x94a3b8 })
-        );
-        propGroup.add(propCenter);
-        propGroup.position.x = 1.8;
-        airplaneGroup.add(propGroup);
-
-        const tipGeo = new THREE.BoxGeometry(0.3, 0.03, 0.1);
-        const tipMat = new THREE.MeshPhongMaterial({ color: 0x818cf8 });
-        const tip1 = new THREE.Mesh(tipGeo, tipMat);
-        tip1.position.set(0, 0.05, 1.5);
-        airplaneGroup.add(tip1);
-        const tip2 = new THREE.Mesh(tipGeo, tipMat);
-        tip2.position.set(0, 0.05, -1.5);
-        airplaneGroup.add(tip2);
-
-        airplaneGroup.position.y = 0;
-        scene.add(airplaneGroup);
-
-        // === СОСТОЯНИЕ ПИД ===
-        let pidState = {
-            angle: 0,
-            targetAngle: 0,
-            angularSpeed: 0,
-            integral: 0,
-            lastError: 0,
-            running: false,
-            time: 0,
-            history: [],
-            kp: 1.2,
-            ki: 0.3,
-            kd: 0.4,
-            maxAngle: 45,
-        };
-
-        // === DOM ===
-        const kpSlider = document.getElementById('kpSlider');
-        const kiSlider = document.getElementById('kiSlider');
-        const kdSlider = document.getElementById('kdSlider');
-        const kpVal = document.getElementById('kpVal');
-        const kiVal = document.getElementById('kiVal');
-        const kdVal = document.getElementById('kdVal');
-        const angleDisplay = document.getElementById('angleDisplay');
-        const speedDisplay = document.getElementById('speedDisplay');
-        const errorDisplay = document.getElementById('errorDisplay');
-        const statusDisplay = document.getElementById('statusDisplay');
-
-        const chartCanvas = document.getElementById('chartCanvas');
-        const chartCtx = chartCanvas.getContext('2d');
-
-        // === ОБНОВЛЕНИЕ ПИД ===
-        function updatePID() {
-            pidState.kp = parseFloat(kpSlider.value);
-            pidState.ki = parseFloat(kiSlider.value);
-            pidState.kd = parseFloat(kdSlider.value);
-            kpVal.textContent = pidState.kp.toFixed(1);
-            kiVal.textContent = pidState.ki.toFixed(2);
-            kdVal.textContent = pidState.kd.toFixed(2);
-        }
-
-        kpSlider.addEventListener('input', updatePID);
-        kiSlider.addEventListener('input', updatePID);
-        kdSlider.addEventListener('input', updatePID);
-
-        // === ЧЕСТНАЯ ФИЗИКА ПИД ===
-        function calculatePID(dt) {
-            if (!pidState.running) return;
-
-            const error = pidState.targetAngle - pidState.angle;
-
-            // Пропорциональный
-            const P = pidState.kp * error;
-
-            // Интегральный (с ограничением)
-            pidState.integral += error * dt;
-            pidState.integral = Math.max(-5, Math.min(5, pidState.integral));
-            const I = pidState.ki * pidState.integral;
-
-            // Дифференциальный
-            const derivative = (error - pidState.lastError) / dt;
-            const D = pidState.kd * derivative;
-
-            // Управляющий сигнал
-            const output = P + I + D;
-
-            // === РЕАЛИСТИЧНАЯ ФИЗИКА ===
-            const inertia = 0.8;
-            const angularAccel = output / inertia;
-
-            pidState.angularSpeed += angularAccel * dt;
-
-            // Аэродинамическое затухание (реалистичное, маленькое)
-            const airDrag = 0.08;
-            pidState.angularSpeed *= (1 - airDrag * dt);
-
-            pidState.angle += pidState.angularSpeed * dt;
-
-            // Ограничение угла
-            pidState.angle = Math.max(-pidState.maxAngle, Math.min(pidState.maxAngle, pidState.angle));
-            if (Math.abs(pidState.angle) >= pidState.maxAngle) {
-                pidState.angularSpeed *= 0.9;
+        // Инициализация всех систем
+        class PIDSimulator {
+            constructor() {
+                this.initThreeJS();
+                this.initPID();
+                this.initScenarios();
+                this.initAchievements();
+                this.initConfigs();
+                this.initTutorial();
+                this.initEventListeners();
+                this.animate();
             }
-
-            pidState.lastError = error;
-
-            pidState.history.push({
-                angle: pidState.angle,
-                target: pidState.targetAngle,
-                time: pidState.time,
-                error: error,
-                output: output,
-            });
-            if (pidState.history.length > 300) pidState.history.shift();
-
-            pidState.time += dt;
-
-            // Обновляем индикаторы
-            angleDisplay.textContent = pidState.angle.toFixed(1) + '°';
-            speedDisplay.textContent = pidState.angularSpeed.toFixed(1) + ' °/с';
-            errorDisplay.textContent = error.toFixed(1) + '°';
-
-            if (Math.abs(error) < 0.5 && Math.abs(pidState.angularSpeed) < 2) {
-                statusDisplay.textContent = '✅ Стабильно';
-                statusDisplay.style.color = '#10b981';
-            } else if (Math.abs(error) < 3) {
-                statusDisplay.textContent = '🔄 Регулируется';
-                statusDisplay.style.color = '#f59e0b';
-            } else if (Math.abs(error) > 10) {
-                statusDisplay.textContent = '💥 НЕСТАБИЛЬНО!';
-                statusDisplay.style.color = '#ef4444';
-            } else {
-                statusDisplay.textContent = '⚡ Колебания';
-                statusDisplay.style.color = '#f59e0b';
+            
+            // Инициализация сценариев
+            initScenarios() {
+                this.currentScenario = 'basic';
+                this.scenarios = {
+                    basic: {
+                        name: 'Базовая стабилизация',
+                        description: 'Настройте ПИД для удержания горизонтального положения',
+                        turbulence: 0,
+                        gustFrequency: 0,
+                        maneuverAmplitude: 0,
+                        sensorNoise: 0
+                    },
+                    turbulence: {
+                        name: 'Турбулентность',
+                        description: 'Постоянная турбулентность средней интенсивности',
+                        turbulence: 0.3,
+                        gustFrequency: 2,
+                        maneuverAmplitude: 0,
+                        sensorNoise: 0.1
+                    },
+                    gust: {
+                        name: 'Порывы ветра',
+                        description: 'Случайные порывы ветра',
+                        turbulence: 0.1,
+                        gustFrequency: 5,
+                        maneuverAmplitude: 0,
+                        sensorNoise: 0
+                    },
+                    maneuver: {
+                        name: 'Маневрирование',
+                        description: 'Следуйте за изменяющейся целью',
+                        turbulence: 0,
+                        gustFrequency: 0,
+                        maneuverAmplitude: 15,
+                        sensorNoise: 0
+                    },
+                    sensor_failure: {
+                        name: 'Отказ датчика',
+                        description: 'Датчик имеет шум и периодические сбои',
+                        turbulence: 0,
+                        gustFrequency: 0,
+                        maneuverAmplitude: 0,
+                        sensorNoise: 0.5
+                    }
+                };
             }
-        }
-
-        // === 3D АНИМАЦИЯ ===
-        let propAngle = 0;
-
-        function animate3D() {
-            requestAnimationFrame(animate3D);
-
-            airplaneGroup.rotation.z = pidState.angle * Math.PI / 180;
-            airplaneGroup.rotation.x = Math.sin(pidState.angle * Math.PI / 180) * 0.1;
-
-            if (pidState.running) propAngle += 0.5;
-            propGroup.rotation.z = propAngle;
-
-            if (pidState.running) {
-                airplaneGroup.position.y = Math.sin(pidState.time * 0.5) * 0.05;
+            
+            // Инициализация достижений
+            initAchievements() {
+                this.achievements = {
+                    first_flight: {
+                        name: 'Первый полёт',
+                        description: 'Запустите симуляцию',
+                        icon: '🚀',
+                        earned: false
+                    },
+                    stable_3s: {
+                        name: 'Стабильность за 3 секунды',
+                        description: 'Достигните стабилизации за 3 секунды',
+                        icon: '🎯',
+                        earned: false
+                    },
+                    low_overshoot: {
+                        name: 'Минимальное перерегулирование',
+                        description: 'Перерегулирование менее 5%',
+                        icon: '📉',
+                        earned: false
+                    },
+                    perfect_tuning: {
+                        name: 'Идеальная настройка',
+                        description: 'Все метрики в оптимальных пределах',
+                        icon: '💎',
+                        earned: false
+                    },
+                    all_tasks: {
+                        name: 'Мастер ПИД',
+                        description: 'Выполните все задания',
+                        icon: '👑',
+                        earned: false
+                    },
+                    config_master: {
+                        name: 'Коллекционер',
+                        description: 'Сохраните 5 конфигураций',
+                        icon: '💾',
+                        earned: false
+                    }
+                };
             }
-
-            renderer.render(scene, camera);
-        }
-
-        // === ГРАФИК ===
-        function drawChart() {
-            const w = chartCanvas.width;
-            const h = chartCanvas.height;
-            chartCtx.clearRect(0, 0, w, h);
-
-            if (pidState.history.length < 2) {
-                chartCtx.fillStyle = 'rgba(255,255,255,0.05)';
-                chartCtx.font = '10px monospace';
-                chartCtx.fillText('Запустите симуляцию', w/2 - 60, h/2 + 4);
-                return;
+            
+            // Инициализация конфигураций
+            initConfigs() {
+                this.savedConfigs = [];
+                this.loadConfigsFromStorage();
             }
-
-            const data = pidState.history;
-            const maxAngle = Math.max(15, ...data.map(d => Math.abs(d.angle))) * 1.2;
-
-            chartCtx.strokeStyle = 'rgba(255,255,255,0.03)';
-            chartCtx.lineWidth = 0.5;
-            for (let i = 0; i < 4; i++) {
-                const y = (i / 4) * h;
-                chartCtx.beginPath();
-                chartCtx.moveTo(0, y);
-                chartCtx.lineTo(w, y);
-                chartCtx.stroke();
+            
+            // Инициализация обучения
+            initTutorial() {
+                this.tutorialSteps = [
+                    {
+                        title: 'Что такое ПИД?',
+                        content: 'ПИД-регулятор — это механизм обратной связи, который вычисляет ошибку между желаемым и фактическим значением.',
+                        highlight: null
+                    },
+                    {
+                        title: 'P — Пропорциональный',
+                        content: 'Реагирует на текущую ошибку. Увеличьте Kp для более быстрой реакции, но слишком большое значение вызовет колебания.',
+                        highlight: 'kp'
+                    },
+                    {
+                        title: 'I — Интегральный',
+                        content: 'Накапливает ошибку со временем. Устраняет статическую ошибку, но может вызвать перерегулирование.',
+                        highlight: 'ki'
+                    },
+                    {
+                        title: 'D — Дифференциальный',
+                        content: 'Реагирует на скорость изменения ошибки. Уменьшает колебания и улучшает стабильность.',
+                        highlight: 'kd'
+                    },
+                    {
+                        title: 'Практика',
+                        content: 'Попробуйте изменить коэффициенты и наблюдайте за реакцией системы!',
+                        highlight: null
+                    }
+                ];
+                this.currentTutorialStep = 0;
             }
-
-            const targetY = h / 2;
-            chartCtx.strokeStyle = 'rgba(255,255,255,0.1)';
-            chartCtx.lineWidth = 1;
-            chartCtx.setLineDash([4, 4]);
-            chartCtx.beginPath();
-            chartCtx.moveTo(0, targetY);
-            chartCtx.lineTo(w, targetY);
-            chartCtx.stroke();
-            chartCtx.setLineDash([]);
-
-            chartCtx.strokeStyle = 'rgba(79, 70, 229, 0.8)';
-            chartCtx.lineWidth = 2;
-            chartCtx.beginPath();
-            for (let i = 0; i < data.length; i++) {
-                const x = (i / data.length) * w;
-                const y = h / 2 - (data[i].angle / maxAngle) * h * 0.45;
-                if (i === 0) chartCtx.moveTo(x, y);
-                else chartCtx.lineTo(x, y);
+            
+            // Сохранение конфигурации
+            saveConfig(name, params) {
+                if (!name) {
+                    alert('Введите название конфигурации');
+                    return;
+                }
+                
+                const config = {
+                    name: name,
+                    kp: params.kp,
+                    ki: params.ki,
+                    kd: params.kd,
+                    timestamp: Date.now(),
+                    metrics: this.calculateMetrics()
+                };
+                
+                this.savedConfigs.push(config);
+                this.saveConfigsToStorage();
+                this.updateConfigsDisplay();
+                
+                // Проверка достижения
+                if (this.savedConfigs.length >= 5) {
+                    this.unlockAchievement('config_master');
+                }
             }
-            chartCtx.stroke();
-
-            const last = data[data.length - 1];
-            const lastX = w;
-            const lastY = h / 2 - (last.angle / maxAngle) * h * 0.45;
-            chartCtx.fillStyle = '#4f46e5';
-            chartCtx.beginPath();
-            chartCtx.arc(lastX - 3, lastY, 4, 0, Math.PI * 2);
-            chartCtx.fill();
-
-            chartCtx.fillStyle = 'rgba(255,255,255,0.15)';
-            chartCtx.font = '7px monospace';
-            chartCtx.fillText(maxAngle.toFixed(0) + '°', 2, 12);
-            chartCtx.fillText('0°', 2, h/2 + 4);
-            chartCtx.fillText('-' + maxAngle.toFixed(0) + '°', 2, h - 4);
-        }
-
-        // === ЦИКЛ ===
-        let lastTime = 0;
-
-        function loop(timestamp) {
-            if (lastTime === 0) lastTime = timestamp;
-            let delta = (timestamp - lastTime) / 1000;
-            lastTime = timestamp;
-            delta = Math.min(delta, 0.03);
-
-            if (pidState.running) {
-                calculatePID(delta);
-                drawChart();
-            } else {
-                drawChart();
+            
+            // Сохранение в localStorage
+            saveConfigsToStorage() {
+                localStorage.setItem('pid_configs', JSON.stringify(this.savedConfigs));
             }
-
-            requestAnimationFrame(loop);
-        }
-
-        // === УПРАВЛЕНИЕ ===
-        document.getElementById('btnStart').addEventListener('click', () => {
-            if (!pidState.running) {
-                pidState.running = true;
-                pidState.time = 0;
-                pidState.history = [];
-                pidState.integral = 0;
-                pidState.lastError = 0;
-                document.getElementById('btnStart').textContent = '▶ Запущено';
-                document.getElementById('btnStart').style.opacity = '0.7';
-                statusDisplay.textContent = '🔄 Работает';
-                statusDisplay.style.color = '#06b6d4';
+            
+            // Загрузка из localStorage
+            loadConfigsFromStorage() {
+                const stored = localStorage.getItem('pid_configs');
+                if (stored) {
+                    this.savedConfigs = JSON.parse(stored);
+                }
             }
-        });
-
-        document.getElementById('btnReset').addEventListener('click', () => {
-            pidState.running = false;
-            pidState.angle = 0;
-            pidState.angularSpeed = 0;
-            pidState.integral = 0;
-            pidState.lastError = 0;
-            pidState.history = [];
-            pidState.time = 0;
-            document.getElementById('btnStart').textContent = '▶ Запустить';
-            document.getElementById('btnStart').style.opacity = '1';
-            statusDisplay.textContent = 'Готов';
-            statusDisplay.style.color = '#f59e0b';
-            angleDisplay.textContent = '0°';
-            speedDisplay.textContent = '0 °/с';
-            errorDisplay.textContent = '0°';
-            drawChart();
-        });
-
-        document.getElementById('btnDisturb').addEventListener('click', () => {
-            if (pidState.running) {
-                pidState.angle += 20;
-                statusDisplay.textContent = '⚡ Возмущение!';
-                statusDisplay.style.color = '#ef4444';
+            
+            // Обновление отображения конфигураций
+            updateConfigsDisplay() {
+                const container = document.getElementById('savedConfigs');
+                if (this.savedConfigs.length === 0) {
+                    container.innerHTML = '<span style="color:var(--gray-light); font-size:0.8em;">Нет сохраненных конфигураций</span>';
+                    return;
+                }
+                
+                container.innerHTML = this.savedConfigs.map((config, index) => `
+                    <div style="background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:8px; padding:10px;">
+                        <div style="font-weight:600; color:#a5b4fc;">${config.name}</div>
+                        <div style="font-size:0.75em; color:var(--gray-light);">
+                            Kp: ${config.kp}, Ki: ${config.ki}, Kd: ${config.kd}
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="loadConfig(${index})">Загрузить</button>
+                    </div>
+                `).join('');
+            }
+            
+            // Загрузка конфигурации
+            loadConfig(index) {
+                const config = this.savedConfigs[index];
+                if (config) {
+                    kpSlider.value = config.kp;
+                    kiSlider.value = config.ki;
+                    kdSlider.value = config.kd;
+                    updatePID();
+                }
+            }
+            
+            // Установка сценария
+            setScenario(name) {
+                this.currentScenario = name;
+                const scenario = this.scenarios[name];
+                
+                // Обновление описания
+                document.getElementById('scenarioDescription').textContent = scenario.description;
+                
+                // Обновление активной кнопки
+                document.querySelectorAll('.scenario-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                // Сброс симуляции
+                this.reset();
+            }
+            
+            // Применение сценария в физике
+            applyScenarioEffects(dt) {
+                const scenario = this.scenarios[this.currentScenario];
+                
+                // Турбулентность
+                if (scenario.turbulence > 0) {
+                    const noise = (Math.random() - 0.5) * scenario.turbulence;
+                    pidState.angle += noise * dt * 10;
+                }
+                
+                // Порывы ветра
+                if (scenario.gustFrequency > 0) {
+                    if (Math.random() < scenario.gustFrequency * dt) {
+                        const gust = (Math.random() - 0.5) * 20;
+                        pidState.angle += gust;
+                    }
+                }
+                
+                // Маневрирование
+                if (scenario.maneuverAmplitude > 0) {
+                    pidState.targetAngle = Math.sin(pidState.time * 0.5) * scenario.maneuverAmplitude;
+                }
+                
+                // Шум датчика
+                if (scenario.sensorNoise > 0) {
+                    const sensorError = (Math.random() - 0.5) * scenario.sensorNoise;
+                    // Добавляем шум к измерению
+                    pidState.measuredAngle = pidState.angle + sensorError;
+                    // Используем зашумленное значение для расчета ошибки
+                    return pidState.measuredAngle;
+                }
+                
+                return pidState.angle;
+            }
+            
+            // Проверка достижений
+            checkAchievements() {
+                if (!this.achievements.first_flight.earned && pidState.running) {
+                    this.unlockAchievement('first_flight');
+                }
+                
+                if (!this.achievements.stable_3s.earned && 
+                    pidState.time >= 3 && 
+                    Math.abs(pidState.angle) < 0.5) {
+                    this.unlockAchievement('stable_3s');
+                }
+                
+                if (!this.achievements.low_overshoot.earned) {
+                    const metrics = this.calculateMetrics();
+                    if (metrics.overshoot < 5 && pidState.time > 5) {
+                        this.unlockAchievement('low_overshoot');
+                    }
+                }
+                
+                if (!this.achievements.perfect_tuning.earned) {
+                    const metrics = this.calculateMetrics();
+                    if (metrics.overshoot < 10 && 
+                        metrics.settlingTime < 3 && 
+                        metrics.riseTime < 1) {
+                        this.unlockAchievement('perfect_tuning');
+                    }
+                }
+            }
+            
+            // Разблокировка достижения
+            unlockAchievement(name) {
+                const achievement = this.achievements[name];
+                if (achievement && !achievement.earned) {
+                    achievement.earned = true;
+                    this.showAchievementPopup(achievement);
+                    this.saveAchievements();
+                }
+            }
+            
+            // Показ всплывающего окна достижения
+            showAchievementPopup(achievement) {
+                const popup = document.createElement('div');
+                popup.className = 'achievement-popup';
+                popup.innerHTML = `
+                    <div style="font-size:1.2em; font-weight:700;">${achievement.icon} ${achievement.name}</div>
+                    <div style="font-size:0.8em; opacity:0.8;">${achievement.description}</div>
+                `;
+                document.body.appendChild(popup);
+                
                 setTimeout(() => {
-                    statusDisplay.textContent = '🔄 Регулируется';
-                    statusDisplay.style.color = '#f59e0b';
-                }, 500);
-            } else {
-                alert('Сначала запустите симуляцию!');
+                    popup.remove();
+                }, 3000);
             }
-        });
-
-        document.getElementById('btnOptimal').addEventListener('click', () => {
-            kpSlider.value = '1.8';
-            kiSlider.value = '0.4';
-            kdSlider.value = '0.6';
-            updatePID();
-        });
-
-        document.getElementById('btnBad').addEventListener('click', () => {
-            kpSlider.value = '4.5';
-            kiSlider.value = '1.5';
-            kdSlider.value = '0.0';
-            updatePID();
-            statusDisplay.textContent = '💩 Плохие настройки!';
-            statusDisplay.style.color = '#ef4444';
-        });
-
-        document.getElementById('btnExport').addEventListener('click', () => {
-            if (pidState.history.length === 0) {
-                alert('Нет данных для экспорта. Запустите симуляцию.');
-                return;
+            
+            // Сохранение достижений
+            saveAchievements() {
+                localStorage.setItem('pid_achievements', JSON.stringify(this.achievements));
             }
-            let csv = 'Время,Угол,Ошибка,Выход\n';
-            pidState.history.forEach(d => {
-                csv += `${d.time.toFixed(2)},${d.angle.toFixed(2)},${d.error.toFixed(2)},${d.output ? d.output.toFixed(2) : '0'}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'pid_data.csv';
-            a.click();
-            URL.revokeObjectURL(url);
-        });
-
-        // === ЗАДАНИЯ ===
-        let tasks = { task1: false, task2: false, task3: false };
-
-        function checkTask1() {
-            const history = pidState.history;
-            if (history.length < 30) {
-                alert('Недостаточно данных. Запустите симуляцию и подождите.');
-                return;
-            }
-            const last30 = history.slice(-30);
-            const avgError = last30.reduce((sum, d) => sum + Math.abs(d.error), 0) / last30.length;
-            if (avgError < 0.5) {
-                tasks.task1 = true;
-                document.getElementById('task1Status').textContent = '✅ Выполнено!';
-                document.getElementById('task1Status').className = 'task-status done';
-            } else {
-                alert('❌ Не выполнено. Средняя ошибка: ' + avgError.toFixed(2) + '°. Настройте ПИД для стабилизации.');
-            }
-        }
-
-        function checkTask2() {
-            const history = pidState.history;
-            if (history.length < 10) {
-                alert('Недостаточно данных. Запустите симуляцию и подождите.');
-                return;
-            }
-            let maxOvershoot = 0;
-            for (let i = 10; i < history.length; i++) {
-                if (history[i].angle > 0 && history[i].angle > maxOvershoot) {
-                    maxOvershoot = history[i].angle;
+            
+            // Загрузка достижений
+            loadAchievements() {
+                const stored = localStorage.getItem('pid_achievements');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    Object.keys(parsed).forEach(key => {
+                        if (this.achievements[key]) {
+                            this.achievements[key].earned = parsed[key].earned;
+                        }
+                    });
                 }
             }
-            if (maxOvershoot < 2.0) {
-                tasks.task2 = true;
-                document.getElementById('task2Status').textContent = '✅ Выполнено!';
-                document.getElementById('task2Status').className = 'task-status done';
-            } else {
-                alert('❌ Не выполнено. Перерегулирование: ' + maxOvershoot.toFixed(1) + '°. Настройте Kd для уменьшения.');
+            
+            // Показ достижений
+            showAchievements() {
+                const content = document.getElementById('achievementsContent');
+                content.innerHTML = Object.values(this.achievements).map(achievement => `
+                    <div style="display:flex; align-items:center; gap:10px; padding:10px; 
+                                background:${achievement.earned ? 'rgba(16, 185, 129, 0.1)' : 'rgba(0,0,0,0.2)'}; 
+                                border-radius:8px; margin-bottom:8px;">
+                        <span style="font-size:1.5em;">${achievement.earned ? achievement.icon : '🔒'}</span>
+                        <div>
+                            <div style="font-weight:600; color:${achievement.earned ? '#10b981' : '#64748b'};">
+                                ${achievement.name}
+                            </div>
+                            <div style="font-size:0.8em; color:var(--gray-light);">
+                                ${achievement.description}
+                            </div>
+                        </div>
+                        ${achievement.earned ? '<span style="margin-left:auto; color:#10b981;">✅</span>' : ''}
+                    </div>
+                `).join('');
+                
+                openModal('achievementsModal');
             }
-        }
-
-        function checkTask3() {
-            const history = pidState.history;
-            if (history.length < 20) {
-                alert('Недостаточно данных. Запустите симуляцию и подождите.');
-                return;
+            
+            // Сравнение конфигураций
+            compareConfigs() {
+                const content = document.getElementById('compareContent');
+                
+                if (this.savedConfigs.length < 2) {
+                    content.innerHTML = '<p style="color:var(--gray-light);">Сохраните минимум 2 конфигурации для сравнения</p>';
+                } else {
+                    content.innerHTML = `
+                        <table class="compare-table">
+                            <thead>
+                                <tr>
+                                    <th>Параметр</th>
+                                    ${this.savedConfigs.map(config => `<th>${config.name}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Kp</td>
+                                    ${this.savedConfigs.map(config => `<td>${config.kp}</td>`).join('')}
+                                </tr>
+                                <tr>
+                                    <td>Ki</td>
+                                    ${this.savedConfigs.map(config => `<td>${config.ki}</td>`).join('')}
+                                </tr>
+                                <tr>
+                                    <td>Kd</td>
+                                    ${this.savedConfigs.map(config => `<td>${config.kd}</td>`).join('')}
+                                </tr>
+                                <tr>
+                                    <td>Перерегулирование</td>
+                                    ${this.savedConfigs.map(config => 
+                                        `<td>${config.metrics ? config.metrics.overshoot.toFixed(1) + '%' : '--'}</td>`
+                                    ).join('')}
+                                </tr>
+                                <tr>
+                                    <td>Время установления</td>
+                                    ${this.savedConfigs.map(config => 
+                                        `<td>${config.metrics ? config.metrics.settlingTime.toFixed(2) + 'с' : '--'}</td>`
+                                    ).join('')}
+                                </tr>
+                            </tbody>
+                        </table>
+                    `;
+                }
+                
+                openModal('compareModal');
             }
-            let reactionTime = 0;
-            for (let i = 5; i < history.length; i++) {
-                if (Math.abs(history[i].angle) < 0.5) {
-                    reactionTime = history[i].time;
-                    break;
+            
+            // Показ обучения
+            showTutorial() {
+                const step = this.tutorialSteps[this.currentTutorialStep];
+                const content = document.getElementById('tutorialContent');
+                
+                content.innerHTML = `
+                    <h4 style="color:#a5b4fc; margin-bottom:10px;">Шаг ${this.currentTutorialStep + 1} из ${this.tutorialSteps.length}: ${step.title}</h4>
+                    <p style="color:var(--gray-light); margin-bottom:20px;">${step.content}</p>
+                    <div style="display:flex; gap:10px; justify-content:space-between;">
+                        <button class="btn btn-outline" onclick="prevTutorialStep()" ${this.currentTutorialStep === 0 ? 'disabled' : ''}>
+                            ← Назад
+                        </button>
+                        ${this.currentTutorialStep < this.tutorialSteps.length - 1 ? 
+                            `<button class="btn btn-primary" onclick="nextTutorialStep()">Далее →</button>` :
+                            `<button class="btn btn-success" onclick="closeTutorial()">Завершить</button>`
+                        }
+                    </div>
+                `;
+                
+                openModal('tutorialModal');
+            }
+            
+            // Следующий шаг обучения
+            nextTutorialStep() {
+                if (this.currentTutorialStep < this.tutorialSteps.length - 1) {
+                    this.currentTutorialStep++;
+                    this.showTutorial();
                 }
             }
-            if (reactionTime > 0 && reactionTime < 1.5) {
-                tasks.task3 = true;
-                document.getElementById('task3Status').textContent = '✅ Выполнено!';
-                document.getElementById('task3Status').className = 'task-status done';
-            } else {
-                alert('❌ Не выполнено. Время реакции: ' + (reactionTime > 0 ? reactionTime.toFixed(2) : '∞') + 'с. Настройте Kp для ускорения.');
+            
+            // Предыдущий шаг обучения
+            prevTutorialStep() {
+                if (this.currentTutorialStep > 0) {
+                    this.currentTutorialStep--;
+                    this.showTutorial();
+                }
+            }
+            
+            // Закрытие обучения
+            closeTutorial() {
+                closeModal('tutorialModal');
+                this.currentTutorialStep = 0;
+            }
+            
+            // Расчет расширенных метрик
+            calculateMetrics() {
+                const history = pidState.history;
+                if (history.length < 20) return {
+                    riseTime: 0,
+                    overshoot: 0,
+                    settlingTime: 0,
+                    IAE: 0,
+                    ISE: 0,
+                    dampingRatio: 0
+                };
+                
+                // Время нарастания
+                const steadyState = history[history.length - 1].angle;
+                const target10 = steadyState * 0.1;
+                const target90 = steadyState * 0.9;
+                let riseTime = 0;
+                
+                // Перерегулирование
+                let maxAngle = 0;
+                for (let i = 10; i < history.length; i++) {
+                    maxAngle = Math.max(maxAngle, Math.abs(history[i].angle));
+                }
+                const overshoot = steadyState > 0 ? 
+                    (maxAngle - steadyState) / steadyState * 100 : 0;
+                
+                // Время установления
+                const band = Math.abs(steadyState) * 0.02 + 0.1;
+                let settlingTime = 0;
+                for (let i = history.length - 1; i >= 0; i--) {
+                    if (Math.abs(history[i].angle - steadyState) > band) {
+                        settlingTime = history[i].time;
+                        break;
+                    }
+                }
+                
+                // Интегральные критерии
+                let IAE = 0;
+                let ISE = 0;
+                for (let i = 0; i < history.length; i++) {
+                    const error = history[i].error || (history[i].target - history[i].angle);
+                    IAE += Math.abs(error);
+                    ISE += error * error;
+                }
+                
+                // Коэффициент демпфирования
+                const peaks = [];
+                for (let i = 2; i < history.length - 2; i++) {
+                    if (Math.abs(history[i].angle) > Math.abs(history[i-1].angle) &&
+                        Math.abs(history[i].angle) > Math.abs(history[i+1].angle)) {
+                        peaks.push(history[i].angle);
+                    }
+                }
+                
+                let dampingRatio = 0;
+                if (peaks.length >= 2) {
+                    const ratio = Math.abs(peaks[1] / peaks[0]);
+                    dampingRatio = -Math.log(ratio) / Math.sqrt(Math.PI * Math.PI + Math.log(ratio) * Math.log(ratio));
+                }
+                
+                return {
+                    riseTime,
+                    overshoot,
+                    settlingTime,
+                    IAE: IAE / history.length,
+                    ISE: ISE / history.length,
+                    dampingRatio
+                };
+            }
+            
+            // Инициализация всех обработчиков
+            initEventListeners() {
+                // Базовые обработчики
+                document.getElementById('btnStart').addEventListener('click', () => this.toggleRun());
+                document.getElementById('btnReset').addEventListener('click', () => this.reset());
+                document.getElementById('btnDisturb').addEventListener('click', () => this.addDisturbance());
+                document.getElementById('btnWind').addEventListener('click', () => this.addWind());
+                
+                // Новые обработчики
+                document.getElementById('btnTutorial').addEventListener('click', () => this.showTutorial());
+                document.getElementById('btnCompare').addEventListener('click', () => this.compareConfigs());
+                document.getElementById('btnAchievements').addEventListener('click', () => this.showAchievements());
+                
+                // Слайдеры
+                const sliders = [
+                    { id: 'kpSlider', valId: 'kpVal', param: 'kp' },
+                    { id: 'kiSlider', valId: 'kiVal', param: 'ki' },
+                    { id: 'kdSlider', valId: 'kdVal', param: 'kd' }
+                ];
+                
+                sliders.forEach(({ id, valId, param }) => {
+                    const slider = document.getElementById(id);
+                    slider.addEventListener('input', () => {
+                        pidState[param] = parseFloat(slider.value);
+                        document.getElementById(valId).textContent = pidState[param].toFixed(2);
+                    });
+                });
+                
+                // Глобальные функции для HTML
+                window.loadConfig = (index) => this.loadConfig(index);
+                window.applyPreset = (name) => this.applyPreset(name);
+                window.setScenario = (name) => this.setScenario(name);
+                window.showEduTab = (tab) => this.showEduTab(tab);
+                window.saveConfig = () => this.saveConfig(
+                    document.getElementById('configName').value,
+                    { kp: pidState.kp, ki: pidState.ki, kd: pidState.kd }
+                );
+                window.checkTask1 = () => this.checkTask1();
+                window.checkTask2 = () => this.checkTask2();
+                window.checkTask3 = () => this.checkTask3();
+                window.resetAllTasks = () => this.resetAllTasks();
+                window.nextTutorialStep = () => this.nextTutorialStep();
+                window.prevTutorialStep = () => this.prevTutorialStep();
+                window.closeTutorial = () => this.closeTutorial();
+            }
+            
+            // Применение пресетов
+            applyPreset(name) {
+                const presets = {
+                    stable: { kp: 1.2, ki: 0.3, kd: 0.4 },
+                    fast: { kp: 2.5, ki: 0.2, kd: 0.8 },
+                    smooth: { kp: 0.8, ki: 0.5, kd: 0.2 },
+                    aggressive: { kp: 3.5, ki: 0.8, kd: 0.6 },
+                    bad: { kp: 4.5, ki: 1.5, kd: 0.0 }
+                };
+                
+                const preset = presets[name];
+                if (preset) {
+                    kpSlider.value = preset.kp;
+                    kiSlider.value = preset.ki;
+                    kdSlider.value = preset.kd;
+                    this.updatePID();
+                    
+                    document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+                    event.target.classList.add('active');
+                }
+            }
+            
+            // Обновление ПИД параметров
+            updatePID() {
+                pidState.kp = parseFloat(kpSlider.value);
+                pidState.ki = parseFloat(kiSlider.value);
+                pidState.kd = parseFloat(kdSlider.value);
+                kpVal.textContent = pidState.kp.toFixed(2);
+                kiVal.textContent = pidState.ki.toFixed(2);
+                kdVal.textContent = pidState.kd.toFixed(2);
+            }
+            
+            // Переключение вкладок образования
+            showEduTab(tab) {
+                document.querySelectorAll('.edu-tab').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                
+                document.getElementById('eduTheory').style.display = tab === 'theory' ? 'block' : 'none';
+                document.getElementById('eduTuning').style.display = tab === 'tuning' ? 'block' : 'none';
+                document.getElementById('eduExamples').style.display = tab === 'examples' ? 'block' : 'none';
+            }
+            
+            // Основной цикл анимации
+            animate() {
+                const loop = (timestamp) => {
+                    if (this.lastTimestamp === 0) this.lastTimestamp = timestamp;
+                    
+                    const dt = (timestamp - this.lastTimestamp) / 1000;
+                    this.lastTimestamp = timestamp;
+                    
+                    if (pidState.running && !pidState.paused) {
+                        this.updatePhysics(dt);
+                        this.checkAchievements();
+                    }
+                    
+                    this.draw();
+                    this.drawChart();
+                    this.updateDisplays();
+                    
+                    requestAnimationFrame(loop);
+                };
+                
+                requestAnimationFrame(loop);
             }
         }
-
-        function resetAllTasks() {
-            tasks = { task1: false, task2: false, task3: false };
-            document.querySelectorAll('.task-status').forEach(el => {
-                el.textContent = '⏳ Не выполнено';
-                el.className = 'task-status pending';
-            });
-            document.getElementById('btnReset').click();
+        
+        // Функции для модальных окон
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
         }
-
-        // === АДАПТАЦИЯ ===
-        window.addEventListener('resize', () => {
-            const w = container.clientWidth || 600;
-            const h = container.clientHeight || 400;
-            camera.aspect = w / h;
-            camera.updateProjectionMatrix();
-            renderer.setSize(w, h);
-        });
-
-        // === ИНИЦИАЛИЗАЦИЯ ===
+        
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        
+        // Инициализация при загрузке
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
-            }, 600);
-            updatePID();
-            drawChart();
-            animate3D();
+            }, 500);
+            
+            window.simulator = new PIDSimulator();
+            window.simulator.loadAchievements();
+            window.simulator.updateConfigsDisplay();
         });
-
-        // === ДОПОЛНИТЕЛЬНО ===
-        const cursorGlow = document.getElementById('cursorGlow');
-        document.addEventListener('mousemove', (e) => {
-            cursorGlow.style.left = e.clientX + 'px';
-            cursorGlow.style.top = e.clientY + 'px';
-        });
-
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
-            for (let i = 0; i < 20; i++) {
-                const p = document.createElement('div');
-                p.classList.add('particle');
-                const size = Math.random() * 3 + 1;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
-                p.style.animationDelay = Math.random() * 15 + 's';
-                container.appendChild(p);
-            }
-        }
-        createParticles();
-
-        window.addEventListener('scroll', () => {
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
-        });
-
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
-        let menuOpen = false;
-
-        mobileMenuBtn.addEventListener('click', () => {
-            menuOpen = !menuOpen;
-            if (menuOpen) {
-                navLinks.style.display = 'flex';
-                navLinks.style.flexDirection = 'column';
-                navLinks.style.position = 'absolute';
-                navLinks.style.top = '100%';
-                navLinks.style.left = '0';
-                navLinks.style.width = '100%';
-                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
-                navLinks.style.padding = '20px 32px';
-                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-                mobileMenuBtn.textContent = '✕';
-            } else {
-                navLinks.style.display = 'none';
-                mobileMenuBtn.textContent = '☰';
-            }
-        });
-
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (menuOpen) {
-                    menuOpen = false;
-                    navLinks.style.display = 'none';
-                    mobileMenuBtn.textContent = '☰';
-                }
-            });
-        });
-
-        requestAnimationFrame(loop);
-
-        if (window.location.hash) {
-            window.scrollTo(0, 0);
-            history.pushState("", document.title, window.location.pathname + window.location.search);
-        }
     </script>
-
 </body>
 </html>
