@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ThunderLight — Academy</title>
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            color: var(--light);
+            background: var(--darker);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08), transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .preloader-logo {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: preloaderPulse 1.5s infinite;
+            display: block;
+        }
+        .preloader-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes preloaderPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            background: rgba(2, 6, 23, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .nav-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .nav-logo:hover { transform: scale(1.05); }
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            animation: logoGlow 2s infinite;
+        }
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.6); }
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+        .nav-links a:hover::after { width: 60%; }
+        .nav-links a:hover { color: var(--light); }
+        .nav-links a.active {
+            color: var(--light);
+            background: rgba(79, 70, 229, 0.15);
+        }
+        .nav-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            animation: downloadPulse 2s infinite;
+        }
+        .nav-download:hover {
+            transform: translateY(-2px);
+            animation: none;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        @keyframes downloadPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        }
+
+        .hero {
+            padding: 160px 32px 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            from { transform: translate(0, 0); }
+            to { transform: translate(60px, 60px); }
+        }
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: glowFloat 10s ease-in-out infinite;
+        }
+        .hero-glow-1 { background: var(--primary); top: -200px; left: -100px; }
+        .hero-glow-2 { background: var(--accent); bottom: -200px; right: -100px; animation-delay: -5s; }
+        @keyframes glowFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            background-size: 200% 200%;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero p {
+            font-size: 1.1em;
+            color: var(--gray-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .articles-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 10px 32px 60px;
+        }
+
+        /* Фильтры */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 30px;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .filter-btn {
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--gray-light);
+            font-size: 0.8em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .filter-btn:hover {
+            border-color: rgba(255,255,255,0.2);
+            color: var(--light);
+        }
+        .filter-btn.active {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.15);
+            color: var(--light);
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .article-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+        }
+        .article-card:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+        .article-card .topic {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.65em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .topic-python { background: rgba(52, 211, 153, 0.2); color: #34d399; }
+        .topic-arduino { background: rgba(250, 204, 21, 0.2); color: #facc15; }
+        .topic-electronics { background: rgba(251, 191, 36, 0.2); color: #f59e0b; }
+        .topic-bpla { background: rgba(79, 70, 229, 0.2); color: #818cf8; }
+        .topic-pid { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+        .article-card .level {
+            font-size: 0.6em;
+            color: var(--gray);
+            margin-left: 8px;
+        }
+        .article-card h3 {
+            font-size: 1.05em;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .article-card p {
+            color: var(--gray-light);
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+        .article-card .meta {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            font-size: 0.7em;
+            color: var(--gray);
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85em;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+        }
+
+        .footer {
+            padding: 50px 32px 30px;
+            background: var(--darker);
+            border-top: 1px solid var(--border);
+        }
+        .footer-grid {
+            max-width: 1280px;
+            margin: 0 auto 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        .footer-col h4 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+        .footer-col a:hover { color: var(--light); }
+        .footer-brand p {
+            color: var(--gray);
+            font-size: 0.85em;
+            margin: 10px 0 16px;
+            max-width: 300px;
+        }
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-bottom p { color: var(--gray); font-size: 0.75em; }
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+        .footer-social a {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer-social a:hover {
+            background: rgba(79, 70, 229, 0.2);
+            color: var(--light);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 1024px) {
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .nav-content { padding: 12px 20px; }
+            .hero { padding: 130px 20px 30px; }
+            .hero h1 { font-size: 2em; }
+            .articles-container { padding: 16px; }
+            .articles-grid { grid-template-columns: 1fr; }
+            .filter-bar { gap: 4px; padding: 8px 12px; }
+            .filter-btn { font-size: 0.7em; padding: 4px 12px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+            .footer { padding: 30px 20px 20px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.5em; }
+            .article-card { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <span class="preloader-logo">⚡ ThunderLight</span>
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <span class="nav-logo-icon">⚡</span>
+                ThunderLight
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+                <li><a href="/lab.html">Lab</a></li>
+                <li><a href="/simulator.html">Simulator</a></li>
+                <li><a href="/builder.html">Builder</a></li>
+                <li><a href="/docs.html">Документация</a></li>
+                <li><a href="/articles/" class="active">Academy</a></li>
+                <li><a href="/drone-sim.html">Drone Sim</a></li>
+                <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ======== HERO ======== -->
+    <section class="hero">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-content">
+            <h1>📖 Academy <span class="hero-gradient">ThunderLight</span></h1>
+            <p>Структурированные уроки по Python, Arduino, электронике и управлению БПЛА. От новичка до инженера.</p>
+        </div>
+    </section>
+
+    <!-- ======== СТАТЬИ ======== -->
+    <div class="articles-container">
+
+        <!-- Фильтры -->
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" data-filter="all">📌 Все</button>
+            <button class="filter-btn" data-filter="python">🐍 Python</button>
+            <button class="filter-btn" data-filter="arduino">⚡ Arduino</button>
+            <button class="filter-btn" data-filter="electronics">🔌 Электроника</button>
+            <button class="filter-btn" data-filter="bpla">✈️ БПЛА</button>
+            <button class="filter-btn" data-filter="pid">🎯 ПИД</button>
+        </div>
+
+        <!-- Сетка статей -->
+        <div class="articles-grid" id="articlesGrid">
+
+            <!-- ===== PYTHON ===== -->
+            <a href="/articles/python/01-intro.html" class="article-card" data-topic="python">
+                <span class="topic topic-python">🐍 Python</span><span class="level">Уровень 1</span>
+                <h3>Введение в Python</h3>
+                <p>Знакомство с языком, установка, первая программа. Основы синтаксиса.</p>
+                <div class="meta"><span>📚 4 урока</span><span>⏱ 30 мин</span></div>
+            </a>
+
+            <a href="/articles/python/02-variables.html" class="article-card" data-topic="python">
+                <span class="topic topic-python">🐍 Python</span><span class="level">Уровень 1</span>
+                <h3>Переменные и типы данных</h3>
+                <p>Числа, строки, списки, словари. Всё, что нужно для начала.</p>
+                <div class="meta"><span>📚 5 уроков</span><span>⏱ 40 мин</span></div>
+            </a>
+
+            <a href="/articles/python/03-conditions.html" class="article-card" data-topic="python">
+                <span class="topic topic-python">🐍 Python</span><span class="level">Уровень 1</span>
+                <h3>Условные операторы и циклы</h3>
+                <p>if, else, elif, for, while. Управление потоком программы.</p>
+                <div class="meta"><span>📚 4 урока</span><span>⏱ 35 мин</span></div>
+            </a>
+
+            <a href="/articles/python/04-functions.html" class="article-card" data-topic="python">
+                <span class="topic topic-python">🐍 Python</span><span class="level">Уровень 2</span>
+                <h3>Функции и модули</h3>
+                <p>Создание функций, аргументы, возврат значений. Импорт модулей.</p>
+                <div class="meta"><span>📚 3 урока</span><span>⏱ 30 мин</span></div>
+            </a>
+
+            <!-- ===== ARDUINO ===== -->
+            <a href="/articles/arduino/01-intro.html" class="article-card" data-topic="arduino">
+                <span class="topic topic-arduino">⚡ Arduino</span><span class="level">Уровень 1</span>
+                <h3>Знакомство с Arduino</h3>
+                <p>Что такое Arduino, установка IDE, первая программа — мигающий светодиод.</p>
+                <div class="meta"><span>📚 4 урока</span><span>⏱ 30 мин</span></div>
+            </a>
+
+            <a href="/articles/arduino/02-blink.html" class="article-card" data-topic="arduino">
+                <span class="topic topic-arduino">⚡ Arduino</span><span class="level">Уровень 1</span>
+                <h3>Blink — первый проект</h3>
+                <p>Подключение светодиода, написание скетча, загрузка прошивки.</p>
+                <div class="meta"><span>📚 3 урока</span><span>⏱ 25 мин</span></div>
+            </a>
+
+            <a href="/articles/arduino/03-sensors.html" class="article-card" data-topic="arduino">
+                <span class="topic topic-arduino">⚡ Arduino</span><span class="level">Уровень 2</span>
+                <h3>Датчики и сенсоры</h3>
+                <p>Подключение датчиков: кнопки, потенциометры, фоторезисторы.</p>
+                <div class="meta"><span>📚 5 уроков</span><span>⏱ 40 мин</span></div>
+            </a>
+
+            <!-- ===== ЭЛЕКТРОНИКА ===== -->
+            <a href="/articles/electronics/01-ohm.html" class="article-card" data-topic="electronics">
+                <span class="topic topic-electronics">🔌 Электроника</span><span class="level">Уровень 1</span>
+                <h3>Закон Ома</h3>
+                <p>Напряжение, ток, сопротивление. Расчёты для простых цепей.</p>
+                <div class="meta"><span>📚 3 урока</span><span>⏱ 25 мин</span></div>
+            </a>
+
+            <a href="/articles/electronics/02-schematics.html" class="article-card" data-topic="electronics">
+                <span class="topic topic-electronics">🔌 Электроника</span><span class="level">Уровень 2</span>
+                <h3>Чтение принципиальных схем</h3>
+                <p>Как читать схемы, обозначения компонентов, практические примеры.</p>
+                <div class="meta"><span>📚 4 урока</span><span>⏱ 35 мин</span></div>
+            </a>
+
+            <!-- ===== БПЛА ===== -->
+            <a href="/articles/bpla/01-design.html" class="article-card" data-topic="bpla">
+                <span class="topic topic-bpla">✈️ БПЛА</span><span class="level">Уровень 2</span>
+                <h3>Устройство БПЛА</h3>
+                <p>Компоненты мультиротора: рама, двигатели, ESC, полётный контроллер.</p>
+                <div class="meta"><span>📚 5 уроков</span><span>⏱ 40 мин</span></div>
+            </a>
+
+            <a href="/articles/bpla/02-flight-controller.html" class="article-card" data-topic="bpla">
+                <span class="topic topic-bpla">✈️ БПЛА</span><span class="level">Уровень 3</span>
+                <h3>Полётный контроллер</h3>
+                <p>Архитектура VRD FC, гибридная система управления (Arduino + RPi).</p>
+                <div class="meta"><span>📚 6 уроков</span><span>⏱ 50 мин</span></div>
+            </a>
+
+            <!-- ===== ПИД ===== -->
+            <a href="/articles/pid/01-theory.html" class="article-card" data-topic="pid">
+                <span class="topic topic-pid">🎯 ПИД</span><span class="level">Уровень 3</span>
+                <h3>Теория ПИД-регулятора</h3>
+                <p>Пропорциональная, интегральная, дифференциальная составляющие.</p>
+                <div class="meta"><span>📚 4 урока</span><span>⏱ 35 мин</span></div>
+            </a>
+
+            <a href="/articles/pid/02-tuning.html" class="article-card" data-topic="pid">
+                <span class="topic topic-pid">🎯 ПИД</span><span class="level">Уровень 3</span>
+                <h3>Настройка ПИД на практике</h3>
+                <p>Методы настройки, типовые ошибки, работа с симулятором.</p>
+                <div class="meta"><span>📚 4 урока</span><span>⏱ 40 мин</span></div>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- ======== ФУТЕР ======== -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">⚡</span>
+                    ThunderLight
+                </a>
+                <p>Образовательная экосистема БПЛА. Учись, проектируй, летай.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Экосистема</h4>
+                <ul>
+                    <li><a href="/articles/">Academy</a></li>
+                    <li><a href="/lab.html">Lab</a></li>
+                    <li><a href="/simulator.html">Simulator</a></li>
+                    <li><a href="/builder.html">Builder</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                    <li><a href="/drone-sim.html">Drone Sim</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Документы</h4>
+                <ul>
+                    <li><a href="/privacy.html">Конфиденциальность</a></li>
+                    <li><a href="/terms.html">Условия использования</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><a href="https://t.me/thunderlight_online" target="_blank">Telegram</a></li>
+                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderLight/" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
+            <div class="footer-social">
+                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
+                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
+                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Предзагрузчик
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 600);
+        });
+
+        // Курсор
+        const cursorGlow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        // Частицы
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                const size = Math.random() * 3 + 1;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // Навбар
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Мобильное меню
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        let menuOpen = false;
+
+        mobileMenuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
+                navLinks.style.padding = '20px 32px';
+                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+                mobileMenuBtn.textContent = '✕';
+            } else {
+                navLinks.style.display = 'none';
+                mobileMenuBtn.textContent = '☰';
+            }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (menuOpen) {
+                    menuOpen = false;
+                    navLinks.style.display = 'none';
+                    mobileMenuBtn.textContent = '☰';
+                }
+            });
+        });
+
+        // ===== ФИЛЬТРАЦИЯ СТАТЕЙ =====
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const articles = document.querySelectorAll('.article-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.dataset.filter;
+
+                articles.forEach(article => {
+                    if (filter === 'all' || article.dataset.topic === filter) {
+                        article.style.display = 'block';
+                    } else {
+                        article.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // ===== АНИМАЦИЯ ПОЯВЛЕНИЯ =====
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.article-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.5s ease';
+            observer.observe(el);
+        });
+
+        // Убираем якорь из URL
+        if (window.location.hash) {
+            window.scrollTo(0, 0);
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+    </script>
+
+</body>
+</html>
