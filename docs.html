@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThunderLight — Документация по БПЛА</title>
+    <title>ThunderLight — Техническая документация по БПЛА</title>
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -288,7 +288,6 @@
             padding: 10px 32px 60px;
         }
 
-        /* Боковое меню */
         .docs-layout {
             display: grid;
             grid-template-columns: 280px 1fr;
@@ -358,27 +357,39 @@
             letter-spacing: -0.5px;
         }
         .doc-section h3 {
-            font-size: 1.2em;
+            font-size: 1.15em;
             font-weight: 700;
-            margin: 24px 0 12px;
+            margin: 28px 0 12px;
             color: #a5b4fc;
         }
-        .doc-section p, .doc-section li {
+        .doc-section h4 {
+            font-size: 1em;
+            font-weight: 600;
+            margin: 20px 0 8px;
+            color: #c084fc;
+        }
+        .doc-section p {
             color: var(--gray-light);
             font-size: 0.95em;
             line-height: 1.8;
+            margin: 8px 0;
         }
         .doc-section ul, .doc-section ol {
             padding-left: 24px;
-            margin: 12px 0;
+            margin: 10px 0;
         }
-        .doc-section li { margin-bottom: 6px; }
+        .doc-section li {
+            color: var(--gray-light);
+            font-size: 0.95em;
+            line-height: 1.8;
+            margin-bottom: 4px;
+        }
 
         .doc-card {
             background: rgba(15, 23, 42, 0.4);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 20px 24px;
+            padding: 18px 22px;
             margin: 16px 0;
         }
         .doc-card .label {
@@ -387,29 +398,23 @@
             letter-spacing: 1px;
             color: var(--gray);
         }
-        .doc-card .value {
-            font-size: 1em;
-            font-weight: 600;
-            color: var(--light);
-            font-family: monospace;
-        }
 
         .spec-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
         }
         .spec-item {
             background: rgba(15, 23, 42, 0.4);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 16px;
+            border-radius: 8px;
+            padding: 10px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .spec-item .label { font-size: 0.8em; color: var(--gray-light); }
-        .spec-item .value { font-size: 0.9em; font-weight: 600; color: var(--light); font-family: monospace; }
+        .spec-item .value { font-size: 0.85em; font-weight: 600; color: var(--light); font-family: monospace; }
 
         .code-block {
             background: rgba(0,0,0,0.4);
@@ -417,14 +422,16 @@
             border-radius: 10px;
             padding: 16px 20px;
             font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.8em;
+            font-size: 0.75em;
             color: #a5b4fc;
             overflow-x: auto;
             margin: 12px 0;
+            line-height: 1.6;
         }
-        .code-block .comment { color: var(--gray); }
+        .code-block .comment { color: #64748b; }
         .code-block .keyword { color: #f472b6; }
         .code-block .string { color: #34d399; }
+        .code-block .function { color: #60a5fa; }
 
         .btn {
             padding: 8px 20px;
@@ -481,16 +488,16 @@
         .file-list {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 8px;
         }
         .file-item {
             background: rgba(15, 23, 42, 0.4);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px 16px;
+            border-radius: 8px;
+            padding: 12px 14px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             transition: var(--transition);
             text-decoration: none;
             color: var(--light);
@@ -499,9 +506,9 @@
             border-color: rgba(79, 70, 229, 0.3);
             transform: translateY(-2px);
         }
-        .file-item .icon { font-size: 1.5em; }
-        .file-item .info .name { font-size: 0.9em; font-weight: 600; }
-        .file-item .info .desc { font-size: 0.7em; color: var(--gray-light); }
+        .file-item .icon { font-size: 1.3em; }
+        .file-item .info .name { font-size: 0.85em; font-weight: 600; }
+        .file-item .info .desc { font-size: 0.65em; color: var(--gray-light); }
 
         .footer {
             padding: 50px 32px 30px;
@@ -584,8 +591,8 @@
             }
             .docs-sidebar .title { display: none; }
             .docs-sidebar a {
-                padding: 6px 12px;
-                font-size: 0.75em;
+                padding: 5px 10px;
+                font-size: 0.7em;
                 border-left: none;
                 border-bottom: 2px solid transparent;
             }
@@ -601,7 +608,6 @@
             .hero { padding: 130px 20px 30px; }
             .hero h1 { font-size: 2em; }
             .docs-container { padding: 16px; }
-            .docs-sidebar a { font-size: 0.7em; padding: 4px 10px; }
             .doc-section h2 { font-size: 1.4em; }
             .footer-grid { grid-template-columns: 1fr; gap: 20px; }
             .footer { padding: 30px 20px 20px; }
@@ -609,8 +615,8 @@
         }
         @media (max-width: 480px) {
             .hero h1 { font-size: 1.5em; }
-            .docs-sidebar a { font-size: 0.65em; }
             .spec-item { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .code-block { font-size: 0.65em; padding: 12px 14px; }
         }
     </style>
 </head>
@@ -652,8 +658,8 @@
         <div class="hero-glow hero-glow-1"></div>
         <div class="hero-glow hero-glow-2"></div>
         <div class="hero-content">
-            <h1>📚 Документация <span class="hero-gradient">по БПЛА</span></h1>
-            <p>Полное руководство по сборке, настройке и эксплуатации образовательного конструктора БПЛА ThunderLight.</p>
+            <h1>📚 Техническая <span class="hero-gradient">документация</span></h1>
+            <p>Полное руководство по сборке, настройке и эксплуатации конструктора БПЛА ThunderLight.</p>
         </div>
     </section>
 
@@ -662,51 +668,101 @@
             <!-- Боковое меню -->
             <nav class="docs-sidebar" id="docsSidebar">
                 <div class="title">📖 Содержание</div>
-                <a href="#" class="active" data-section="spec">📋 Спецификация</a>
+                <a href="#" class="active" data-section="intro">📌 Введение</a>
+                <a href="#" data-section="spec">📋 Спецификация</a>
                 <a href="#" data-section="schematics">🔌 Схемы подключения</a>
-                <a href="#" data-section="models">🖨️ 3D-модели</a>
-                <a href="#" data-section="software">📚 Программное обеспечение</a>
-                <a href="#" data-section="assembly">📖 Инструкция по сборке</a>
+                <a href="#" data-section="assembly">🔧 Сборка</a>
+                <a href="#" data-section="firmware">💾 Прошивка</a>
                 <a href="#" data-section="calibration">🧪 Калибровка</a>
+                <a href="#" data-section="pid">🎯 ПИД-настройка</a>
+                <a href="#" data-section="flight">✈️ Первый полёт</a>
                 <a href="#" data-section="techdata">📊 Технические данные</a>
                 <a href="#" data-section="safety">🛡️ Безопасность</a>
-                <a href="#" data-section="repository">📁 Репозиторий</a>
+                <a href="#" data-section="maintenance">🔧 Обслуживание</a>
             </nav>
 
             <!-- Контент -->
             <div class="docs-content">
 
+                <!-- ====== ВВЕДЕНИЕ ====== -->
+                <div class="doc-section active" id="section-intro">
+                    <h2>📌 Введение</h2>
+                    <p>Данная документация представляет собой полное техническое руководство по сборке, настройке и эксплуатации образовательного конструктора БПЛА ThunderLight.</p>
+
+                    <h3>О проекте</h3>
+                    <p>ThunderLight — это открытая образовательная экосистема для изучения систем управления беспилотными летательными аппаратами. В основе конструктора лежит гибридная архитектура управления, состоящая из двух уровней:</p>
+                    <ul>
+                        <li><strong>Нижний уровень (Low_LV)</strong> — на базе Arduino Nano (ATmega328P) отвечает за чтение датчиков, стабилизацию и управление исполнительными механизмами в реальном времени.</li>
+                        <li><strong>Верхний уровень (Hight_LV)</strong> — на базе Raspberry Pi 3 отвечает за планирование траектории, диагностику, визуализацию и адаптацию алгоритмов.</li>
+                    </ul>
+
+                    <h3>Для кого эта документация</h3>
+                    <ul>
+                        <li><strong>Для учащихся</strong> — пошаговые инструкции по сборке и программированию.</li>
+                        <li><strong>Для педагогов</strong> — методические материалы и лабораторные работы.</li>
+                        <li><strong>Для инженеров</strong> — технические характеристики, схемы и исходные коды.</li>
+                    </ul>
+
+                    <h3>Состав документации</h3>
+                    <ul>
+                        <li><strong>Спецификация</strong> — полный перечень компонентов с характеристиками.</li>
+                        <li><strong>Схемы подключения</strong> — электрические схемы и распиновка.</li>
+                        <li><strong>Инструкция по сборке</strong> — пошаговое руководство с пояснениями.</li>
+                        <li><strong>Руководство по прошивке</strong> — загрузка кода в Arduino и Raspberry Pi.</li>
+                        <li><strong>Руководство по калибровке</strong> — настройка датчиков, ESC и ПИД-регулятора.</li>
+                        <li><strong>Инструкция по первому полёту</strong> — подготовка и запуск.</li>
+                        <li><strong>Технические данные</strong> — характеристики и результаты испытаний.</li>
+                        <li><strong>Правила безопасности</strong> — обязательные требования.</li>
+                        <li><strong>Руководство по обслуживанию</strong> — уход и ремонт.</li>
+                    </ul>
+
+                    <div class="doc-card">
+                        <div class="label">📦 Версия документации</div>
+                        <p style="margin-top:6px;">Версия 1.0 от 2026 года. Актуально для комплекта ThunderLight VRD FC.</p>
+                    </div>
+                </div>
+
                 <!-- ====== СПЕЦИФИКАЦИЯ ====== -->
-                <div class="doc-section active" id="section-spec">
+                <div class="doc-section" id="section-spec">
                     <h2>📋 Спецификация компонентов</h2>
-                    <p>Полный перечень деталей и электронных компонентов, необходимых для сборки конструктора БПЛА ThunderLight.</p>
+                    <p>Полный перечень деталей и электронных компонентов конструктора.</p>
 
                     <h3>Электронные компоненты</h3>
                     <div class="spec-grid">
-                        <div class="spec-item"><span class="label">Полётный контроллер</span><span class="value">Arduino Nano (ATmega328P)</span></div>
-                        <div class="spec-item"><span class="label">Верхний уровень</span><span class="value">Raspberry Pi 3</span></div>
-                        <div class="spec-item"><span class="label">Датчик IMU</span><span class="value">MPU-6050 (6 DOF)</span></div>
+                        <div class="spec-item"><span class="label">Полётный контроллер (нижний уровень)</span><span class="value">Arduino Nano (ATmega328P)</span></div>
+                        <div class="spec-item"><span class="label">Вычислительный модуль (верхний уровень)</span><span class="value">Raspberry Pi 3</span></div>
+                        <div class="spec-item"><span class="label">Датчик инерциальный (IMU)</span><span class="value">MPU-6050 (6 DOF)</span></div>
                         <div class="spec-item"><span class="label">Сервоприводы</span><span class="value">MG-90S × 4</span></div>
-                        <div class="spec-item"><span class="label">Регуляторы ESC</span><span class="value">20A × 4</span></div>
-                        <div class="spec-item"><span class="label">Двигатели</span><span class="value">2212 1000kV × 4</span></div>
-                        <div class="spec-item"><span class="label">Аккумулятор</span><span class="value">3S 2200mAh Li-Po</span></div>
-                        <div class="spec-item"><span class="label">Пропеллеры</span><span class="value">10" × 4.5</span></div>
-                        <div class="spec-item"><span class="label">Приёмник</span><span class="value">FlySky FS-iA6</span></div>
-                        <div class="spec-item"><span class="label">GPS-модуль</span><span class="value">NEO-6M (опционально)</span></div>
+                        <div class="spec-item"><span class="label">Регуляторы скорости (ESC)</span><span class="value">20A × 4</span></div>
+                        <div class="spec-item"><span class="label">Бесколлекторные двигатели</span><span class="value">2212 1000kV × 4</span></div>
+                        <div class="spec-item"><span class="label">Аккумуляторная батарея</span><span class="value">Li-Po 3S 2200mAh (11.1V)</span></div>
+                        <div class="spec-item"><span class="label">Пропеллеры</span><span class="value">10 × 4.5 (комплект)</span></div>
+                        <div class="spec-item"><span class="label">Приёмник (опционально)</span><span class="value">FlySky FS-iA6 (PPM)</span></div>
+                        <div class="spec-item"><span class="label">GPS-модуль (опционально)</span><span class="value">NEO-6M</span></div>
                     </div>
 
                     <h3>Конструкционные детали</h3>
                     <div class="spec-grid">
-                        <div class="spec-item"><span class="label">Рама</span><span class="value">3D-печать (PLA)</span></div>
-                        <div class="spec-item"><span class="label">Размер рамы</span><span class="value">250 мм (диагональ)</span></div>
-                        <div class="spec-item"><span class="label">Материал</span><span class="value">PLA-пластик</span></div>
-                        <div class="spec-item"><span class="label">Крепёж</span><span class="value">Винты M3, стойки</span></div>
+                        <div class="spec-item"><span class="label">Рама (3D-печать)</span><span class="value">PLA-пластик</span></div>
+                        <div class="spec-item"><span class="label">Размер рамы (диагональ)</span><span class="value">250 мм</span></div>
+                        <div class="spec-item"><span class="label">Крепёж</span><span class="value">Винты M3, нейлоновые стойки</span></div>
+                        <div class="spec-item"><span class="label">Кабельная обвязка</span><span class="value">Нейлоновые стяжки</span></div>
+                    </div>
+
+                    <h3>Программное обеспечение</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item"><span class="label">Среда разработки (Arduino)</span><span class="value">Arduino IDE v1.8.19+</span></div>
+                        <div class="spec-item"><span class="label">Язык (нижний уровень)</span><span class="value">C++ (Arduino)</span></div>
+                        <div class="spec-item"><span class="label">Язык (верхний уровень)</span><span class="value">Python 3.9+</span></div>
+                        <div class="spec-item"><span class="label">Библиотеки Python</span><span class="value">pyserial, numpy, matplotlib</span></div>
+                        <div class="spec-item"><span class="label">Библиотеки Arduino</span><span class="value">Wire, MPU6050, Servo</span></div>
+                        <div class="spec-item"><span class="label">Протокол связи</span><span class="value">UART (115200 бод)</span></div>
                     </div>
 
                     <div class="doc-card" style="margin-top:20px;">
-                        <div class="label">📦 Полный комплект</div>
-                        <p style="margin-top:8px;">Все компоненты можно приобрести отдельно. Примерная стоимость комплекта: <strong style="color:#f59e0b;">~12 000 ₽</strong></p>
-                        <a href="#section-repository" class="btn btn-primary btn-sm" style="margin-top:10px;">📁 Скачать спецификацию</a>
+                        <div class="label">📦 Ориентировочная стоимость комплекта</div>
+                        <p style="margin-top:8px;font-size:1.1em;font-weight:700;color:#f59e0b;">~ 12 000 ₽</p>
+                        <p style="font-size:0.8em;color:var(--gray);">Стоимость может варьироваться в зависимости от поставщиков и региона.</p>
                     </div>
                 </div>
 
@@ -715,34 +771,38 @@
                     <h2>🔌 Схемы подключения</h2>
                     <p>Электрические схемы соединения всех компонентов системы управления.</p>
 
-                    <h3>Общая архитектура</h3>
+                    <h3>Общая архитектура системы</h3>
+                    <p>Система управления построена по гибридной архитектуре с разделением на два уровня. Нижний уровень (Arduino) работает в жёстком реальном времени, верхний уровень (Raspberry Pi) обеспечивает планирование и визуализацию.</p>
+
                     <div class="doc-card">
-                        <pre class="code-block" style="font-size:0.75em;">
-                ┌─────────────────────────────────────────────────────────────────┐
-                │                    THUNDERLIGHT VRD FC                         │
-                ├─────────────────────────────────────────────────────────────────┤
-                │                                                                 │
-                │  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐    │
-                │  │   Arduino   │◄────►│  Raspberry  │      │   Пульт     │    │
-                │  │    Nano     │ UART │    Pi 3     │      │   (RX)      │    │
-                │  └──────┬──────┘      └──────┬──────┘      └──────┬──────┘    │
-                │         │                    │                    │           │
-                │         ▼                    ▼                    ▼           │
-                │  ┌─────────────┐      ┌─────────────┐      ┌─────────────┐    │
-                │  │   IMU       │      │   Телемет-  │      │   Приёмник  │    │
-                │  │   MPU-6050  │      │   рия       │      │   (RX)      │    │
-                │  └─────────────┘      └─────────────┘      └─────────────┘    │
-                │         │                    │                                 │
-                │         ▼                    ▼                                 │
-                │  ┌─────────────┐      ┌─────────────┐                         │
-                │  │   ESC × 4   │      │   GPS       │                         │
-                │  └─────────────┘      └─────────────┘                         │
-                │         │                                                      │
-                │         ▼                                                      │
-                │  ┌─────────────┐                                               │
-                │  │  Моторы × 4 │                                               │
-                │  └─────────────┘                                               │
-                └─────────────────────────────────────────────────────────────────┘
+                        <pre class="code-block" style="font-size:0.7em;line-height:1.4;">
+                ┌───────────────────────────────────────────────────────────────────────┐
+                │                          VRD FLIGHT CONTROLLER                       │
+                │                       Гибридная двухуровневая архитектура            │
+                ├───────────────────────────────────────────────────────────────────────┤
+                │                                                                       │
+                │  ┌─────────────────────┐         ┌─────────────────────┐             │
+                │  │   НИЖНИЙ УРОВЕНЬ     │  UART   │   ВЕРХНИЙ УРОВЕНЬ   │             │
+                │  │   (Real-time)        │◄───────►│   (Planning)        │             │
+                │  │   Arduino Nano       │  115200 │   Raspberry Pi 3    │             │
+                │  │   ATmega328P         │  бод    │   Python 3          │             │
+                │  └──────────┬──────────┘         └──────────┬──────────┘             │
+                │             │                               │                         │
+                │             ▼                               ▼                         │
+                │  ┌─────────────────────┐         ┌─────────────────────┐             │
+                │  │   ДАТЧИКИ           │         │   ВИЗУАЛИЗАЦИЯ      │             │
+                │  │   MPU-6050 (IMU)    │         │   Телеметрия        │             │
+                │  │   (I2C)             │         │   Графики           │             │
+                │  └─────────────────────┘         └─────────────────────┘             │
+                │             │                                                         │
+                │             ▼                                                         │
+                │  ┌─────────────────────┐                                             │
+                │  │   ИСПОЛНИТЕЛЬНЫЕ     │                                             │
+                │  │   МЕХАНИЗМЫ         │                                             │
+                │  │   ESC × 4 (PWM)     │                                             │
+                │  │   Сервоприводы      │                                             │
+                │  └─────────────────────┘                                             │
+                └───────────────────────────────────────────────────────────────────────┘
                         </pre>
                     </div>
 
@@ -750,330 +810,417 @@
                     <div class="doc-card">
                         <div class="spec-grid">
                             <div class="spec-item"><span class="label">MPU-6050 (I2C)</span><span class="value">A4 (SDA), A5 (SCL)</span></div>
-                            <div class="spec-item"><span class="label">ESC 1</span><span class="value">D3 (PWM)</span></div>
-                            <div class="spec-item"><span class="label">ESC 2</span><span class="value">D5 (PWM)</span></div>
-                            <div class="spec-item"><span class="label">ESC 3</span><span class="value">D6 (PWM)</span></div>
-                            <div class="spec-item"><span class="label">ESC 4</span><span class="value">D9 (PWM)</span></div>
-                            <div class="spec-item"><span class="label">Приёмник (PPM)</span><span class="value">D2 (PPM)</span></div>
-                            <div class="spec-item"><span class="label">UART (RPi)</span><span class="value">D0 (RX), D1 (TX)</span></div>
+                            <div class="spec-item"><span class="label">ESC 1 (PWM)</span><span class="value">D3</span></div>
+                            <div class="spec-item"><span class="label">ESC 2 (PWM)</span><span class="value">D5</span></div>
+                            <div class="spec-item"><span class="label">ESC 3 (PWM)</span><span class="value">D6</span></div>
+                            <div class="spec-item"><span class="label">ESC 4 (PWM)</span><span class="value">D9</span></div>
+                            <div class="spec-item"><span class="label">Приёмник (PPM)</span><span class="value">D2</span></div>
+                            <div class="spec-item"><span class="label">UART (Raspberry Pi)</span><span class="value">D0 (RX), D1 (TX)</span></div>
                             <div class="spec-item"><span class="label">Питание</span><span class="value">5V, GND</span></div>
                         </div>
                     </div>
 
-                    <div class="doc-card" style="margin-top:12px;">
-                        <div class="label">📄 Полная схема</div>
-                        <p style="margin-top:8px;">Скачайте подробную схему подключения в формате PDF.</p>
-                        <a href="#" class="btn btn-outline btn-sm" style="margin-top:6px;">📥 Скачать схему (PDF)</a>
+                    <h3>Подключение Raspberry Pi</h3>
+                    <div class="doc-card">
+                        <div class="spec-grid">
+                            <div class="spec-item"><span class="label">UART (Arduino)</span><span class="value">GPIO14 (TX), GPIO15 (RX)</span></div>
+                            <div class="spec-item"><span class="label">Питание</span><span class="value">5V, GND (GPIO)</span></div>
+                            <div class="spec-item"><span class="label">Дисплей/монитор</span><span class="value">HDMI (опционально)</span></div>
+                            <div class="spec-item"><span class="label">Сеть</span><span class="value">Wi-Fi / Ethernet</span></div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- ====== 3D-МОДЕЛИ ====== -->
-                <div class="doc-section" id="section-models">
-                    <h2>🖨️ 3D-модели для печати</h2>
-                    <p>Все детали рамы и корпусов доступны для самостоятельной 3D-печати.</p>
+                <!-- ====== СБОРКА ====== -->
+                <div class="doc-section" id="section-assembly">
+                    <h2>🔧 Инструкция по сборке</h2>
+                    <p>Пошаговое руководство по механической сборке аппарата.</p>
 
-                    <h3>Файлы для скачивания</h3>
-                    <div class="file-list">
-                        <a href="#" class="file-item">
-                            <span class="icon">📦</span>
-                            <div class="info">
-                                <div class="name">Рама основная</div>
-                                <div class="desc">STL, 45 г PLA, время печати 3 ч</div>
-                            </div>
-                        </a>
-                        <a href="#" class="file-item">
-                            <span class="icon">📦</span>
-                            <div class="info">
-                                <div class="name">Корпус контроллера</div>
-                                <div class="desc">STL, 25 г PLA, время печати 1.5 ч</div>
-                            </div>
-                        </a>
-                        <a href="#" class="file-item">
-                            <span class="icon">📦</span>
-                            <div class="info">
-                                <div class="name">Крепление аккумулятора</div>
-                                <div class="desc">STL, 12 г PLA, время печати 1 ч</div>
-                            </div>
-                        </a>
-                        <a href="#" class="file-item">
-                            <span class="icon">📦</span>
-                            <div class="info">
-                                <div class="name">Крепление камеры</div>
-                                <div class="desc">STL, 8 г PLA, время печати 0.5 ч</div>
-                            </div>
-                        </a>
-                        <a href="#" class="file-item">
-                            <span class="icon">📦</span>
-                            <div class="info">
-                                <div class="name">Защита пропеллеров</div>
-                                <div class="desc">STL, 20 г PLA, время печати 1.5 ч</div>
-                            </div>
-                        </a>
-                        <a href="#" class="file-item">
-                            <span class="icon">📦</span>
-                            <div class="info">
-                                <div class="name">Шаблоны для лазерной резки</div>
-                                <div class="desc">DXF, фанера 3 мм</div>
-                            </div>
-                        </a>
-                    </div>
+                    <h3>Этап 1: Подготовка деталей</h3>
+                    <p>Перед началом сборки убедитесь, что у вас есть все компоненты из спецификации. Подготовьте рабочее место с хорошим освещением и необходимыми инструментами:</p>
+                    <ul>
+                        <li>Набор отвёрток (крестовая и плоская)</li>
+                        <li>Пинцет для работы с проводами</li>
+                        <li>Паяльник с тонким жалом (для пайки проводов)</li>
+                        <li>Мультиметр для проверки соединений</li>
+                        <li>Нейлоновые стяжки для кабельной обвязки</li>
+                    </ul>
 
-                    <div class="doc-card" style="margin-top:16px;">
-                        <div class="label">🖨️ Рекомендации по печати</div>
-                        <ul>
-                            <li>Материал: PLA или PETG</li>
-                            <li>Высота слоя: 0.2 мм</li>
-                            <li>Заполнение: 20-30%</li>
-                            <li>Поддержка: включена для сложных деталей</li>
+                    <h3>Этап 2: Сборка рамы</h3>
+                    <p>Рама поставляется в виде набора 3D-печатных деталей. Следуйте инструкции:</p>
+                    <ol>
+                        <li><strong>Центральная плата:</strong> Установите центральную плату на ровную поверхность. Это основа всей конструкции.</li>
+                        <li><strong>Плечи рамы:</strong> Прикрепите четыре плеча к центральной плате с помощью винтов M3. Убедитесь, что плечи расположены симметрично под углом 90° друг к другу.</li>
+                        <li><strong>Крепление двигателей:</strong> Установите двигатели на концах плечей. Закрепите их винтами, входящими в комплект двигателей.</li>
+                        <li><strong>Крепление ESC:</strong> Закрепите регуляторы скорости на плечах с помощью нейлоновых стяжек. Расположите их близко к двигателям для минимизации силовых проводов.</li>
+                    </ol>
+
+                    <h3>Этап 3: Монтаж электроники</h3>
+                    <ol>
+                        <li><strong>Arduino Nano:</strong> Установите Arduino Nano на центральную плату с помощью нейлоновых стоек.</li>
+                        <li><strong>Raspberry Pi:</strong> Закрепите Raspberry Pi на центральной плате рядом с Arduino. Используйте стойки для обеспечения вентиляции.</li>
+                        <li><strong>IMU MPU-6050:</strong> Установите датчик в центре платы, строго параллельно плоскости. Это критично для точности стабилизации.</li>
+                        <li><strong>Приёмник (опционально):</strong> Установите приёмник в удобном месте, обеспечив доступ к антеннам.</li>
+                    </ol>
+
+                    <h3>Этап 4: Электрические соединения</h3>
+                    <ol>
+                        <li><strong>Питание:</strong> Подключите аккумулятор к распределителю питания. Проверьте полярность!</li>
+                        <li><strong>ESC:</strong> Подключите сигнальные провода ESC к выходам Arduino (D3, D5, D6, D9). Подключите силовые провода ESC к распределителю питания.</li>
+                        <li><strong>IMU:</strong> Подключите MPU-6050 к Arduino по шине I2C (SDA → A4, SCL → A5).</li>
+                        <li><strong>UART:</strong> Соедините Arduino и Raspberry Pi по последовательному порту (Arduino D0 → RPi GPIO15, Arduino D1 → RPi GPIO14).</li>
+                    </ol>
+
+                    <h3>Этап 5: Установка пропеллеров</h3>
+                    <ol>
+                        <li>Установите пропеллеры на валы двигателей.</li>
+                        <li><strong>Важно:</strong> Убедитесь, что направление вращения соответствует схеме (два пропеллера по часовой стрелке, два — против).</li>
+                        <li>Закрепите пропеллеры гайками, входящими в комплект двигателей.</li>
+                    </ol>
+
+                    <div class="doc-card" style="margin-top:16px;border-color:rgba(239,68,68,0.3);">
+                        <div class="label" style="color:var(--danger);">⚠️ Критическое предупреждение</div>
+                        <ul style="margin-top:4px;">
+                            <li>Перед установкой пропеллеров <strong>обязательно</strong> откалибруйте ESC (см. раздел "Калибровка").</li>
+                            <li>Никогда не включайте питание без установленных пропеллеров — это может повредить двигатели.</li>
                         </ul>
                     </div>
                 </div>
 
-                <!-- ====== ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ====== -->
-                <div class="doc-section" id="section-software">
-                    <h2>📚 Программное обеспечение</h2>
-                    <p>Код для Arduino и Raspberry Pi, а также список необходимого ПО.</p>
+                <!-- ====== ПРОШИВКА ====== -->
+                <div class="doc-section" id="section-firmware">
+                    <h2>💾 Прошивка и программное обеспечение</h2>
+                    <p>Инструкция по загрузке прошивки в Arduino и настройке Raspberry Pi.</p>
 
-                    <h3>Arduino (нижний уровень)</h3>
+                    <h3>Установка ПО на компьютер</h3>
+                    <ol>
+                        <li><strong>Arduino IDE:</strong> Скачайте и установите Arduino IDE с официального сайта (версия 1.8.19 или новее).</li>
+                        <li><strong>Библиотеки Arduino:</strong> Установите необходимые библиотеки через менеджер библиотек:
+                            <ul>
+                                <li><code>Wire</code> — для работы с I2C (установлена по умолчанию)</li>
+                                <li><code>MPU6050</code> — для работы с датчиком</li>
+                                <li><code>Servo</code> — для управления сервоприводами</li>
+                            </ul>
+                        </li>
+                        <li><strong>Python:</strong> Установите Python 3.9 или новее на Raspberry Pi.</li>
+                        <li><strong>Библиотеки Python:</strong> Установите необходимые пакеты:
+                            <div class="code-block" style="margin:8px 0;">
+                                pip install pyserial numpy matplotlib
+                            </div>
+                        </li>
+                    </ol>
+
+                    <h3>Загрузка прошивки в Arduino</h3>
+                    <ol>
+                        <li>Подключите Arduino Nano к компьютеру через USB-кабель.</li>
+                        <li>Откройте Arduino IDE и загрузите скетч VRD_Flight_Controller.ino (доступен в репозитории).</li>
+                        <li>Выберите плату: <strong>Arduino Nano</strong> (процессор ATmega328P).</li>
+                        <li>Выберите порт, к которому подключена плата.</li>
+                        <li>Нажмите <strong>Загрузить</strong>.</li>
+                    </ol>
+
                     <div class="code-block">
                         <span class="comment">// VRD Flight Controller — Low Level (Arduino Nano)</span>
-                        <span class="comment">// Стабилизация, чтение IMU, управление ESC</span>
+                        <span class="comment">// Версия 1.0 — базовая стабилизация</span>
 
                         <span class="keyword">#include</span> &lt;Wire.h&gt;
                         <span class="keyword">#include</span> &lt;MPU6050.h&gt;
+                        <span class="keyword">#include</span> &lt;Servo.h&gt;
 
                         MPU6050 imu;
-                        <span class="keyword">float</span> pitch, roll, yaw;
-                        <span class="keyword">float</span> targetPitch = 0, targetRoll = 0;
+                        Servo esc1, esc2, esc3, esc4;
+
+                        <span class="comment">// ПИД-коэффициенты</span>
+                        <span class="keyword">float</span> kp = 1.2, ki = 0.3, kd = 0.4;
+                        <span class="keyword">float</span> integral = 0, lastError = 0;
 
                         <span class="keyword">void</span> <span class="keyword">setup</span>() {
                             Serial.begin(115200);
+                            Wire.begin();
                             imu.initialize();
+                            esc1.attach(3);
+                            esc2.attach(5);
+                            esc3.attach(6);
+                            esc4.attach(9);
+                            <span class="comment">// Калибровка ESC</span>
+                            calibrateESC();
                         }
 
                         <span class="keyword">void</span> <span class="keyword">loop</span>() {
-                            imu.getRotation(&pitch, &roll, &yaw);
+                            <span class="comment">// Чтение данных с IMU</span>
+                            imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+                            <span class="comment">// Фильтр и расчёт углов</span>
+                            calculateAngles(ax, ay, az, gx, gy, gz);
                             <span class="comment">// ПИД-регулятор</span>
-                            <span class="keyword">float</span> errorP = targetPitch - pitch;
-                            <span class="keyword">float</span> output = kp * errorP + ki * integral + kd * derivative;
+                            <span class="keyword">float</span> output = pidCalculate(targetAngle, currentAngle);
                             <span class="comment">// Отправка на ESC</span>
-                            analogWrite(ESC_PIN, output);
+                            esc1.writeMicroseconds(output);
+                            esc2.writeMicroseconds(output);
+                            esc3.writeMicroseconds(output);
+                            esc4.writeMicroseconds(output);
+                            <span class="comment">// Отправка телеметрии на Raspberry Pi</span>
+                            sendTelemetry();
                             delay(10);
                         }
                     </div>
 
-                    <h3>Raspberry Pi (верхний уровень)</h3>
-                    <div class="code-block">
-                        <span class="comment"># VRD Flight Controller — High Level (Raspberry Pi 3)</span>
-                        <span class="comment"># Планирование траектории, телеметрия, визуализация</span>
-
-                        <span class="keyword">import</span> serial
-                        <span class="keyword">import</span> numpy <span class="keyword">as</span> np
-                        <span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
-
-                        ser = serial.Serial('/dev/ttyS0', 115200)
-
-                        <span class="keyword">def</span> <span class="keyword">get_telemetry</span>():
-                            data = ser.readline().decode().strip().split(',')
-                            <span class="keyword">return</span> {
-                                'pitch': float(data[0]),
-                                'roll': float(data[1]),
-                                'altitude': float(data[2])
-                            }
-
-                        <span class="keyword">while</span> True:
-                            telemetry = get_telemetry()
-                            <span class="comment"># Визуализация</span>
-                            print(f"Pitch: {telemetry['pitch']:.2f}°")
-                    </div>
-
-                    <h3>Необходимое ПО</h3>
-                    <div class="spec-grid">
-                        <div class="spec-item"><span class="label">Arduino IDE</span><span class="value">v1.8.19+</span></div>
-                        <div class="spec-item"><span class="label">Python</span><span class="value">v3.9+</span></div>
-                        <div class="spec-item"><span class="label">Библиотеки</span><span class="value">pyserial, numpy, matplotlib</span></div>
-                        <div class="spec-item"><span class="label">Git</span><span class="value">для клонирования репозитория</span></div>
-                    </div>
-                </div>
-
-                <!-- ====== ИНСТРУКЦИЯ ПО СБОРКЕ ====== -->
-                <div class="doc-section" id="section-assembly">
-                    <h2>📖 Инструкция по сборке</h2>
-                    <p>Пошаговое руководство по сборке аппарата.</p>
-
-                    <h3>Шаг 1: Подготовка деталей</h3>
-                    <ul>
-                        <li>Распечатайте все детали рамы на 3D-принтере</li>
-                        <li>Проверьте наличие всех электронных компонентов</li>
-                        <li>Подготовьте инструменты: отвёртки, пинцет, паяльник</li>
-                    </ul>
-
-                    <h3>Шаг 2: Сборка рамы</h3>
-                    <ul>
-                        <li>Соедините центральную плату с плечами рамы</li>
-                        <li>Закрепите двигатели на концах плеч</li>
-                        <li>Установите ESC на плечи</li>
-                    </ul>
-
-                    <h3>Шаг 3: Электроника</h3>
-                    <ul>
-                        <li>Установите Arduino Nano и Raspberry Pi на центральную плату</li>
-                        <li>Подключите IMU MPU-6050 к Arduino</li>
-                        <li>Подключите ESC к Arduino и аккумулятору</li>
-                        <li>Подключите приёмник</li>
-                    </ul>
-
-                    <h3>Шаг 4: Программирование</h3>
-                    <ul>
-                        <li>Загрузите скетч в Arduino</li>
-                        <li>Запустите Python-скрипт на Raspberry Pi</li>
-                        <li>Настройте параметры ПИД-регулятора</li>
-                    </ul>
-
-                    <div class="doc-card" style="margin-top:16px;">
-                        <div class="label">📹 Видеоинструкция</div>
-                        <p style="margin-top:8px;">Подробная видеоинструкция по сборке доступна по ссылке.</p>
-                        <a href="#" class="btn btn-primary btn-sm" style="margin-top:6px;">▶ Смотреть видео</a>
-                    </div>
+                    <h3>Настройка Raspberry Pi</h3>
+                    <ol>
+                        <li>Подключитесь к Raspberry Pi через SSH или используйте монитор и клавиатуру.</li>
+                        <li>Склонируйте репозиторий проекта:
+                            <div class="code-block" style="margin:8px 0;">
+                                git clone https://github.com/LightRain-K/ThunderLight.git
+                            </div>
+                        </li>
+                        <li>Перейдите в директорию с Python-скриптом и запустите его:
+                            <div class="code-block" style="margin:8px 0;">
+                                cd ThunderLight/firmware/python
+                                python3 telemetry.py
+                            </div>
+                        </li>
+                    </ol>
                 </div>
 
                 <!-- ====== КАЛИБРОВКА ====== -->
                 <div class="doc-section" id="section-calibration">
                     <h2>🧪 Калибровка</h2>
-                    <p>Настройка датчиков, ESC и ПИД-регулятора.</p>
+                    <p>Настройка датчиков и регуляторов скорости.</p>
 
                     <h3>Калибровка IMU (MPU-6050)</h3>
-                    <ul>
-                        <li>Установите аппарат на ровную поверхность</li>
-                        <li>Запустите скетч калибровки</li>
-                        <li>Запишите значения смещения (offset) акселерометра и гироскопа</li>
-                        <li>Внесите значения в код</li>
-                    </ul>
+                    <p>Датчик MPU-6050 требует калибровки для компенсации смещений (offset) акселерометра и гироскопа.</p>
+                    <ol>
+                        <li>Установите аппарат на абсолютно ровную горизонтальную поверхность.</li>
+                        <li>Загрузите в Arduino калибровочный скетч (доступен в репозитории).</li>
+                        <li>Откройте монитор порта (Serial Monitor) на скорости 115200 бод.</li>
+                        <li>Запишите значения смещения, которые выводятся в монитор порта.</li>
+                        <li>Внесите полученные значения в основной скетч в функцию <code>imu.setAccelOffset()</code> и <code>imu.setGyroOffset()</code>.</li>
+                    </ol>
 
                     <h3>Калибровка ESC</h3>
+                    <p>Регуляторы скорости (ESC) необходимо откалибровать для согласования диапазона сигнала.</p>
+                    <div class="doc-card" style="border-color:rgba(239,68,68,0.3);">
+                        <div class="label" style="color:var(--danger);">⚠️ Важно</div>
+                        <p style="margin-top:4px;">Перед калибровкой ESC <strong>обязательно снимите пропеллеры</strong>!</p>
+                    </div>
+                    <ol>
+                        <li>Отключите аккумулятор от аппарата.</li>
+                        <li>Загрузите в Arduino калибровочный скетч ESC.</li>
+                        <li>Установите максимальный сигнал (2000 мкс).</li>
+                        <li>Подключите аккумулятор. ESC издадут звуковой сигнал.</li>
+                        <li>Установите минимальный сигнал (1000 мкс). ESC издадут второй звуковой сигнал.</li>
+                        <li>Калибровка завершена. Отключите питание.</li>
+                    </ol>
+
+                    <h3>Проверка работы ESC</h3>
+                    <p>После калибровки проверьте работу каждого ESC по отдельности:</p>
+                    <ol>
+                        <li>Подключите аккумулятор.</li>
+                        <li>Отправляйте команды через монитор порта (например, "1000", "1500", "2000").</li>
+                        <li>Наблюдайте за вращением двигателей. Все двигатели должны вращаться синхронно.</li>
+                    </ol>
+                </div>
+
+                <!-- ====== ПИД-НАСТРОЙКА ====== -->
+                <div class="doc-section" id="section-pid">
+                    <h2>🎯 Настройка ПИД-регулятора</h2>
+                    <p>Руководство по настройке коэффициентов ПИД-регулятора для стабильного полёта.</p>
+
+                    <h3>Что такое ПИД-регулятор</h3>
+                    <p>ПИД-регулятор (пропорционально-интегрально-дифференциальный) — это алгоритм управления, который вычисляет управляющий сигнал на основе трёх составляющих:</p>
                     <ul>
-                        <li>Отключите пропеллеры</li>
-                        <li>Включите питание с максимальным сигналом</li>
-                        <li>Дождитесь звукового сигнала</li>
-                        <li>Снизьте сигнал до минимума</li>
+                        <li><strong>Пропорциональная (P)</strong> — реагирует на текущую ошибку. Увеличивает скорость реакции.</li>
+                        <li><strong>Интегральная (I)</strong> — накапливает ошибку во времени. Устраняет статическую ошибку.</li>
+                        <li><strong>Дифференциальная (D)</strong> — реагирует на скорость изменения ошибки. Гасит колебания.</li>
                     </ul>
 
-                    <h3>Настройка ПИД-регулятора</h3>
-                    <ul>
-                        <li>Используйте <a href="/simulator.html" style="color:var(--accent);">симулятор ПИД</a> для подбора коэффициентов</li>
-                        <li>Начните с Kp = 1.2, Ki = 0.3, Kd = 0.4</li>
-                        <li>Постепенно увеличивайте Kp до появления колебаний</li>
-                        <li>Добавьте Kd для гашения колебаний</li>
-                        <li>Добавьте Ki для устранения статической ошибки</li>
-                    </ul>
-
+                    <h3>Рекомендуемый порядок настройки</h3>
                     <div class="doc-card">
-                        <div class="label">🎯 Рекомендуемые настройки</div>
-                        <div class="spec-grid">
-                            <div class="spec-item"><span class="label">Kp</span><span class="value">1.8</span></div>
-                            <div class="spec-item"><span class="label">Ki</span><span class="value">0.4</span></div>
-                            <div class="spec-item"><span class="label">Kd</span><span class="value">0.6</span></div>
-                            <div class="spec-item"><span class="label">Частота ПИД</span><span class="value">100 Гц</span></div>
-                        </div>
+                        <ol>
+                            <li><strong>Начните с Kp:</strong> Установите Ki = 0, Kd = 0. Увеличивайте Kp до появления колебаний, затем уменьшите на 20-30%.</li>
+                            <li><strong>Добавьте Kd:</strong> Увеличивайте Kd, пока колебания не будут полностью погашены.</li>
+                            <li><strong>Добавьте Ki:</strong> Увеличивайте Ki для устранения статической ошибки (отклонения от целевого угла).</li>
+                            <li><strong>Проверьте в динамике:</strong> Подайте возмущение (отклоните аппарат рукой) и наблюдайте за возвратом в исходное положение.</li>
+                        </ol>
+                    </div>
+
+                    <h3>Стартовые значения</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item"><span class="label">Kp (Пропорциональный)</span><span class="value" style="color:#f59e0b;">1.2</span></div>
+                        <div class="spec-item"><span class="label">Ki (Интегральный)</span><span class="value" style="color:#06b6d4;">0.3</span></div>
+                        <div class="spec-item"><span class="label">Kd (Дифференциальный)</span><span class="value" style="color:#ec4899;">0.4</span></div>
+                        <div class="spec-item"><span class="label">Частота ПИД</span><span class="value">100 Гц</span></div>
+                    </div>
+
+                    <h3>Использование симулятора</h3>
+                    <p>Для предварительной настройки рекомендуется использовать <a href="/simulator.html" style="color:var(--accent);">интерактивный симулятор ПИД-регулятора</a>. Это позволяет безопасно подобрать коэффициенты перед запуском реального аппарата.</p>
+
+                    <h4>Признаки неправильных коэффициентов</h4>
+                    <ul>
+                        <li><strong>Слишком высокий Kp:</strong> Резкие колебания, аппарат "дрожит".</li>
+                        <li><strong>Слишком низкий Kp:</strong> Медленная реакция, аппарат "вялый".</li>
+                        <li><strong>Слишком высокий Kd:</strong> Замедленная реакция, "зажатость".</li>
+                        <li><strong>Слишком высокий Ki:</strong> Интегральное насыщение, аппарат "плывёт".</li>
+                    </ul>
+                </div>
+
+                <!-- ====== ПЕРВЫЙ ПОЛЁТ ====== -->
+                <div class="doc-section" id="section-flight">
+                    <h2>✈️ Первый полёт</h2>
+                    <p>Подготовка и проведение первого испытательного полёта.</p>
+
+                    <h3>Предполётная проверка</h3>
+                    <ol>
+                        <li><strong>Визуальный осмотр:</strong> Проверьте все винтовые соединения, целостность рамы и пропеллеров.</li>
+                        <li><strong>Балансировка:</strong> Убедитесь, что центр тяжести находится в центре аппарата.</li>
+                        <li><strong>Направление вращения:</strong> Проверьте, что все двигатели вращаются в правильном направлении.</li>
+                        <li><strong>ПИД-коэффициенты:</strong> Убедитесь, что параметры ПИД загружены в контроллер.</li>
+                        <li><strong>Аккумулятор:</strong> Проверьте уровень заряда аккумулятора (должен быть ≥ 11.4 В для 3S).</li>
+                    </ol>
+
+                    <h3>Выбор места</h3>
+                    <ul>
+                        <li>Выберите открытую площадку размером не менее 20×20 метров.</li>
+                        <li>Убедитесь в отсутствии людей и животных в зоне полёта.</li>
+                        <li>Проверьте отсутствие линий электропередач и высоких деревьев.</li>
+                    </ul>
+
+                    <h3>Процедура запуска</h3>
+                    <ol>
+                        <li>Установите аппарат на ровную горизонтальную поверхность.</li>
+                        <li>Включите питание (подключите аккумулятор).</li>
+                        <li>Дождитесь инициализации датчиков (светодиод на Arduino перестанет мигать).</li>
+                        <li>Медленно увеличивайте газ до отрыва от земли.</li>
+                        <li>Зафиксируйте аппарат на высоте 0.5-1 метра.</li>
+                        <li>Наблюдайте за поведением — аппарат должен висеть стабильно, без колебаний.</li>
+                        <li>При отклонениях — посадите аппарат и скорректируйте ПИД-коэффициенты.</li>
+                    </ol>
+
+                    <div class="doc-card" style="border-color:rgba(239,68,68,0.3);">
+                        <div class="label" style="color:var(--danger);">⚠️ Критическое предупреждение</div>
+                        <ul style="margin-top:4px;">
+                            <li>При первых признаках нестабильности — немедленно снижайте газ и сажайте аппарат.</li>
+                            <li>Никогда не летайте над людьми или транспортными средствами.</li>
+                        </ul>
                     </div>
                 </div>
 
                 <!-- ====== ТЕХНИЧЕСКИЕ ДАННЫЕ ====== -->
                 <div class="doc-section" id="section-techdata">
                     <h2>📊 Технические данные</h2>
-                    <p>Характеристики и результаты испытаний системы управления.</p>
+                    <p>Характеристики аппарата и результаты испытаний системы управления.</p>
 
-                    <h3>Характеристики аппарата</h3>
+                    <h3>Общие характеристики</h3>
                     <div class="spec-grid">
-                        <div class="spec-item"><span class="label">Масса</span><span class="value">~550 г</span></div>
-                        <div class="spec-item"><span class="label">Размер (диагональ)</span><span class="value">250 мм</span></div>
-                        <div class="spec-item"><span class="label">Время полёта</span><span class="value">~12 мин</span></div>
-                        <div class="spec-item"><span class="label">Макс. скорость</span><span class="value">~65 км/ч</span></div>
+                        <div class="spec-item"><span class="label">Общая масса</span><span class="value">~550 г</span></div>
+                        <div class="spec-item"><span class="label">Диагональ рамы</span><span class="value">250 мм</span></div>
+                        <div class="spec-item"><span class="label">Максимальное время полёта</span><span class="value">~12 мин</span></div>
+                        <div class="spec-item"><span class="label">Максимальная скорость</span><span class="value">~65 км/ч</span></div>
                         <div class="spec-item"><span class="label">Тяговооружённость</span><span class="value">2.8</span></div>
-                        <div class="spec-item"><span class="label">Дальность управления</span><span class="value">~500 м</span></div>
+                        <div class="spec-item"><span class="label">Дальность управления</span><span class="value">~500 м (опционально)</span></div>
+                        <div class="spec-item"><span class="label">Рабочая частота ПИД</span><span class="value">100 Гц</span></div>
+                        <div class="spec-item"><span class="label">Диапазон питания</span><span class="value">11.1 В (3S Li-Po)</span></div>
                     </div>
 
                     <h3>Результаты испытаний системы управления</h3>
+                    <p>Испытания проводились на испытательном стенде и в режиме реального полёта.</p>
                     <div class="spec-grid">
-                        <div class="spec-item"><span class="label">Ошибка стабилизации</span><span class="value" style="color:#10b981;">≤ 1.2°</span></div>
-                        <div class="spec-item"><span class="label">Время реакции</span><span class="value" style="color:#10b981;">0.35 с</span></div>
-                        <div class="spec-item"><span class="label">Время восстановления</span><span class="value" style="color:#10b981;">0.7 с</span></div>
-                        <div class="spec-item"><span class="label">Отклонение от траектории</span><span class="value" style="color:#10b981;">0.82%</span></div>
+                        <div class="spec-item"><span class="label">Ошибка стабилизации (угол)</span><span class="value" style="color:#10b981;">≤ 1.2°</span></div>
+                        <div class="spec-item"><span class="label">Время реакции на возмущение</span><span class="value" style="color:#10b981;">0.35 с</span></div>
+                        <div class="spec-item"><span class="label">Время восстановления после возмущения</span><span class="value" style="color:#10b981;">0.7 с</span></div>
+                        <div class="spec-item"><span class="label">Отклонение от заданной траектории</span><span class="value" style="color:#10b981;">0.82%</span></div>
                     </div>
 
                     <div class="doc-card">
                         <div class="label">✅ Все требования выполнены с запасом</div>
-                        <p style="margin-top:8px;">Система управления показала стабильную работу во всех режимах испытаний.</p>
+                        <p style="margin-top:6px;">Система управления показала стабильную работу во всех режимах испытаний. Отклонения находятся в пределах допустимых значений.</p>
                     </div>
                 </div>
 
                 <!-- ====== БЕЗОПАСНОСТЬ ====== -->
                 <div class="doc-section" id="section-safety">
-                    <h2>🛡️ Безопасность</h2>
-                    <p>Правила безопасной работы с БПЛА и аккумуляторами.</p>
+                    <h2>🛡️ Правила безопасности</h2>
+                    <p>Обязательные правила безопасной работы с БПЛА и аккумуляторами.</p>
 
-                    <h3>Общие правила</h3>
+                    <h3>Общие правила безопасности</h3>
                     <ul>
-                        <li>Всегда проверяйте целостность конструкции перед запуском</li>
-                        <li>Запускайте аппарат только на открытой площадке вдали от людей</li>
-                        <li>Никогда не приближайтесь к вращающимся пропеллерам</li>
-                        <li>При работе с БПЛА используйте защитные очки</li>
+                        <li><strong>Всегда</strong> проверяйте целостность конструкции перед каждым запуском.</li>
+                        <li><strong>Запускайте</strong> аппарат только на открытой площадке, вдали от людей, животных и зданий.</li>
+                        <li><strong>Никогда</strong> не приближайтесь к вращающимся пропеллерам.</li>
+                        <li><strong>Используйте</strong> защитные очки при работе с аппаратом.</li>
+                        <li><strong>Не летайте</strong> в дождь, снег или сильный ветер.</li>
                     </ul>
 
                     <h3>Правила работы с Li-Po аккумуляторами</h3>
-                    <ul>
-                        <li>Заряжайте аккумуляторы только специальным зарядным устройством</li>
-                        <li>Не оставляйте заряжающиеся аккумуляторы без присмотра</li>
-                        <li>Храните аккумуляторы в огнеупорных контейнерах</li>
-                        <li>Не используйте повреждённые или вздутые аккумуляторы</li>
-                        <li>Не разряжайте аккумулятор ниже 3.0 В на элемент</li>
-                    </ul>
-
-                    <h3>Что делать в экстренной ситуации</h3>
-                    <ul>
-                        <li>При неконтролируемом полёте — немедленно отключите питание</li>
-                        <li>При пожаре аккумулятора — используйте песок или огнетушитель (не воду!)</li>
-                        <li>При падении — отойдите на безопасное расстояние</li>
-                    </ul>
-
-                    <div class="doc-card" style="border-color: rgba(239, 68, 68, 0.3);">
-                        <div class="label" style="color: var(--danger);">⚠️ ВАЖНО</div>
-                        <p style="margin-top:8px;color:var(--gray-light);">Нарушение правил безопасности может привести к серьёзным травмам. Перед запуском ознакомьтесь со всеми правилами.</p>
+                    <div class="doc-card" style="border-color:rgba(239,68,68,0.3);">
+                        <div class="label" style="color:var(--danger);">⚠️ Li-Po аккумуляторы пожароопасны</div>
+                        <p style="margin-top:4px;">Нарушение правил работы с Li-Po аккумуляторами может привести к возгоранию.</p>
                     </div>
+                    <ul>
+                        <li><strong>Заряжайте</strong> аккумуляторы только специальным Li-Po зарядным устройством с балансиром.</li>
+                        <li><strong>Не оставляйте</strong> заряжающиеся аккумуляторы без присмотра.</li>
+                        <li><strong>Храните</strong> аккумуляторы в огнеупорных контейнерах при температуре 15-25°C.</li>
+                        <li><strong>Не используйте</strong> повреждённые, вздутые или деформированные аккумуляторы.</li>
+                        <li><strong>Не разряжайте</strong> аккумулятор ниже 3.0 В на элемент.</li>
+                        <li><strong>Транспортируйте</strong> аккумуляторы в специальных сумках.</li>
+                    </ul>
+
+                    <h3>Действия в экстренной ситуации</h3>
+                    <ul>
+                        <li><strong>При неконтролируемом полёте</strong> — немедленно отключите питание (выдерните аккумулятор).</li>
+                        <li><strong>При пожаре аккумулятора</strong> — используйте песок, сухой огнетушитель или накройте плотной тканью. <strong>Никогда не используйте воду!</strong></li>
+                        <li><strong>При падении аппарата</strong> — отойдите на безопасное расстояние, подождите, пока пропеллеры остановятся.</li>
+                        <li><strong>При травме</strong> — немедленно обратитесь за медицинской помощью.</li>
+                    </ul>
                 </div>
 
-                <!-- ====== РЕПОЗИТОРИЙ ====== -->
-                <div class="doc-section" id="section-repository">
-                    <h2>📁 Репозиторий</h2>
-                    <p>Все файлы проекта доступны на GitHub.</p>
+                <!-- ====== ОБСЛУЖИВАНИЕ ====== -->
+                <div class="doc-section" id="section-maintenance">
+                    <h2>🔧 Обслуживание и ремонт</h2>
+                    <p>Рекомендации по уходу, обслуживанию и ремонту аппарата.</p>
 
-                    <div class="doc-card" style="text-align:center;padding:32px;">
-                        <span style="font-size:3em;display:block;margin-bottom:12px;">🐙</span>
-                        <h3 style="font-size:1.3em;font-weight:700;">ThunderLight на GitHub</h3>
-                        <p style="color:var(--gray-light);margin:8px 0 16px;">
-                            Исходные коды, 3D-модели, схемы и документация.
-                        </p>
-                        <a href="https://github.com/LightRain-K/ThunderLight" target="_blank" class="btn btn-primary" style="display:inline-flex;">
-                            <i class="fab fa-github"></i> Перейти в репозиторий
-                        </a>
+                    <h3>Регулярное обслуживание</h3>
+                    <ul>
+                        <li><strong>После каждых 10 полётов:</strong> Проверяйте затяжку винтов, состояние пропеллеров и проводов.</li>
+                        <li><strong>Ежемесячно:</strong> Проверяйте калибровку датчиков IMU.</li>
+                        <li><strong>При обнаружении вибраций:</strong> Проверьте балансировку пропеллеров и состояние подшипников двигателей.</li>
+                    </ul>
+
+                    <h3>Замена пропеллеров</h3>
+                    <p>Пропеллеры являются расходным материалом и подлежат замене при появлении трещин, сколов или дисбаланса.</p>
+                    <ol>
+                        <li>Снимите гайку крепления пропеллера.</li>
+                        <li>Снимите повреждённый пропеллер.</li>
+                        <li>Установите новый пропеллер, соблюдая направление вращения.</li>
+                        <li>Закрепите гайкой. Не перетягивайте!</li>
+                    </ol>
+
+                    <h3>Замена двигателя</h3>
+                    <ol>
+                        <li>Отключите аккумулятор.</li>
+                        <li>Отпаяйте или отсоедините провода ESC.</li>
+                        <li>Открутите винты крепления двигателя.</li>
+                        <li>Установите новый двигатель.</li>
+                        <li>Подключите провода ESC (соблюдайте цветовую маркировку).</li>
+                        <li>Проверьте направление вращения.</li>
+                    </ol>
+
+                    <div class="doc-card" style="margin-top:16px;">
+                        <div class="label">📦 Запасные части</div>
+                        <p style="margin-top:6px;">Рекомендуется иметь в запасе:</p>
+                        <ul>
+                            <li>Комплект пропеллеров (4 шт.)</li>
+                            <li>Комплект нейлоновых стяжек</li>
+                            <li>Запасной двигатель (1 шт.)</li>
+                            <li>Запасной ESC (1 шт.)</li>
+                        </ul>
                     </div>
 
-                    <h3>Структура репозитория</h3>
-                    <div class="code-block" style="font-size:0.8em;">
-                        ThunderLight/
-                        ├── firmware/
-                        │   ├── arduino/          # Скетч для Arduino Nano
-                        │   └── python/           # Скрипты для Raspberry Pi
-                        ├── hardware/
-                        │   ├── 3d_models/        # STL-файлы для печати
-                        │   ├── schematics/       # Схемы подключения
-                        │   └── pcb/              # Файлы печатных плат
-                        ├── docs/
-                        │   ├── assembly/         # Инструкция по сборке
-                        │   ├── calibration/      # Калибровка
-                        │   └── safety/           # Правила безопасности
-                        └── README.md
-                    </div>
+                    <h3>Хранение аппарата</h3>
+                    <ul>
+                        <li>Храните аппарат в сухом, прохладном месте.</li>
+                        <li>Не храните с установленным аккумулятором.</li>
+                        <li>Защищайте от прямых солнечных лучей.</li>
+                    </ul>
                 </div>
 
             </div>
@@ -1134,19 +1281,14 @@
         const sections = document.querySelectorAll('.doc-section');
 
         function showSection(sectionId) {
-            // Скрываем все секции
             sections.forEach(s => s.classList.remove('active'));
-
-            // Показываем нужную
             const target = document.getElementById('section-' + sectionId);
             if (target) target.classList.add('active');
 
-            // Обновляем активную ссылку
             sidebarLinks.forEach(link => {
                 link.classList.toggle('active', link.dataset.section === sectionId);
             });
 
-            // Прокручиваем к началу контента
             document.querySelector('.docs-content').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
@@ -1156,24 +1298,19 @@
                 const section = link.dataset.section;
                 if (section) {
                     showSection(section);
-                    // Обновляем URL без перезагрузки
                     history.pushState({ section: section }, '', '#section-' + section);
                 }
             });
         });
 
-        // Обработка якоря в URL
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.replace('#section-', '');
             if (hash) {
                 const link = document.querySelector(`#docsSidebar a[data-section="${hash}"]`);
-                if (link) {
-                    showSection(hash);
-                }
+                if (link) showSection(hash);
             }
         });
 
-        // При загрузке проверяем хеш
         window.addEventListener('load', () => {
             const hash = window.location.hash.replace('#section-', '');
             if (hash) {
