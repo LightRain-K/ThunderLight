@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Стили — оставляем те же, что и в предыдущей версии */
+        /* Стили — те же, что в предыдущей версии, оставляем без изменений для краткости */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -308,7 +308,6 @@
             gap: 10px;
         }
 
-        /* Схема БПЛА */
         .config-type-selector {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -539,14 +538,6 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
         }
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
-        }
 
         .component-group {
             border-bottom: 1px solid var(--border);
@@ -714,7 +705,6 @@
             <div class="builder-panel">
                 <h3>🧩 Конфигурация</h3>
 
-                <!-- Тип БПЛА -->
                 <div class="component-group">
                     <div class="group-title">✈️ Схема БПЛА</div>
                     <div class="config-type-selector" id="configTypeSelector">
@@ -741,122 +731,116 @@
                     </div>
                 </div>
 
-                <!-- Полётный контроллер -->
                 <div class="component-group">
                     <div class="group-title">🔄 Полётный контроллер</div>
                     <div class="part-selector" id="fcSelector">
                         <div class="part-option selected" data-fc="ardupilot">
                             <div class="name">ArduPilot (Pixhawk)</div>
-                            <div class="spec"><span>40 г</span><span>ArduPilot</span><span>4500 ₽</span></div>
+                            <div class="spec"><span>40 г</span><span>ArduPilot</span><span>12000 ₽</span></div>
                         </div>
                         <div class="part-option" data-fc="betaflight">
                             <div class="name">Betaflight (F7)</div>
-                            <div class="spec"><span>12 г</span><span>Betaflight</span><span>2000 ₽</span></div>
+                            <div class="spec"><span>12 г</span><span>Betaflight</span><span>6000 ₽</span></div>
                         </div>
                         <div class="part-option" data-fc="px4">
                             <div class="name">PX4 (Cube Orange)</div>
-                            <div class="spec"><span>55 г</span><span>PX4</span><span>8000 ₽</span></div>
+                            <div class="spec"><span>55 г</span><span>PX4</span><span>22000 ₽</span></div>
                         </div>
                         <div class="part-option" data-fc="vrd">
                             <div class="name">🔥 VRD FC</div>
-                            <div class="spec"><span>85 г</span><span>Open Source</span><span>3500 ₽</span></div>
+                            <div class="spec"><span>85 г</span><span>Open Source</span><span>8500 ₽</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Моторы -->
                 <div class="component-group">
                     <div class="group-title">⚡ Двигатели</div>
                     <div class="part-selector" id="motorSelector">
                         <div class="part-option selected" data-motor="2212">
                             <div class="name">2212 1000kV</div>
-                            <div class="spec"><span>56 г</span><span>850 г</span><span>800 ₽</span></div>
+                            <div class="spec"><span>56 г</span><span>850 г</span><span>1800 ₽</span></div>
                         </div>
                         <div class="part-option" data-motor="2205">
                             <div class="name">2205 2300kV</div>
-                            <div class="spec"><span>28 г</span><span>550 г</span><span>600 ₽</span></div>
+                            <div class="spec"><span>28 г</span><span>550 г</span><span>1400 ₽</span></div>
                         </div>
                         <div class="part-option" data-motor="2312">
                             <div class="name">2312 800kV</div>
-                            <div class="spec"><span>72 г</span><span>1200 г</span><span>1000 ₽</span></div>
+                            <div class="spec"><span>72 г</span><span>1200 г</span><span>2200 ₽</span></div>
                         </div>
                         <div class="part-option" data-motor="2806">
                             <div class="name">2806 650kV</div>
-                            <div class="spec"><span>95 г</span><span>1500 г</span><span>1200 ₽</span></div>
+                            <div class="spec"><span>95 г</span><span>1500 г</span><span>2800 ₽</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Аккумулятор -->
                 <div class="component-group">
                     <div class="group-title">🔋 Аккумулятор</div>
                     <div class="part-selector" id="batterySelector">
                         <div class="part-option selected" data-battery="3s2200">
                             <div class="name">3S 2200mAh</div>
-                            <div class="spec"><span>180 г</span><span>11.1V</span><span>1500 ₽</span></div>
+                            <div class="spec"><span>180 г</span><span>11.1V</span><span>3200 ₽</span></div>
                         </div>
                         <div class="part-option" data-battery="4s1500">
                             <div class="name">4S 1500mAh</div>
-                            <div class="spec"><span>165 г</span><span>14.8V</span><span>1400 ₽</span></div>
+                            <div class="spec"><span>165 г</span><span>14.8V</span><span>3000 ₽</span></div>
                         </div>
                         <div class="part-option" data-battery="4s3000">
                             <div class="name">4S 3000mAh</div>
-                            <div class="spec"><span>310 г</span><span>14.8V</span><span>2200 ₽</span></div>
+                            <div class="spec"><span>310 г</span><span>14.8V</span><span>4800 ₽</span></div>
                         </div>
                         <div class="part-option" data-battery="6s5000">
                             <div class="name">6S 5000mAh</div>
-                            <div class="spec"><span>720 г</span><span>22.2V</span><span>4500 ₽</span></div>
+                            <div class="spec"><span>720 г</span><span>22.2V</span><span>9800 ₽</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- ESC -->
                 <div class="component-group">
                     <div class="group-title">🔌 ESC (регуляторы)</div>
                     <div class="part-selector" id="escSelector">
                         <div class="part-option selected" data-esc="20a">
                             <div class="name">20A</div>
-                            <div class="spec"><span>12 г</span><span>400 ₽</span></div>
+                            <div class="spec"><span>12 г</span><span>900 ₽</span></div>
                         </div>
                         <div class="part-option" data-esc="30a">
                             <div class="name">30A</div>
-                            <div class="spec"><span>18 г</span><span>600 ₽</span></div>
+                            <div class="spec"><span>18 г</span><span>1300 ₽</span></div>
                         </div>
                         <div class="part-option" data-esc="50a">
                             <div class="name">50A</div>
-                            <div class="spec"><span>25 г</span><span>900 ₽</span></div>
+                            <div class="spec"><span>25 г</span><span>2000 ₽</span></div>
                         </div>
                         <div class="part-option" data-esc="80a">
                             <div class="name">80A</div>
-                            <div class="spec"><span>35 г</span><span>1400 ₽</span></div>
+                            <div class="spec"><span>35 г</span><span>3000 ₽</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Пропеллеры -->
                 <div class="component-group">
                     <div class="group-title">🔄 Пропеллеры (комплект)</div>
                     <div class="part-selector" id="propSelector">
                         <div class="part-option selected" data-prop="5inch">
                             <div class="name">5" (12.7 см)</div>
-                            <div class="spec"><span>8 г</span><span>400 ₽</span></div>
+                            <div class="spec"><span>8 г</span><span>800 ₽</span></div>
                         </div>
                         <div class="part-option" data-prop="7inch">
                             <div class="name">7" (17.8 см)</div>
-                            <div class="spec"><span>12 г</span><span>600 ₽</span></div>
+                            <div class="spec"><span>12 г</span><span>1200 ₽</span></div>
                         </div>
                         <div class="part-option" data-prop="9inch">
                             <div class="name">9" (22.9 см)</div>
-                            <div class="spec"><span>18 г</span><span>800 ₽</span></div>
+                            <div class="spec"><span>18 г</span><span>1600 ₽</span></div>
                         </div>
                         <div class="part-option" data-prop="12inch">
                             <div class="name">12" (30.5 см)</div>
-                            <div class="spec"><span>28 г</span><span>1200 ₽</span></div>
+                            <div class="spec"><span>28 г</span><span>2400 ₽</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Дополнительное оборудование -->
                 <div class="component-group">
                     <div class="group-title">📷 Полезная нагрузка</div>
                     <div class="part-selector" id="payloadSelector">
@@ -866,7 +850,7 @@
                         </div>
                         <div class="part-option" data-payload="gopro">
                             <div class="name">GoPro Hero</div>
-                            <div class="spec"><span>150 г</span><span>8000 ₽</span></div>
+                            <div class="spec"><span>150 г</span><span>18000 ₽</span></div>
                         </div>
                         <div class="part-option" data-payload="payload200">
                             <div class="name">Нагрузка 200 г</div>
@@ -874,39 +858,37 @@
                         </div>
                         <div class="part-option" data-payload="gimbal">
                             <div class="name">Стаб. + камера</div>
-                            <div class="spec"><span>300 г</span><span>12000 ₽</span></div>
+                            <div class="spec"><span>300 г</span><span>28000 ₽</span></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Доп. электроника -->
                 <div class="component-group">
                     <div class="group-title">📡 Дополнительное оборудование</div>
                     <div style="display:flex; gap:6px; flex-wrap:wrap;">
                         <label style="display:flex;align-items:center;gap:4px;font-size:0.7em;color:var(--gray-light);cursor:pointer;">
-                            <input type="checkbox" id="hasGPS" checked> GPS
+                            <input type="checkbox" id="hasGPS" checked> GPS <span style="color:var(--gray);font-size:0.8em;">(18г, 2500₽)</span>
                         </label>
                         <label style="display:flex;align-items:center;gap:4px;font-size:0.7em;color:var(--gray-light);cursor:pointer;">
-                            <input type="checkbox" id="hasTelemetry"> Телеметрия
+                            <input type="checkbox" id="hasTelemetry"> Телеметрия <span style="color:var(--gray);font-size:0.8em;">(15г, 3500₽)</span>
                         </label>
                         <label style="display:flex;align-items:center;gap:4px;font-size:0.7em;color:var(--gray-light);cursor:pointer;">
-                            <input type="checkbox" id="hasBEC"> BEC
+                            <input type="checkbox" id="hasBEC"> BEC <span style="color:var(--gray);font-size:0.8em;">(12г, 1200₽)</span>
                         </label>
                         <label style="display:flex;align-items:center;gap:4px;font-size:0.7em;color:var(--gray-light);cursor:pointer;">
-                            <input type="checkbox" id="hasReceiver" checked> Приёмник
+                            <input type="checkbox" id="hasReceiver" checked> Приёмник <span style="color:var(--gray);font-size:0.8em;">(10г, 1800₽)</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="slider-group">
-                    <label>Размер рамы/размах <span id="frameSizeVal">250 мм</span></label>
+                    <label>Размер рамы / размах <span id="frameSizeVal">250 мм</span></label>
                     <input type="range" id="frameSizeSlider" min="100" max="600" value="250" step="10">
                 </div>
 
                 <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
                     <button class="btn btn-primary" id="btnRandom">🎲 Случайный</button>
                     <button class="btn btn-outline" id="btnResetBuilder">⟳ Сброс</button>
-                    <button class="btn btn-warning" id="btnOptimal" style="display:none;">🎯 Оптимальный</button>
                 </div>
             </div>
 
@@ -923,32 +905,32 @@
                 </div>
 
                 <div class="param-grid">
-                    <div class="param-item good">
+                    <div class="param-item good" id="massItem">
                         <div class="label">Общая масса</div>
                         <div class="value" id="totalMass">—</div>
                         <div class="unit">г</div>
                     </div>
-                    <div class="param-item good">
+                    <div class="param-item good" id="thrustItem">
                         <div class="label">Общая тяга</div>
                         <div class="value" id="totalThrust">—</div>
                         <div class="unit">г</div>
                     </div>
-                    <div class="param-item good">
+                    <div class="param-item good" id="twItem">
                         <div class="label">Тяговооружённость</div>
                         <div class="value" id="thrustWeight">—</div>
                         <div class="unit">—</div>
                     </div>
-                    <div class="param-item good">
+                    <div class="param-item good" id="timeItem">
                         <div class="label">Время полёта</div>
                         <div class="value" id="flightTime">—</div>
                         <div class="unit">мин</div>
                     </div>
-                    <div class="param-item good">
+                    <div class="param-item good" id="effItem">
                         <div class="label">КПД системы</div>
                         <div class="value" id="efficiency">—</div>
                         <div class="unit">г/Вт</div>
                     </div>
-                    <div class="param-item good">
+                    <div class="param-item good" id="speedItem">
                         <div class="label">Макс. скорость</div>
                         <div class="value" id="maxSpeed">—</div>
                         <div class="unit">км/ч</div>
@@ -979,7 +961,6 @@
 
                 <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
                     <button class="btn btn-success btn-sm" id="btnExportBuilder">📊 Экспорт</button>
-                    <button class="btn btn-outline btn-sm" id="btnCompare">📋 Сравнить</button>
                 </div>
             </div>
         </div>
@@ -1032,58 +1013,58 @@
 
     <script>
         // ================================================================
-        // ПРОФЕССИОНАЛЬНЫЙ КОНСТРУКТОР — ВСЕ КОМПОНЕНТЫ
+        // ПРОФЕССИОНАЛЬНЫЙ КОНСТРУКТОР — РЕАЛИСТИЧНЫЕ ЦЕНЫ И РАСЧЁТЫ
         // ================================================================
 
         // === БАЗА ДАННЫХ ===
         const DB = {
             configTypes: {
-                quad: { name: 'Квадрокоптер', motors: 4, icon: '✚', defaultFrame: 250 },
-                hexa: { name: 'Гексакоптер', motors: 6, icon: '⬡', defaultFrame: 400 },
-                x8: { name: 'X8', motors: 8, icon: '✚✚', defaultFrame: 450 },
-                plane: { name: 'Самолёт', motors: 1, icon: '➤', defaultFrame: 1200 },
+                quad: { name: 'Квадрокоптер', motors: 4, icon: '✚', defaultFrame: 250, type: 'multi' },
+                hexa: { name: 'Гексакоптер', motors: 6, icon: '⬡', defaultFrame: 400, type: 'multi' },
+                x8: { name: 'X8', motors: 8, icon: '✚✚', defaultFrame: 450, type: 'multi' },
+                plane: { name: 'Самолёт', motors: 1, icon: '➤', defaultFrame: 1200, type: 'plane' },
             },
             flightControllers: {
-                ardupilot: { name: 'ArduPilot (Pixhawk)', mass: 40, price: 4500, firmware: 'ArduPilot' },
-                betaflight: { name: 'Betaflight (F7)', mass: 12, price: 2000, firmware: 'Betaflight' },
-                px4: { name: 'PX4 (Cube Orange)', mass: 55, price: 8000, firmware: 'PX4' },
-                vrd: { name: 'VRD FC (Arduino+RPi)', mass: 85, price: 3500, firmware: 'Open Source' },
+                ardupilot: { name: 'ArduPilot (Pixhawk)', mass: 40, price: 12000, firmware: 'ArduPilot' },
+                betaflight: { name: 'Betaflight (F7)', mass: 12, price: 6000, firmware: 'Betaflight' },
+                px4: { name: 'PX4 (Cube Orange)', mass: 55, price: 22000, firmware: 'PX4' },
+                vrd: { name: 'VRD FC (Arduino+RPi)', mass: 85, price: 8500, firmware: 'Open Source' },
             },
             motors: {
-                '2212': { name: '2212 1000kV', mass: 56, thrust: 850, price: 800, kv: 1000, current: 12 },
-                '2205': { name: '2205 2300kV', mass: 28, thrust: 550, price: 600, kv: 2300, current: 10 },
-                '2312': { name: '2312 800kV', mass: 72, thrust: 1200, price: 1000, kv: 800, current: 18 },
-                '2806': { name: '2806 650kV', mass: 95, thrust: 1500, price: 1200, kv: 650, current: 22 },
+                '2212': { name: '2212 1000kV', mass: 56, thrust: 850, price: 1800, kv: 1000, current: 12 },
+                '2205': { name: '2205 2300kV', mass: 28, thrust: 550, price: 1400, kv: 2300, current: 10 },
+                '2312': { name: '2312 800kV', mass: 72, thrust: 1200, price: 2200, kv: 800, current: 18 },
+                '2806': { name: '2806 650kV', mass: 95, thrust: 1500, price: 2800, kv: 650, current: 22 },
             },
             batteries: {
-                '3s2200': { name: '3S 2200mAh', mass: 180, voltage: 11.1, capacity: 2200, price: 1500 },
-                '4s1500': { name: '4S 1500mAh', mass: 165, voltage: 14.8, capacity: 1500, price: 1400 },
-                '4s3000': { name: '4S 3000mAh', mass: 310, voltage: 14.8, capacity: 3000, price: 2200 },
-                '6s5000': { name: '6S 5000mAh', mass: 720, voltage: 22.2, capacity: 5000, price: 4500 },
+                '3s2200': { name: '3S 2200mAh', mass: 180, voltage: 11.1, capacity: 2200, price: 3200 },
+                '4s1500': { name: '4S 1500mAh', mass: 165, voltage: 14.8, capacity: 1500, price: 3000 },
+                '4s3000': { name: '4S 3000mAh', mass: 310, voltage: 14.8, capacity: 3000, price: 4800 },
+                '6s5000': { name: '6S 5000mAh', mass: 720, voltage: 22.2, capacity: 5000, price: 9800 },
             },
             escs: {
-                '20a': { name: '20A', mass: 12, price: 400, current: 20 },
-                '30a': { name: '30A', mass: 18, price: 600, current: 30 },
-                '50a': { name: '50A', mass: 25, price: 900, current: 50 },
-                '80a': { name: '80A', mass: 35, price: 1400, current: 80 },
+                '20a': { name: '20A', mass: 12, price: 900, current: 20 },
+                '30a': { name: '30A', mass: 18, price: 1300, current: 30 },
+                '50a': { name: '50A', mass: 25, price: 2000, current: 50 },
+                '80a': { name: '80A', mass: 35, price: 3000, current: 80 },
             },
             props: {
-                '5inch': { name: '5" (12.7 см)', mass: 8, price: 400, size: 5 },
-                '7inch': { name: '7" (17.8 см)', mass: 12, price: 600, size: 7 },
-                '9inch': { name: '9" (22.9 см)', mass: 18, price: 800, size: 9 },
-                '12inch': { name: '12" (30.5 см)', mass: 28, price: 1200, size: 12 },
+                '5inch': { name: '5" (12.7 см)', mass: 8, price: 800, size: 5 },
+                '7inch': { name: '7" (17.8 см)', mass: 12, price: 1200, size: 7 },
+                '9inch': { name: '9" (22.9 см)', mass: 18, price: 1600, size: 9 },
+                '12inch': { name: '12" (30.5 см)', mass: 28, price: 2400, size: 12 },
             },
             payloads: {
                 none: { name: 'Без нагрузки', mass: 0, price: 0 },
-                gopro: { name: 'GoPro Hero', mass: 150, price: 8000 },
+                gopro: { name: 'GoPro Hero', mass: 150, price: 18000 },
                 payload200: { name: 'Нагрузка 200 г', mass: 200, price: 0 },
-                gimbal: { name: 'Стаб. + камера', mass: 300, price: 12000 },
+                gimbal: { name: 'Стаб. + камера', mass: 300, price: 28000 },
             },
             extras: {
-                gps: { name: 'GPS', mass: 18, price: 1200 },
-                telemetry: { name: 'Телеметрия', mass: 15, price: 1500 },
-                bec: { name: 'BEC', mass: 12, price: 500 },
-                receiver: { name: 'Приёмник', mass: 10, price: 800 },
+                gps: { name: 'GPS', mass: 18, price: 2500 },
+                telemetry: { name: 'Телеметрия', mass: 15, price: 3500 },
+                bec: { name: 'BEC', mass: 12, price: 1200 },
+                receiver: { name: 'Приёмник', mass: 10, price: 1800 },
             }
         };
 
@@ -1125,10 +1106,17 @@
         const costExtraEl = document.getElementById('costExtra');
         const costTotalEl = document.getElementById('costTotal');
 
+        const massItem = document.getElementById('massItem');
+        const thrustItem = document.getElementById('thrustItem');
+        const twItem = document.getElementById('twItem');
+        const timeItem = document.getElementById('timeItem');
+        const effItem = document.getElementById('effItem');
+        const speedItem = document.getElementById('speedItem');
+
         const previewCanvas = document.getElementById('previewCanvas');
         const pCtx = previewCanvas.getContext('2d');
 
-        // === ВЫБОР КОМПОНЕНТОВ ===
+        // === ВЫБОР ===
         function setupSelector(container, callback) {
             container.querySelectorAll('.part-option, .config-type').forEach(el => {
                 el.addEventListener('click', () => {
@@ -1163,7 +1151,6 @@
             updateBuilder();
         });
 
-        // === ДОПОЛНИТЕЛЬНОЕ ОБОРУДОВАНИЕ ===
         document.querySelectorAll('#hasGPS, #hasTelemetry, #hasBEC, #hasReceiver').forEach(el => {
             el.addEventListener('change', () => {
                 config.extras[el.id.replace('has', '').toLowerCase()] = el.checked;
@@ -1182,11 +1169,12 @@
             const payload = DB.payloads[config.payload];
 
             const motorCount = type.motors;
+            const isPlane = type.type === 'plane';
 
             // Базовые компоненты
-            const frameMass = 50 + config.frameSize * 0.35;
-            const wiringMass = 20 + motorCount * 3;
-            const propMass = prop.mass * motorCount;
+            const frameMass = isPlane ? 200 + config.frameSize * 0.08 : 50 + config.frameSize * 0.35;
+            const wiringMass = isPlane ? 50 : 20 + motorCount * 3;
+            const propMass = prop.mass * (isPlane ? 1 : motorCount);
 
             // Доп. оборудование
             let extraMass = 0;
@@ -1198,54 +1186,94 @@
             if (config.extras.receiver) { extraMass += DB.extras.receiver.mass; extraPrice += DB.extras.receiver.price; extraNames.push('Приёмник'); }
 
             // Общая масса
-            const totalMass = fc.mass + motor.mass * motorCount + battery.mass + esc.mass * motorCount +
+            const motorMass = motor.mass * (isPlane ? 1 : motorCount);
+            const escMass = esc.mass * (isPlane ? 1 : motorCount);
+            const totalMass = fc.mass + motorMass + battery.mass + escMass +
                              frameMass + wiringMass + propMass + payload.mass + extraMass;
 
             // Общая тяга
-            const totalThrust = motor.thrust * motorCount;
+            const totalThrust = motor.thrust * (isPlane ? 1 : motorCount);
 
             // Тяговооружённость
             const thrustWeight = totalThrust / totalMass;
 
             // Время полёта
-            const avgCurrent = motor.current * 0.7 * motorCount + 2;
-            const flightTime = (battery.capacity / avgCurrent) * 0.75;
+            const avgCurrent = motor.current * 0.7 * (isPlane ? 1 : motorCount) + (isPlane ? 1 : 2);
+            const flightTime = (battery.capacity / avgCurrent) * (isPlane ? 0.9 : 0.75);
 
             // КПД
-            const efficiency = totalThrust / (motor.current * battery.voltage * motorCount / 1000);
+            const power = battery.voltage * avgCurrent / 1000;
+            const efficiency = totalThrust / (power + 0.01);
 
             // Макс. скорость (приблизительно)
-            const maxSpeed = Math.sqrt(totalThrust / (totalMass / 1000) * 2) * 3.6;
+            let maxSpeed = 0;
+            if (isPlane) {
+                maxSpeed = Math.sqrt(totalThrust / (totalMass / 1000) * 1.5) * 3.0;
+            } else {
+                maxSpeed = Math.sqrt(totalThrust / (totalMass / 1000) * 2) * 3.6;
+            }
+            maxSpeed = Math.min(maxSpeed, 120);
 
             // Класс
             let className = 'Микро';
-            if (config.frameSize > 450) className = 'Большой';
-            else if (config.frameSize > 300) className = 'Средний';
-            else if (config.frameSize > 180) className = '250';
-            else className = 'Микро';
+            if (isPlane) {
+                if (config.frameSize > 2000) className = 'Большой';
+                else if (config.frameSize > 1200) className = 'Средний';
+                else if (config.frameSize > 800) className = 'Тренировочный';
+                else className = 'Микро';
+            } else {
+                if (config.frameSize > 450) className = 'Большой';
+                else if (config.frameSize > 300) className = 'Средний';
+                else if (config.frameSize > 180) className = '250';
+                else className = 'Микро';
+            }
 
             // Стоимость
-            const costParts = fc.price + motor.price * motorCount + battery.price + esc.price * motorCount + prop.price + payload.price;
-            const costFrame = 150 + config.frameSize * 1.2;
+            const costParts = fc.price + motor.price * (isPlane ? 1 : motorCount) + battery.price +
+                             esc.price * (isPlane ? 1 : motorCount) + prop.price + payload.price;
+            const costFrame = isPlane ? 800 + config.frameSize * 0.2 : 150 + config.frameSize * 1.2;
             const costTotal = costParts + costFrame + extraPrice;
 
-            // Статус
+            // Статус — для самолёта и мультиротора разные критерии
             let status = '✅ Оптимальная конфигурация';
             let statusClass = 'badge-success';
-            if (thrustWeight < 2.0) {
-                status = '⚠️ Низкая тяговооружённость (<2.0)';
-                statusClass = 'badge-warning';
-            } else if (thrustWeight > 4.0) {
-                status = '⚠️ Избыточная тяга (>4.0)';
-                statusClass = 'badge-warning';
-            }
-            if (totalMass > 2000) {
-                status = '⚠️ Масса > 2 кг — проверьте регистрацию';
-                statusClass = 'badge-danger';
-            }
-            if (thrustWeight >= 2.5 && thrustWeight <= 3.5 && totalMass < 1500) {
-                status = '✅ Идеальная конфигурация!';
-                statusClass = 'badge-success';
+
+            if (isPlane) {
+                // Для самолёта: тяговооружённость 0.3-0.6 — норма
+                if (thrustWeight < 0.25) {
+                    status = '⚠️ Очень низкая тяговооружённость (<0.25) — может не взлететь';
+                    statusClass = 'badge-danger';
+                } else if (thrustWeight < 0.35) {
+                    status = '⚠️ Низкая тяговооружённость — полёт возможен, но слабый набор высоты';
+                    statusClass = 'badge-warning';
+                } else if (thrustWeight > 0.8) {
+                    status = '⚠️ Избыточная тяга для самолёта (>0.8)';
+                    statusClass = 'badge-warning';
+                } else if (thrustWeight >= 0.35 && thrustWeight <= 0.6) {
+                    status = '✅ Отличная тяговооружённость для самолёта!';
+                    statusClass = 'badge-success';
+                }
+                if (totalMass > 5000) {
+                    status = '⚠️ Масса > 5 кг — требуется регистрация';
+                    statusClass = 'badge-danger';
+                }
+            } else {
+                // Для мультироторов
+                if (thrustWeight < 2.0) {
+                    status = '⚠️ Низкая тяговооружённость (<2.0)';
+                    statusClass = 'badge-warning';
+                } else if (thrustWeight > 4.0) {
+                    status = '⚠️ Избыточная тяга (>4.0)';
+                    statusClass = 'badge-warning';
+                }
+                if (totalMass > 2000) {
+                    status = '⚠️ Масса > 2 кг — требуется регистрация';
+                    statusClass = 'badge-danger';
+                }
+                if (thrustWeight >= 2.5 && thrustWeight <= 3.5 && totalMass < 1500) {
+                    status = '✅ Идеальная конфигурация!';
+                    statusClass = 'badge-success';
+                }
             }
 
             return {
@@ -1257,6 +1285,7 @@
                 maxSpeed: maxSpeed,
                 className: className,
                 motorCount: motorCount,
+                isPlane: isPlane,
                 status: status,
                 statusClass: statusClass,
                 costParts: Math.round(costParts),
@@ -1289,7 +1318,7 @@
             configBadge.textContent = p.status;
             configBadge.className = 'badge ' + p.statusClass;
             classBadge.textContent = 'Класс: ' + p.className;
-            motorCountBadge.textContent = p.motorCount + ' мотора';
+            motorCountBadge.textContent = p.motorCount + ' мотора' + (p.motorCount > 1 ? '' : '');
 
             costPartsEl.textContent = p.costParts + ' ₽';
             costFrameEl.textContent = p.costFrame + ' ₽';
@@ -1297,23 +1326,31 @@
             costTotalEl.textContent = p.costTotal + ' ₽';
 
             // Цветовая индикация
-            const items = document.querySelectorAll('.param-item');
             const tw = p.thrustWeight;
             const mass = p.totalMass;
+            const isPlane = p.isPlane;
 
-            const twItem = items[2];
-            if (tw >= 2.5 && tw <= 3.5) twItem.className = 'param-item good';
-            else if (tw >= 2.0 && tw <= 4.0) twItem.className = 'param-item warning';
-            else twItem.className = 'param-item danger';
+            // Тяговооружённость
+            if (isPlane) {
+                if (tw >= 0.35 && tw <= 0.6) twItem.className = 'param-item good';
+                else if (tw >= 0.25 && tw <= 0.8) twItem.className = 'param-item warning';
+                else twItem.className = 'param-item danger';
+            } else {
+                if (tw >= 2.5 && tw <= 3.5) twItem.className = 'param-item good';
+                else if (tw >= 2.0 && tw <= 4.0) twItem.className = 'param-item warning';
+                else twItem.className = 'param-item danger';
+            }
 
-            const massItem = items[0];
-            if (mass < 1000) massItem.className = 'param-item good';
-            else if (mass < 1500) massItem.className = 'param-item warning';
+            // Масса
+            const massLimit = isPlane ? 3000 : 1500;
+            if (mass < massLimit * 0.6) massItem.className = 'param-item good';
+            else if (mass < massLimit) massItem.className = 'param-item warning';
             else massItem.className = 'param-item danger';
 
-            const timeItem = items[3];
-            if (p.flightTime > 15) timeItem.className = 'param-item good';
-            else if (p.flightTime > 8) timeItem.className = 'param-item warning';
+            // Время полёта
+            const timeLimit = isPlane ? 30 : 15;
+            if (p.flightTime > timeLimit) timeItem.className = 'param-item good';
+            else if (p.flightTime > timeLimit * 0.5) timeItem.className = 'param-item warning';
             else timeItem.className = 'param-item danger';
 
             drawPreview(p);
@@ -1337,101 +1374,14 @@
             const scale = Math.min(w, h) / 500;
 
             const type = p.type;
+            const isPlane = p.isPlane;
 
-            if (type.motors === 4) {
-                // Квадрокоптер
-                const armLen = p.frameSize / 2 * scale * 0.8;
-                pCtx.shadowColor = 'rgba(79, 70, 229, 0.2)';
-                pCtx.shadowBlur = 15;
+            pCtx.shadowColor = 'rgba(79, 70, 229, 0.2)';
+            pCtx.shadowBlur = 15;
 
-                // Центр
-                pCtx.fillStyle = 'rgba(148, 163, 184, 0.3)';
-                pCtx.strokeStyle = 'rgba(255,255,255,0.1)';
-                pCtx.lineWidth = 1;
-                pCtx.beginPath();
-                pCtx.arc(cx, cy, 18 * scale, 0, Math.PI * 2);
-                pCtx.fill();
-                pCtx.stroke();
-
-                pCtx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
-                pCtx.lineWidth = 2.5 * scale;
-                const angles = [0, Math.PI/2, Math.PI, 3*Math.PI/2];
-                angles.forEach(a => {
-                    const ex = cx + Math.cos(a) * armLen;
-                    const ey = cy + Math.sin(a) * armLen;
-                    pCtx.beginPath();
-                    pCtx.moveTo(cx + Math.cos(a) * 18 * scale, cy + Math.sin(a) * 18 * scale);
-                    pCtx.lineTo(ex, ey);
-                    pCtx.stroke();
-
-                    pCtx.fillStyle = 'rgba(251, 191, 36, 0.3)';
-                    pCtx.strokeStyle = 'rgba(251, 191, 36, 0.1)';
-                    pCtx.beginPath();
-                    pCtx.arc(ex, ey, 10 * scale, 0, Math.PI * 2);
-                    pCtx.fill();
-                    pCtx.stroke();
-
-                    pCtx.strokeStyle = 'rgba(255,255,255,0.04)';
-                    pCtx.lineWidth = 1.5 * scale;
-                    pCtx.beginPath();
-                    pCtx.arc(ex, ey, 20 * scale, 0, Math.PI * 2);
-                    pCtx.stroke();
-                });
-            } else if (type.motors === 6) {
-                // Гексакоптер
-                const armLen = p.frameSize / 2 * scale * 0.8;
-                pCtx.fillStyle = 'rgba(148, 163, 184, 0.3)';
-                pCtx.beginPath();
-                pCtx.arc(cx, cy, 18 * scale, 0, Math.PI * 2);
-                pCtx.fill();
-
-                pCtx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
-                pCtx.lineWidth = 2.5 * scale;
-                for (let i = 0; i < 6; i++) {
-                    const a = i * Math.PI / 3;
-                    const ex = cx + Math.cos(a) * armLen;
-                    const ey = cy + Math.sin(a) * armLen;
-                    pCtx.beginPath();
-                    pCtx.moveTo(cx + Math.cos(a) * 18 * scale, cy + Math.sin(a) * 18 * scale);
-                    pCtx.lineTo(ex, ey);
-                    pCtx.stroke();
-
-                    pCtx.fillStyle = 'rgba(251, 191, 36, 0.3)';
-                    pCtx.beginPath();
-                    pCtx.arc(ex, ey, 10 * scale, 0, Math.PI * 2);
-                    pCtx.fill();
-                }
-            } else if (type.motors === 8) {
-                // X8
-                const armLen = p.frameSize / 2 * scale * 0.8;
-                pCtx.fillStyle = 'rgba(148, 163, 184, 0.3)';
-                pCtx.beginPath();
-                pCtx.arc(cx, cy, 18 * scale, 0, Math.PI * 2);
-                pCtx.fill();
-
-                pCtx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
-                pCtx.lineWidth = 2.5 * scale;
-                for (let i = 0; i < 8; i++) {
-                    const a = i * Math.PI / 4;
-                    const ex = cx + Math.cos(a) * armLen;
-                    const ey = cy + Math.sin(a) * armLen;
-                    pCtx.beginPath();
-                    pCtx.moveTo(cx + Math.cos(a) * 18 * scale, cy + Math.sin(a) * 18 * scale);
-                    pCtx.lineTo(ex, ey);
-                    pCtx.stroke();
-
-                    pCtx.fillStyle = 'rgba(251, 191, 36, 0.3)';
-                    pCtx.beginPath();
-                    pCtx.arc(ex, ey, 10 * scale, 0, Math.PI * 2);
-                    pCtx.fill();
-                }
-            } else {
+            if (isPlane) {
                 // Самолёт
                 const len = p.frameSize / 3 * scale * 0.8;
-                pCtx.shadowColor = 'rgba(79, 70, 229, 0.2)';
-                pCtx.shadowBlur = 15;
-
-                // Фюзеляж
                 pCtx.fillStyle = 'rgba(148, 163, 184, 0.4)';
                 pCtx.strokeStyle = 'rgba(255,255,255,0.1)';
                 pCtx.lineWidth = 1;
@@ -1447,7 +1397,6 @@
                 pCtx.fill();
                 pCtx.stroke();
 
-                // Крыло
                 pCtx.fillStyle = 'rgba(79, 70, 229, 0.3)';
                 pCtx.strokeStyle = 'rgba(255,255,255,0.05)';
                 pCtx.beginPath();
@@ -1468,13 +1417,11 @@
                 pCtx.fill();
                 pCtx.stroke();
 
-                // Двигатель впереди
                 pCtx.fillStyle = 'rgba(251, 191, 36, 0.3)';
                 pCtx.beginPath();
                 pCtx.arc(cx + len * 0.65, cy, 8 * scale, 0, Math.PI * 2);
                 pCtx.fill();
 
-                // Хвост
                 pCtx.fillStyle = 'rgba(148, 163, 184, 0.2)';
                 pCtx.beginPath();
                 pCtx.moveTo(cx - len * 0.4, cy - 2);
@@ -1491,6 +1438,44 @@
                 pCtx.lineTo(cx - len * 0.42, cy + 3);
                 pCtx.closePath();
                 pCtx.fill();
+
+            } else {
+                // Мультиротор
+                const armLen = p.frameSize / 2 * scale * 0.8;
+                const motorCount = p.motorCount;
+
+                pCtx.fillStyle = 'rgba(148, 163, 184, 0.3)';
+                pCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+                pCtx.lineWidth = 1;
+                pCtx.beginPath();
+                pCtx.arc(cx, cy, 18 * scale, 0, Math.PI * 2);
+                pCtx.fill();
+                pCtx.stroke();
+
+                pCtx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
+                pCtx.lineWidth = 2.5 * scale;
+                for (let i = 0; i < motorCount; i++) {
+                    const a = (i / motorCount) * Math.PI * 2 - Math.PI / 2;
+                    const ex = cx + Math.cos(a) * armLen;
+                    const ey = cy + Math.sin(a) * armLen;
+                    pCtx.beginPath();
+                    pCtx.moveTo(cx + Math.cos(a) * 18 * scale, cy + Math.sin(a) * 18 * scale);
+                    pCtx.lineTo(ex, ey);
+                    pCtx.stroke();
+
+                    pCtx.fillStyle = 'rgba(251, 191, 36, 0.3)';
+                    pCtx.strokeStyle = 'rgba(251, 191, 36, 0.1)';
+                    pCtx.beginPath();
+                    pCtx.arc(ex, ey, 10 * scale, 0, Math.PI * 2);
+                    pCtx.fill();
+                    pCtx.stroke();
+
+                    pCtx.strokeStyle = 'rgba(255,255,255,0.04)';
+                    pCtx.lineWidth = 1.5 * scale;
+                    pCtx.beginPath();
+                    pCtx.arc(ex, ey, 20 * scale, 0, Math.PI * 2);
+                    pCtx.stroke();
+                }
             }
 
             // Информация
@@ -1503,7 +1488,6 @@
             pCtx.fillText(`Тяговооруж.: ${p.thrustWeight.toFixed(2)}`, 10, 52);
             pCtx.fillText(`Полёт: ${p.flightTime.toFixed(1)} мин`, 10, 64);
 
-            // Легенда
             pCtx.fillStyle = 'rgba(255,255,255,0.06)';
             pCtx.fillRect(w - 130, 8, 120, 68);
             pCtx.fillStyle = 'rgba(255,255,255,0.1)';
@@ -1515,7 +1499,6 @@
             pCtx.fillText(`Винты: ${p.prop.name}`, w - 125, 58);
             pCtx.fillText(`Нагрузка: ${p.payload.name}`, w - 125, 68);
 
-            // Маркер центра
             pCtx.fillStyle = 'rgba(79, 70, 229, 0.3)';
             pCtx.beginPath();
             pCtx.arc(cx, cy, 2, 0, Math.PI * 2);
@@ -1540,7 +1523,10 @@
             config.esc = escKeys[Math.floor(Math.random() * escKeys.length)];
             config.prop = propKeys[Math.floor(Math.random() * propKeys.length)];
             config.payload = payloadKeys[Math.floor(Math.random() * payloadKeys.length)];
-            config.frameSize = Math.round(Math.random() * 350 + 150);
+
+            const typeData = DB.configTypes[type];
+            config.frameSize = typeData.defaultFrame + Math.round(Math.random() * 100 - 50);
+
             config.extras = {
                 gps: Math.random() > 0.5,
                 telemetry: Math.random() > 0.7,
@@ -1601,6 +1587,7 @@
         document.getElementById('btnExportBuilder').addEventListener('click', () => {
             const p = calculateParams();
             const extraStr = p.extraNames.length > 0 ? p.extraNames.join(', ') : 'Нет';
+            const typeStr = p.isPlane ? 'Самолёт' : 'Мультиротор';
 
             const text = `
         ═══════════════════════════════════════════════════════════
@@ -1609,6 +1596,7 @@
 
         📐 КОНСТРУКЦИЯ
         ──────────────────────────────────────────────────────────
+        Тип:                  ${typeStr}
         Схема:                ${p.type.name} (${p.motorCount} моторов)
         Полётный контроллер:  ${p.fc.name} (${p.fc.firmware})
         Двигатели:            ${p.motor.name} (${p.motor.kv}kV)
@@ -1650,27 +1638,6 @@
             a.download = 'specification_uav.txt';
             a.click();
             URL.revokeObjectURL(url);
-        });
-
-        document.getElementById('btnCompare').addEventListener('click', () => {
-            // Сохраняем текущую конфигурацию как "эталонную"
-            const current = calculateParams();
-            alert(
-                '📋 Сравнение с рекомендуемыми параметрами:\n\n' +
-                '📊 ВАШ АППАРАТ\n' +
-                `Масса: ${current.totalMass} г\n` +
-                `Тяговооруж.: ${current.thrustWeight.toFixed(2)}\n` +
-                `Время полёта: ${current.flightTime.toFixed(1)} мин\n` +
-                `Стоимость: ${current.costTotal} ₽\n\n` +
-                '🎯 ОПТИМАЛЬНЫЙ ДИАПАЗОН\n' +
-                'Масса: < 1500 г (для класса 250)\n' +
-                'Тяговооруж.: 2.5 — 3.5\n' +
-                'Время полёта: > 10 мин\n' +
-                'Стоимость: < 15000 ₽\n\n' +
-                (current.thrustWeight >= 2.5 && current.thrustWeight <= 3.5 && current.totalMass < 1500 ?
-                    '✅ Ваша конфигурация близка к оптимальной!' :
-                    '⚠️ Рекомендуется скорректировать параметры.')
-            );
         });
 
         // === ИНИЦИАЛИЗАЦИЯ ===
