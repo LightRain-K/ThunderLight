@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThunderLight — Лаборатория БПЛА</title>
+    <title>ThunderLight — Профессиональный Симулятор БПЛА</title>
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Все стили — такие же, как в предыдущей версии */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -25,8 +24,10 @@
             --radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
+        
         body {
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             line-height: 1.7;
@@ -35,38 +36,8 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
-        .cursor-glow {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 0;
-            background: radial-gradient(circle, rgba(79, 70, 229, 0.08), transparent 70%);
-            transform: translate(-50%, -50%);
-            transition: opacity 0.3s;
-        }
-        .particles-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            animation: floatUp linear infinite;
-            opacity: 0;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 0.5; }
-            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-        }
+        
+        /* Прелоадер */
         .preloader {
             position: fixed;
             top: 0;
@@ -81,29 +52,8 @@
             transition: opacity 0.5s, visibility 0.5s;
         }
         .preloader.hidden { opacity: 0; visibility: hidden; }
-        .preloader-logo {
-            font-size: 3em;
-            font-weight: 900;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: preloaderPulse 1.5s infinite;
-            display: block;
-        }
-        .preloader-spinner {
-            width: 40px;
-            height: 40px;
-            margin: 20px auto 0;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes preloaderPulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.95); }
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Навигация */
         .navbar {
             position: fixed;
             top: 0;
@@ -114,298 +64,137 @@
             border-bottom: 1px solid var(--border);
             transition: var(--transition);
         }
-        .navbar.scrolled {
-            background: rgba(2, 6, 23, 0.95);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-        .nav-content {
-            max-width: 1280px;
+        
+        /* Основной контейнер симулятора */
+        .simulator-container {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .nav-logo {
-            font-size: 1.5em;
-            font-weight: 800;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: var(--transition);
-        }
-        .nav-logo:hover { transform: scale(1.05); }
-        .nav-logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            animation: logoGlow 2s infinite;
-        }
-        @keyframes logoGlow {
-            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
-            50% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.6); }
-        }
-        .nav-links {
-            display: flex;
-            gap: 8px;
-            list-style: none;
-            align-items: center;
-        }
-        .nav-links a {
-            color: var(--gray-light);
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: 500;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: var(--transition);
-            position: relative;
-        }
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: var(--primary);
-            transition: var(--transition);
-            transform: translateX(-50%);
-        }
-        .nav-links a:hover::after { width: 60%; }
-        .nav-links a:hover { color: var(--light); }
-        .nav-links a.active {
-            color: var(--light);
-            background: rgba(79, 70, 229, 0.15);
-        }
-        .nav-download {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white !important;
-            padding: 10px 20px !important;
-            border-radius: 10px !important;
-            font-weight: 600 !important;
-            animation: downloadPulse 2s infinite;
-        }
-        .nav-download:hover {
-            transform: translateY(-2px);
-            animation: none;
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
-        }
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: var(--light);
-            font-size: 1.5em;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
-        @keyframes downloadPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-        }
-        .hero {
-            padding: 160px 32px 40px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        .hero-grid-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
-            animation: gridMove 20s linear infinite;
-        }
-        @keyframes gridMove {
-            from { transform: translate(0, 0); }
-            to { transform: translate(60px, 60px); }
-        }
-        .hero-glow {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.15;
-            animation: glowFloat 10s ease-in-out infinite;
-        }
-        .hero-glow-1 { background: var(--primary); top: -200px; left: -100px; }
-        .hero-glow-2 { background: var(--accent); bottom: -200px; right: -100px; animation-delay: -5s; }
-        @keyframes glowFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -30px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-        }
-        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
-        .hero h1 {
-            font-size: 3em;
-            font-weight: 900;
-            line-height: 1.1;
-            margin-bottom: 16px;
-            letter-spacing: -2px;
-        }
-        .hero-gradient {
-            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 5s ease infinite;
-            background-size: 200% 200%;
-        }
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        .hero p {
-            font-size: 1.1em;
-            color: var(--gray-light);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .lab-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 10px 32px 60px;
-        }
-        .lab-grid {
+            padding: 100px 20px 40px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
         }
-        .lab-panel {
+        
+        /* Панель визуализации */
+        .visualization-panel {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 24px;
+            overflow: hidden;
+            position: relative;
         }
-        .lab-panel h3 {
-            font-size: 1.1em;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: linear-gradient(180deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%);
         }
+        
         #simCanvas {
             width: 100%;
-            height: 400px;
-            background: radial-gradient(ellipse at center bottom, rgba(79, 70, 229, 0.08), transparent 70%);
-            border-radius: 12px;
-            border: 1px solid var(--border);
+            height: 100%;
             display: block;
             cursor: crosshair;
         }
-        .slider-group {
-            margin-bottom: 14px;
+        
+        /* HUD оверлей */
+        .hud-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 15px;
+            pointer-events: none;
         }
+        
+        .hud-box {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 15px;
+            backdrop-filter: blur(10px);
+            min-width: 120px;
+        }
+        
+        .hud-label {
+            font-size: 0.7em;
+            color: var(--gray-light);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+        
+        .hud-value {
+            font-size: 1.3em;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        /* Панель управления */
+        .control-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .panel-section {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .panel-section h3 {
+            font-size: 0.9em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #a5b4fc;
+        }
+        
+        /* Слайдеры */
+        .slider-group {
+            margin-bottom: 15px;
+        }
+        
         .slider-group label {
             display: flex;
             justify-content: space-between;
             font-size: 0.85em;
             color: var(--gray-light);
-            margin-bottom: 3px;
+            margin-bottom: 5px;
         }
-        .slider-group label span {
-            color: var(--light);
-            font-weight: 600;
-            font-family: monospace;
-        }
-        input[type="range"] {
+        
+        .slider-group input[type="range"] {
             width: 100%;
-            height: 4px;
+            height: 6px;
             -webkit-appearance: none;
-            background: var(--border);
-            border-radius: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
             outline: none;
         }
-        input[type="range"]::-webkit-slider-thumb {
+        
+        .slider-group input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
-            background: var(--primary);
+            background: white;
             cursor: pointer;
-            transition: var(--transition);
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
         }
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            background: var(--secondary);
-        }
-        input[type="range"]::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: none;
-            background: var(--primary);
-            cursor: pointer;
-        }
-        #chartContainer {
-            width: 100%;
-            height: 140px;
-            position: relative;
-            margin-top: 12px;
-        }
-        #chartCanvas {
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-        .task-box {
-            background: rgba(79, 70, 229, 0.08);
-            border: 1px solid rgba(79, 70, 229, 0.2);
-            border-radius: 12px;
-            padding: 14px 18px;
-            margin-top: 12px;
-        }
-        .task-box .task-title {
-            color: #a5b4fc;
-            font-weight: 600;
-            font-size: 0.85em;
-        }
-        .task-box .task-desc {
-            color: var(--gray-light);
-            font-size: 0.85em;
-            margin: 3px 0 10px;
-        }
-        .task-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 3px 12px;
-            border-radius: 50px;
-            font-size: 0.75em;
-            font-weight: 600;
-        }
-        .task-status.done {
-            background: rgba(16, 185, 129, 0.2);
-            color: var(--success);
-        }
-        .task-status.pending {
-            background: rgba(245, 158, 11, 0.2);
-            color: var(--warning);
-        }
+        
+        /* Кнопки */
         .btn {
-            padding: 8px 20px;
+            padding: 10px 20px;
             border-radius: 10px;
             font-weight: 600;
             font-size: 0.85em;
@@ -415,1075 +204,678 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            width: 100%;
+            justify-content: center;
         }
+        
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
+        
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
         }
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--light);
-        }
-        .btn-outline:hover {
-            border-color: rgba(255,255,255,0.3);
-            background: rgba(255,255,255,0.05);
-        }
-        .btn-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-        }
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
-        }
-        .btn-sm { padding: 4px 14px; font-size: 0.75em; }
-        section { padding: 40px 32px; }
-        .section-container { max-width: 1280px; margin: 0 auto; }
-        .footer {
-            padding: 50px 32px 30px;
-            background: var(--darker);
-            border-top: 1px solid var(--border);
-        }
-        .footer-grid {
-            max-width: 1280px;
-            margin: 0 auto 30px;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 32px;
-        }
-        .footer-col h4 {
-            font-size: 0.8em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--gray);
-            margin-bottom: 16px;
-        }
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 8px; }
-        .footer-col a {
-            color: var(--gray-light);
-            text-decoration: none;
-            font-size: 0.85em;
-            transition: var(--transition);
-        }
-        .footer-col a:hover { color: var(--light); }
-        .footer-brand p {
-            color: var(--gray);
-            font-size: 0.85em;
-            margin: 10px 0 16px;
-            max-width: 300px;
-        }
-        .footer-bottom {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding-top: 20px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .footer-bottom p { color: var(--gray); font-size: 0.75em; }
-        .footer-social {
-            display: flex;
-            gap: 10px;
-        }
-        .footer-social a {
-            width: 32px;
-            height: 32px;
+        
+        /* График */
+        .chart-container {
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 10px;
+            position: relative;
+        }
+        
+        #chartCanvas {
+            width: 100%;
+            height: 150px;
+            display: block;
+        }
+        
+        /* Телеметрия */
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .telemetry-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .telemetry-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .telemetry-label {
+            font-size: 0.7em;
             color: var(--gray-light);
-            text-decoration: none;
-            transition: var(--transition);
+            text-transform: uppercase;
         }
-        .footer-social a:hover {
-            background: rgba(79, 70, 229, 0.2);
-            color: var(--light);
-            transform: translateY(-2px);
-        }
+        
+        /* Адаптивность */
         @media (max-width: 1024px) {
-            .lab-grid { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .simulator-container {
+                grid-template-columns: 1fr;
+            }
         }
+        
         @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .mobile-menu-btn { display: block; }
-            .nav-content { padding: 12px 20px; }
-            .hero { padding: 130px 20px 30px; }
-            .hero h1 { font-size: 2em; }
-            .lab-container { padding: 16px; }
-            .lab-panel { padding: 16px; }
-            #simCanvas { height: 280px; }
-            .footer-grid { grid-template-columns: 1fr; gap: 20px; }
-            .footer { padding: 30px 20px 20px; }
-            .footer-bottom { flex-direction: column; text-align: center; }
-        }
-        @media (max-width: 480px) {
-            .hero h1 { font-size: 1.5em; }
-            .lab-panel h3 { font-size: 0.9em; }
-            .btn { padding: 6px 14px; font-size: 0.75em; }
+            .simulator-container {
+                padding: 80px 10px 20px;
+            }
+            
+            .canvas-container {
+                height: 400px;
+            }
         }
     </style>
 </head>
 <body>
-
-    <div class="cursor-glow" id="cursorGlow"></div>
-    <div class="particles-container" id="particles"></div>
-
+    <!-- Прелоадер -->
     <div class="preloader" id="preloader">
-        <div class="preloader-content">
-            <span class="preloader-logo">⚡ ThunderLight</span>
-            <div class="preloader-spinner"></div>
+        <div style="text-align: center;">
+            <span style="font-size: 3em; font-weight: 900; background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">⚡ ThunderLight</span>
+            <div style="width: 40px; height: 40px; margin: 20px auto; border: 3px solid rgba(255,255,255,0.1); border-top-color: #4f46e5; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
         </div>
     </div>
+    
+    <style>
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
 
-    <nav class="navbar" id="navbar">
-        <div class="nav-content">
-            <a href="/" class="nav-logo">
-                <span class="nav-logo-icon">⚡</span>
-                ThunderLight
-            </a>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="/">Главная</a></li>
-                <li><a href="/projects.html">Проекты</a></li>
-                <li><a href="/articles.html">Статьи</a></li>
-                <li><a href="/uav-project.html">БПЛА</a></li>
-                <li><a href="/lab.html" class="active">Lab</a></li>
-                <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
-            </ul>
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div style="max-width: 1400px; margin: 0 auto; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+            <a href="/" style="font-size: 1.5em; font-weight: 800; background: linear-gradient(135deg, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none;">⚡ ThunderLight</a>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <a href="/" style="color: #94a3b8; text-decoration: none;">Главная</a>
+                <a href="/projects.html" style="color: #94a3b8; text-decoration: none;">Проекты</a>
+                <a href="/articles.html" style="color: #94a3b8; text-decoration: none;">Статьи</a>
+                <a href="/lab.html" style="color: white; text-decoration: none; background: rgba(79, 70, 229, 0.2); padding: 8px 16px; border-radius: 8px;">Симулятор</a>
+            </div>
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="hero-grid-bg"></div>
-        <div class="hero-glow hero-glow-1"></div>
-        <div class="hero-glow hero-glow-2"></div>
-        <div class="hero-content">
-            <h1>🧪 Лаборатория <span class="hero-gradient">ThunderLight</span></h1>
-            <p>Экспериментируй с параметрами полёта, наблюдай за поведением самолёта и выполняй инженерные задания.</p>
-        </div>
-    </section>
-
-    <div class="lab-container">
-        <div class="lab-grid">
-            <div class="lab-panel">
-                <h3>🛩️ Полётная модель</h3>
-                <canvas id="simCanvas" width="600" height="400"></canvas>
+    <!-- Основной контейнер -->
+    <div class="simulator-container">
+        <!-- Визуализация -->
+        <div class="visualization-panel">
+            <div class="canvas-container">
+                <canvas id="simCanvas"></canvas>
                 
-                <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-                    <button class="btn btn-primary" id="btnRun">▶ Запустить</button>
-                    <button class="btn btn-outline" id="btnReset">⟳ Сброс</button>
-                    <button class="btn btn-outline" id="btnPause">⏸ Пауза</button>
+                <!-- HUD -->
+                <div class="hud-overlay">
+                    <div class="hud-box">
+                        <div class="hud-label">Высота</div>
+                        <div class="hud-value" id="hudAltitude">0.0 м</div>
+                    </div>
+                    <div class="hud-box">
+                        <div class="hud-label">Скорость</div>
+                        <div class="hud-value" id="hudSpeed">0.0 м/с</div>
+                    </div>
+                    <div class="hud-box">
+                        <div class="hud-label">Тангаж</div>
+                        <div class="hud-value" id="hudPitch">0.0°</div>
+                    </div>
                 </div>
-
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; font-size:0.8em; color:var(--gray-light);">
-                    <div>Высота: <span id="altitudeDisplay" style="color:var(--light);font-weight:600;">0 м</span></div>
-                    <div>Скорость: <span id="speedDisplay" style="color:var(--light);font-weight:600;">0 м/с</span></div>
-                    <div>Угол тангажа: <span id="pitchDisplay" style="color:var(--light);font-weight:600;">0°</span></div>
-                    <div>Подъёмная сила: <span id="liftDisplay" style="color:var(--light);font-weight:600;">0 Н</span></div>
+                
+                <!-- Индикатор режима -->
+                <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 15px;">
+                    <div style="font-size: 0.7em; color: #94a3b8; text-transform: uppercase;">Режим</div>
+                    <div style="font-size: 1em; font-weight: 700;" id="modeIndicator">ГОТОВ</div>
                 </div>
             </div>
+        </div>
 
-            <div class="lab-panel">
-                <h3>🎛️ Параметры управления</h3>
+        <!-- Панель управления -->
+        <div class="control-panel">
+            <!-- Параметры полёта -->
+            <div class="panel-section">
+                <h3>🎛️ Параметры полёта</h3>
                 
                 <div class="slider-group">
-                    <label>Скорость <span id="speedVal">18 м/с</span></label>
+                    <label>Скорость <span id="speedVal" style="color: #00ff88;">18 м/с</span></label>
                     <input type="range" id="speedSlider" min="5" max="40" value="18" step="0.5">
                 </div>
+                
                 <div class="slider-group">
-                    <label>Угол атаки <span id="aoaVal">4°</span></label>
+                    <label>Угол атаки <span id="aoaVal" style="color: #00ff88;">4°</span></label>
                     <input type="range" id="aoaSlider" min="-5" max="20" value="4" step="0.5">
                 </div>
+                
                 <div class="slider-group">
-                    <label>Масса <span id="massVal">850 г</span></label>
+                    <label>Масса <span id="massVal" style="color: #00ff88;">850 г</span></label>
                     <input type="range" id="massSlider" min="300" max="1500" value="850" step="10">
                 </div>
+                
                 <div class="slider-group">
-                    <label>Центр тяжести <span id="cgVal">32%</span></label>
+                    <label>Центр тяжести <span id="cgVal" style="color: #00ff88;">32%</span></label>
                     <input type="range" id="cgSlider" min="20" max="45" value="32" step="0.5">
                 </div>
-
-                <div id="chartContainer">
-                    <canvas id="chartCanvas" width="500" height="140"></canvas>
-                </div>
-                <div style="display:flex;justify-content:space-between;font-size:0.6em;color:var(--gray);margin-top:2px;">
-                    <span>Высота</span>
-                    <span>Время</span>
-                </div>
-            </div>
-        </div>
-
-        <div style="margin-top:20px;">
-            <div class="lab-panel" style="margin-bottom:12px;">
-                <h3>📋 Лабораторные задания</h3>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:12px;">
-                    <div class="task-box">
-                        <div class="task-title">Задание №1 — Устойчивость</div>
-                        <div class="task-desc">Найди устойчивую конфигурацию: высота &gt; 5 м, скорость 10-30 м/с, угол атаки 0-12°.</div>
-                        <span class="task-status pending" id="task1Status">⏳ Не выполнено</span>
-                        <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask1()">Проверить</button>
-                    </div>
-                    <div class="task-box">
-                        <div class="task-title">Задание №2 — Максимальная высота</div>
-                        <div class="task-desc">При скорости 15 м/с добейся высоты &gt; 15 м.</div>
-                        <span class="task-status pending" id="task2Status">⏳ Не выполнено</span>
-                        <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask2()">Проверить</button>
-                    </div>
-                    <div class="task-box">
-                        <div class="task-title">Задание №3 — Балансировка</div>
-                        <div class="task-desc">Центровка 28-38%, угол тангажа &lt; 5°.</div>
-                        <span class="task-status pending" id="task3Status">⏳ Не выполнено</span>
-                        <button class="btn btn-outline btn-sm" style="margin-top:6px;" onclick="checkTask3()">Проверить</button>
-                    </div>
+                
+                <div class="slider-group">
+                    <label>Ветер <span id="windVal" style="color: #00ff88;">0 м/с</span></label>
+                    <input type="range" id="windSlider" min="-10" max="10" value="0" step="0.5">
                 </div>
             </div>
 
-            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-                <button class="btn btn-success btn-sm" onclick="resetAllTasks()">🔄 Сбросить все задания</button>
-                <button class="btn btn-outline btn-sm" onclick="exportData()">📊 Экспорт данных</button>
+            <!-- Управление -->
+            <div class="panel-section">
+                <h3>🎮 Управление</h3>
+                <div style="display: grid; gap: 10px;">
+                    <button class="btn btn-primary" id="btnRun">▶ ЗАПУСК</button>
+                    <button class="btn" id="btnPause" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b;">⏸ ПАУЗА</button>
+                    <button class="btn" id="btnReset" style="background: rgba(239, 68, 68, 0.2); color: #ef4444;">⟳ СБРОС</button>
+                </div>
+            </div>
+
+            <!-- Телеметрия -->
+            <div class="panel-section">
+                <h3>📊 Телеметрия</h3>
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="telLift" style="color: #00ff88;">0 Н</div>
+                        <div class="telemetry-label">Подъёмная сила</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="telDrag" style="color: #ff6b6b;">0 Н</div>
+                        <div class="telemetry-label">Сопротивление</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="telThrust" style="color: #ffd93d;">0 Н</div>
+                        <div class="telemetry-label">Тяга</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="telemetry-value" id="telAccel" style="color: #6bcfff;">0 м/с²</div>
+                        <div class="telemetry-label">Ускорение</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- График -->
+            <div class="panel-section">
+                <h3>📈 Профиль полёта</h3>
+                <div class="chart-container">
+                    <canvas id="chartCanvas"></canvas>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-col footer-brand">
-                <a href="/" class="nav-logo">
-                    <span class="nav-logo-icon">⚡</span>
-                    ThunderLight
-                </a>
-                <p>Образовательная экосистема БПЛА. Экспериментируй, учись, создавай.</p>
-            </div>
-            <div class="footer-col">
-                <h4>Экосистема</h4>
-                <ul>
-                    <li><a href="/articles.html">Academy</a></li>
-                    <li><a href="/lab.html">Lab</a></li>
-                    <li><a href="#" onclick="alert('В разработке'); return false;">Simulator</a></li>
-                    <li><a href="#" onclick="alert('В разработке'); return false;">Builder</a></li>
-                    <li><a href="/article.html?file=vrd-flight-controller.md">VRD FC</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Документы</h4>
-                <ul>
-                    <li><a href="/privacy.html">Конфиденциальность</a></li>
-                    <li><a href="/terms.html">Условия использования</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Контакты</h4>
-                <ul>
-                    <li><a href="https://t.me/thunderlight_online" target="_blank">Telegram</a></li>
-                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
-                    <li><a href="https://github.com/LightRain-K/ThunderLight/" target="_blank">GitHub</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
-            <div class="footer-social">
-                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
-                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
-                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
-            </div>
-        </div>
-    </footer>
-
     <script>
-        // ============================================================
-        // ФИНАЛЬНАЯ ИСПРАВЛЕННАЯ СИМУЛЯЦИЯ
-        // Камера ПРАВИЛЬНО двигается: при подъёме — вверх, при снижении — вниз
-        // ============================================================
+        // ============================================
+        // ПРОФЕССИОНАЛЬНЫЙ СИМУЛЯТОР БПЛА
+        // ============================================
 
-        const canvas = document.getElementById('simCanvas');
-        const ctx = canvas.getContext('2d');
-        const chartCanvas = document.getElementById('chartCanvas');
-        const chartCtx = chartCanvas.getContext('2d');
-
-        const W = 600, H = 400;
-        canvas.width = W; canvas.height = H;
-
-        // Параметры
-        let params = {
-            speed: 18,
-            aoa: 4,
-            mass: 850,
-            cg: 32,
-        };
-
-        // Состояние
-        let state = {
-            altitude: 5,
-            pitch: 0,
-            verticalSpeed: 0,
-            horizontalSpeed: 18,
-            time: 0,
-            running: false,
-            paused: false,
-            history: [],
-            lift: 0,
-            weight: 0,
-            drag: 0,
-            thrust: 0,
-            // Камера: смещение по Y (положительное = вниз, отрицательное = вверх)
-            cameraY: 0,
-        };
-
-        const G = 9.81;
-        const RHO = 1.225;
-        const WING_AREA = 0.5;
-        const MAX_HISTORY = 100;
-
-        // ============================================================
-        // ФИЗИКА
-        // ============================================================
-
-        function calculatePhysics(dt) {
-            dt = Math.min(dt, 0.03);
-
-            const speed = params.speed;
-            const aoaRad = params.aoa * Math.PI / 180;
-            const mass = params.mass / 1000;
-
-            // Подъёмная сила
-            const cl = 2 * Math.PI * aoaRad;
-            const lift = 0.5 * RHO * speed * speed * WING_AREA * Math.max(cl, -1);
-            state.lift = lift;
-
-            const weight = mass * G;
-            state.weight = weight;
-
-            // Сопротивление
-            const cd = 0.04 + 0.08 * Math.abs(aoaRad);
-            const drag = 0.5 * RHO * speed * speed * WING_AREA * cd;
-            state.drag = drag;
-
-            // Тяга
-            const thrust = drag + 0.1 * mass * G;
-            state.thrust = thrust;
-
-            // Вертикальное ускорение
-            const liftForce = lift - weight;
-            const verticalAccel = liftForce / mass;
-
-            state.verticalSpeed += verticalAccel * dt;
-            state.altitude += state.verticalSpeed * dt;
-
-            // Ограничение — не уходим ниже земли
-            if (state.altitude < 0.3) {
-                state.altitude = 0.3;
-                if (state.verticalSpeed < 0) state.verticalSpeed = 0;
+        class FlightSimulator {
+            constructor() {
+                this.canvas = document.getElementById('simCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.chartCanvas = document.getElementById('chartCanvas');
+                this.chartCtx = this.chartCanvas.getContext('2d');
+                
+                // Параметры
+                this.params = {
+                    speed: 18,
+                    aoa: 4,
+                    mass: 850,
+                    cg: 32,
+                    wind: 0
+                };
+                
+                // Состояние
+                this.state = {
+                    altitude: 0,
+                    velocity: 0,
+                    acceleration: 0,
+                    pitch: 0,
+                    time: 0,
+                    running: false,
+                    paused: false,
+                    history: [],
+                    lift: 0,
+                    drag: 0,
+                    thrust: 0,
+                    weight: 0,
+                    cameraOffset: 0
+                };
+                
+                // Физические константы
+                this.constants = {
+                    g: 9.81,
+                    rho: 1.225,
+                    wingArea: 0.5,
+                    clMax: 1.5,
+                    cd0: 0.04,
+                    k: 0.08
+                };
+                
+                this.init();
             }
-
-            // Угол тангажа
-            const cg = params.cg / 100;
-            const pitchTarget = params.aoa * 0.5 + (cg - 0.32) * 20;
-            state.pitch += (pitchTarget - state.pitch) * dt * 1.5;
-            state.pitch = Math.max(-20, Math.min(20, state.pitch));
-
-            state.horizontalSpeed = speed;
-
-            state.history.push({
-                altitude: state.altitude,
-                time: state.time,
-                pitch: state.pitch,
-                lift: lift,
-            });
-            if (state.history.length > MAX_HISTORY) state.history.shift();
-
-            state.time += dt;
-        }
-
-        // ============================================================
-        // РИСУЕМ САМОЛЁТ
-        // ============================================================
-
-        function drawAirplane(cx, cy, pitch, scale) {
-            ctx.save();
-            ctx.translate(cx, cy);
-            ctx.rotate(pitch * Math.PI / 180);
-            ctx.scale(scale, scale);
-
-            ctx.shadowColor = 'rgba(79, 70, 229, 0.2)';
-            ctx.shadowBlur = 25;
-
-            // Фюзеляж
-            ctx.beginPath();
-            ctx.moveTo(50, 0);
-            ctx.quadraticCurveTo(70, -6, 58, -10);
-            ctx.lineTo(-32, -7);
-            ctx.lineTo(-42, -1);
-            ctx.lineTo(-42, 1);
-            ctx.lineTo(-32, 7);
-            ctx.lineTo(58, 10);
-            ctx.quadraticCurveTo(70, 6, 50, 0);
-            ctx.closePath();
-            const fuselageGrad = ctx.createLinearGradient(-40, 0, 70, 0);
-            fuselageGrad.addColorStop(0, 'rgba(100, 116, 139, 0.5)');
-            fuselageGrad.addColorStop(0.3, 'rgba(148, 163, 184, 0.7)');
-            fuselageGrad.addColorStop(1, 'rgba(100, 116, 139, 0.6)');
-            ctx.fillStyle = fuselageGrad;
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-
-            // Крыло верхнее
-            ctx.shadowBlur = 20;
-            ctx.shadowColor = 'rgba(99, 102, 241, 0.2)';
-            ctx.beginPath();
-            ctx.moveTo(8, -4);
-            ctx.quadraticCurveTo(-2, -38, -24, -34);
-            ctx.lineTo(-30, -28);
-            ctx.lineTo(-8, -6);
-            ctx.closePath();
-            const wingGrad1 = ctx.createLinearGradient(10, -30, -20, -5);
-            wingGrad1.addColorStop(0, 'rgba(79, 70, 229, 0.7)');
-            wingGrad1.addColorStop(1, 'rgba(79, 70, 229, 0.3)');
-            ctx.fillStyle = wingGrad1;
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-
-            // Крыло нижнее
-            ctx.beginPath();
-            ctx.moveTo(8, 4);
-            ctx.quadraticCurveTo(-2, 38, -24, 34);
-            ctx.lineTo(-30, 28);
-            ctx.lineTo(-8, 6);
-            ctx.closePath();
-            const wingGrad2 = ctx.createLinearGradient(10, 30, -20, 5);
-            wingGrad2.addColorStop(0, 'rgba(79, 70, 229, 0.7)');
-            wingGrad2.addColorStop(1, 'rgba(79, 70, 229, 0.3)');
-            ctx.fillStyle = wingGrad2;
-            ctx.fill();
-            ctx.stroke();
-
-            // Элероны
-            ctx.shadowBlur = 10;
-            ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
-            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(-20, -28);
-            ctx.lineTo(-28, -26);
-            ctx.lineTo(-28, -20);
-            ctx.lineTo(-18, -22);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(-20, 28);
-            ctx.lineTo(-28, 26);
-            ctx.lineTo(-28, 20);
-            ctx.lineTo(-18, 22);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            // Хвост
-            ctx.shadowBlur = 15;
-            ctx.fillStyle = 'rgba(100, 116, 139, 0.5)';
-            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.moveTo(-32, -1);
-            ctx.lineTo(-48, -16);
-            ctx.lineTo(-44, -13);
-            ctx.lineTo(-34, -2);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(-32, 1);
-            ctx.lineTo(-48, 16);
-            ctx.lineTo(-44, 13);
-            ctx.lineTo(-34, 2);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            // Кабина
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = 'rgba(6, 182, 212, 0.15)';
-            ctx.fillStyle = 'rgba(6, 182, 212, 0.2)';
-            ctx.strokeStyle = 'rgba(6, 182, 212, 0.15)';
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.ellipse(28, -1, 12, 5, 0.05, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            ctx.fillStyle = 'rgba(6, 182, 212, 0.1)';
-            ctx.beginPath();
-            ctx.ellipse(32, -1, 6, 3, 0.05, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Винт
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = 'rgba(255,255,255,0.05)';
-            const propAngle = state.running ? Date.now() / 60 : 0;
-            ctx.save();
-            ctx.translate(58, 0);
-            ctx.rotate(propAngle);
-            ctx.fillStyle = 'rgba(255,255,255,0.3)';
-            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-            ctx.lineWidth = 0.5;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, 12, 2, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.ellipse(0, 0, 2, 12, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.stroke();
-            ctx.fillStyle = 'rgba(255,255,255,0.15)';
-            ctx.beginPath();
-            ctx.arc(0, 0, 2, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
-
-            ctx.restore();
-        }
-
-        // ============================================================
-        // ОТРИСОВКА СЦЕНЫ — КАМЕРА ПРАВИЛЬНО ДВИГАЕТСЯ
-        // ============================================================
-
-        function drawScene() {
-            ctx.clearRect(0, 0, W, H);
-
-            // Небо
-            const grad = ctx.createLinearGradient(0, 0, 0, H);
-            grad.addColorStop(0, '#0a0e27');
-            grad.addColorStop(0.5, '#1a1a3e');
-            grad.addColorStop(0.85, '#2d1b4e');
-            grad.addColorStop(1, '#1a0f2a');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, W, H);
-
-            // === КАМЕРА ===
-            // Целевое смещение: при altitude=0 камера на месте, при росте высоты — уходит ВВЕРХ (отрицательное)
-            // но в координатах canvas "вверх" — это уменьшение Y
-            const targetCamY = -state.altitude * 2.0;
-            state.cameraY += (targetCamY - state.cameraY) * 0.06;
-
-            // Ограничиваем, чтобы камера не улетела слишком далеко
-            const camY = Math.max(-250, Math.min(50, state.cameraY));
-
-            // === ЗЕМЛЯ ===
-            // Базовое положение земли — 72% экрана
-            const baseGroundY = H * 0.72;
-            // Земля смещается ВНИЗ (увеличиваем Y) при подъёме камеры
-            // camY отрицательное => groundY уменьшается => земля поднимается
-            // Это правильное поведение: при наборе высоты земля уходит вниз
-            const groundY = baseGroundY + camY;
-
-            // Закрашиваем землю
-            ctx.fillStyle = 'rgba(34, 197, 94, 0.08)';
-            ctx.fillRect(0, groundY, W, H - groundY);
-
-            // Линия горизонта
-            ctx.strokeStyle = 'rgba(34, 197, 94, 0.2)';
-            ctx.lineWidth = 1;
-            ctx.setLineDash([6, 8]);
-            ctx.beginPath();
-            ctx.moveTo(0, groundY);
-            ctx.lineTo(W, groundY);
-            ctx.stroke();
-            ctx.setLineDash([]);
-
-            // Трава
-            ctx.strokeStyle = 'rgba(34, 197, 94, 0.05)';
-            ctx.lineWidth = 1;
-            for (let i = 0; i < W; i += 12) {
-                const h = 3 + Math.sin(i * 0.5 + state.time * 2) * 2;
-                ctx.beginPath();
-                ctx.moveTo(i, groundY);
-                ctx.lineTo(i + 2, groundY - h);
-                ctx.stroke();
+            
+            init() {
+                this.resizeCanvas();
+                this.setupEventListeners();
+                this.animate();
             }
-
-            // Облака (на разных высотах, смещаются вместе с камерой)
-            ctx.fillStyle = 'rgba(255,255,255,0.03)';
-            for (let i = 0; i < 5; i++) {
-                const cx = (i * 130 + state.time * 2.5) % (W + 100) - 50;
-                // Облака двигаются вместе с камерой, но медленнее (эффект параллакса)
-                const cloudY = 30 + i * 35 + Math.sin(i * 2 + state.time * 0.2) * 15 + camY * 0.15;
-                if (cloudY > 0 && cloudY < H - 30) {
-                    ctx.beginPath();
-                    ctx.arc(cx, cloudY, 40 + i * 5, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.arc(cx + 35, cloudY + 5, 30 + i * 3, 0, Math.PI * 2);
-                    ctx.fill();
+            
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+                
+                this.chartCanvas.width = this.chartCanvas.parentElement.clientWidth;
+                this.chartCanvas.height = 150;
+            }
+            
+            setupEventListeners() {
+                // Кнопки
+                document.getElementById('btnRun').addEventListener('click', () => this.toggleRun());
+                document.getElementById('btnPause').addEventListener('click', () => this.togglePause());
+                document.getElementById('btnReset').addEventListener('click', () => this.reset());
+                
+                // Слайдеры
+                const sliders = [
+                    { id: 'speedSlider', valId: 'speedVal', param: 'speed', unit: ' м/с' },
+                    { id: 'aoaSlider', valId: 'aoaVal', param: 'aoa', unit: '°' },
+                    { id: 'massSlider', valId: 'massVal', param: 'mass', unit: ' г' },
+                    { id: 'cgSlider', valId: 'cgVal', param: 'cg', unit: '%' },
+                    { id: 'windSlider', valId: 'windVal', param: 'wind', unit: ' м/с' }
+                ];
+                
+                sliders.forEach(({ id, valId, param, unit }) => {
+                    const slider = document.getElementById(id);
+                    slider.addEventListener('input', () => {
+                        this.params[param] = parseFloat(slider.value);
+                        document.getElementById(valId).textContent = slider.value + unit;
+                    });
+                });
+                
+                // Ресайз
+                window.addEventListener('resize', () => this.resizeCanvas());
+            }
+            
+            toggleRun() {
+                if (!this.state.running) {
+                    this.state.running = true;
+                    this.state.paused = false;
+                    document.getElementById('btnRun').textContent = '⏹ ОСТАНОВИТЬ';
+                    document.getElementById('modeIndicator').textContent = 'ПОЛЁТ';
+                    document.getElementById('modeIndicator').style.color = '#00ff88';
+                    
+                    if (this.state.history.length === 0) {
+                        this.state.altitude = 0.5;
+                        this.state.velocity = 0;
+                    }
+                } else {
+                    this.state.running = false;
+                    document.getElementById('btnRun').textContent = '▶ ЗАПУСК';
+                    document.getElementById('modeIndicator').textContent = 'ГОТОВ';
+                    document.getElementById('modeIndicator').style.color = '#94a3b8';
                 }
             }
-
-            // === САМОЛЁТ (всегда в центре экрана) ===
-            const planeX = W / 2;
-            const planeY = H / 2 - 10;
-
-            // Конденсационный след
-            if (state.running && state.altitude > 3) {
-                ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            
+            togglePause() {
+                if (this.state.running) {
+                    this.state.paused = !this.state.paused;
+                    document.getElementById('btnPause').textContent = this.state.paused ? '▶ ПРОДОЛЖИТЬ' : '⏸ ПАУЗА';
+                    document.getElementById('modeIndicator').textContent = this.state.paused ? 'ПАУЗА' : 'ПОЛЁТ';
+                    document.getElementById('modeIndicator').style.color = this.state.paused ? '#ffd93d' : '#00ff88';
+                }
+            }
+            
+            reset() {
+                this.state = {
+                    altitude: 0,
+                    velocity: 0,
+                    acceleration: 0,
+                    pitch: 0,
+                    time: 0,
+                    running: false,
+                    paused: false,
+                    history: [],
+                    lift: 0,
+                    drag: 0,
+                    thrust: 0,
+                    weight: 0,
+                    cameraOffset: 0
+                };
+                
+                document.getElementById('btnRun').textContent = '▶ ЗАПУСК';
+                document.getElementById('btnPause').textContent = '⏸ ПАУЗА';
+                document.getElementById('modeIndicator').textContent = 'ГОТОВ';
+                document.getElementById('modeIndicator').style.color = '#94a3b8';
+                
+                this.updateDisplays();
+            }
+            
+            updatePhysics(dt) {
+                const { g, rho, wingArea, clMax, cd0, k } = this.constants;
+                const mass = this.params.mass / 1000; // в кг
+                const speed = this.params.speed + this.params.wind;
+                const aoaRad = this.params.aoa * Math.PI / 180;
+                
+                // Аэродинамические коэффициенты
+                const cl = Math.min(2 * Math.PI * aoaRad, clMax);
+                const cd = cd0 + k * Math.abs(aoaRad);
+                
+                // Силы
+                this.state.lift = 0.5 * rho * speed * speed * wingArea * cl;
+                this.state.drag = 0.5 * rho * speed * speed * wingArea * cd;
+                this.state.weight = mass * g;
+                this.state.thrust = this.state.drag + 0.15 * this.state.weight;
+                
+                // Ускорение
+                const netForce = this.state.lift - this.state.weight;
+                this.state.acceleration = netForce / mass;
+                
+                // Интеграция
+                this.state.velocity += this.state.acceleration * dt;
+                this.state.altitude += this.state.velocity * dt;
+                
+                // Ограничения
+                if (this.state.altitude < 0) {
+                    this.state.altitude = 0;
+                    if (this.state.velocity < 0) this.state.velocity = 0;
+                }
+                
+                // Угол тангажа
+                const cg = this.params.cg / 100;
+                const targetPitch = this.params.aoa * 0.7 + (cg - 0.32) * 30;
+                this.state.pitch += (targetPitch - this.state.pitch) * dt * 2;
+                this.state.pitch = Math.max(-30, Math.min(30, this.state.pitch));
+                
+                // История
+                this.state.history.push({
+                    altitude: this.state.altitude,
+                    time: this.state.time,
+                    pitch: this.state.pitch,
+                    lift: this.state.lift,
+                    velocity: this.state.velocity
+                });
+                
+                if (this.state.history.length > 200) {
+                    this.state.history.shift();
+                }
+                
+                this.state.time += dt;
+            }
+            
+            draw() {
+                const { ctx, canvas, state } = this;
+                const W = canvas.width;
+                const H = canvas.height;
+                
+                // Очистка
+                ctx.clearRect(0, 0, W, H);
+                
+                // Небо
+                const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+                skyGrad.addColorStop(0, '#0a0e27');
+                skyGrad.addColorStop(0.3, '#1a1a3e');
+                skyGrad.addColorStop(0.6, '#2d1b4e');
+                skyGrad.addColorStop(1, '#1a0f2a');
+                ctx.fillStyle = skyGrad;
+                ctx.fillRect(0, 0, W, H);
+                
+                // Звёзды
+                if (state.altitude > 10) {
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                    for (let i = 0; i < 20; i++) {
+                        const x = (i * 137) % W;
+                        const y = (i * 89) % (H * 0.5);
+                        ctx.fillRect(x, y, 1, 1);
+                    }
+                }
+                
+                // Обновление камеры
+                const targetCameraOffset = -state.altitude * 3;
+                state.cameraOffset += (targetCameraOffset - state.cameraOffset) * 0.1;
+                
+                // Земля
+                const groundY = H * 0.75 + state.cameraOffset;
+                ctx.fillStyle = 'rgba(34, 197, 94, 0.15)';
+                ctx.fillRect(0, groundY, W, H - groundY);
+                
+                // Горизонт
+                ctx.strokeStyle = 'rgba(34, 197, 94, 0.3)';
                 ctx.lineWidth = 2;
-                ctx.setLineDash([4, 8]);
                 ctx.beginPath();
-                ctx.moveTo(planeX - 60, planeY + 2);
-                ctx.lineTo(planeX - 160, planeY + 2 + Math.sin(state.time * 0.5) * 3);
+                ctx.moveTo(0, groundY);
+                ctx.lineTo(W, groundY);
+                ctx.stroke();
+                
+                // Самолёт
+                const planeX = W / 2;
+                const planeY = H / 2;
+                this.drawAirplane(planeX, planeY, state.pitch);
+                
+                // Векторы сил
+                if (state.running && !state.paused) {
+                    this.drawForceVectors(planeX, planeY);
+                }
+                
+                // Индикаторы на канвасе
+                this.drawCanvasIndicators();
+            }
+            
+            drawAirplane(x, y, pitch) {
+                const { ctx } = this;
+                
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(pitch * Math.PI / 180);
+                
+                // Фюзеляж
+                ctx.beginPath();
+                ctx.moveTo(60, 0);
+                ctx.quadraticCurveTo(80, -8, 70, -12);
+                ctx.lineTo(-40, -9);
+                ctx.lineTo(-50, -2);
+                ctx.lineTo(-50, 2);
+                ctx.lineTo(-40, 9);
+                ctx.lineTo(70, 12);
+                ctx.quadraticCurveTo(80, 8, 60, 0);
+                ctx.closePath();
+                
+                const fuselageGrad = ctx.createLinearGradient(-50, 0, 80, 0);
+                fuselageGrad.addColorStop(0, '#64748b');
+                fuselageGrad.addColorStop(0.5, '#94a3b8');
+                fuselageGrad.addColorStop(1, '#64748b');
+                ctx.fillStyle = fuselageGrad;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // Крылья
+                ctx.fillStyle = '#4f46e5';
+                ctx.beginPath();
+                ctx.moveTo(10, -5);
+                ctx.quadraticCurveTo(0, -50, -30, -45);
+                ctx.lineTo(-38, -38);
+                ctx.lineTo(-10, -8);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.moveTo(10, 5);
+                ctx.quadraticCurveTo(0, 50, -30, 45);
+                ctx.lineTo(-38, 38);
+                ctx.lineTo(-10, 8);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Хвост
+                ctx.fillStyle = '#7c3aed';
+                ctx.beginPath();
+                ctx.moveTo(-40, -2);
+                ctx.lineTo(-55, -20);
+                ctx.lineTo(-50, -17);
+                ctx.lineTo(-42, -3);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.moveTo(-40, 2);
+                ctx.lineTo(-55, 20);
+                ctx.lineTo(-50, 17);
+                ctx.lineTo(-42, 3);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Кабина
+                ctx.fillStyle = '#06b6d4';
+                ctx.beginPath();
+                ctx.ellipse(35, 0, 15, 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+            
+            drawForceVectors(x, y) {
+                const { ctx, state } = this;
+                const scale = 2;
+                
+                // Подъёмная сила
+                ctx.strokeStyle = '#00ff88';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(x + 30, y);
+                ctx.lineTo(x + 30, y - state.lift * scale);
                 ctx.stroke();
                 ctx.setLineDash([]);
-            }
-
-            // Масштаб самолёта
-            const scale = 0.8 + Math.min(state.altitude / 150, 0.2);
-            drawAirplane(planeX, planeY, state.pitch, scale);
-
-            // === ВЕКТОРЫ СИЛ ===
-            if (state.running) {
-                const liftScale = Math.min(state.lift / 20, 1);
-                const weightScale = Math.min(state.weight / 20, 1);
-
-                ctx.strokeStyle = 'rgba(34, 197, 94, 0.4)';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([3, 5]);
-                ctx.beginPath();
-                ctx.moveTo(planeX + 30, planeY);
-                ctx.lineTo(planeX + 30, planeY - 30 - liftScale * 20);
-                ctx.stroke();
-                ctx.fillStyle = 'rgba(34, 197, 94, 0.4)';
-                ctx.font = '9px monospace';
-                ctx.fillText('Lift', planeX + 34, planeY - 30 - liftScale * 20);
-
-                ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([3, 5]);
-                ctx.beginPath();
-                ctx.moveTo(planeX - 30, planeY);
-                ctx.lineTo(planeX - 30, planeY + 30 + weightScale * 20);
-                ctx.stroke();
-                ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
-                ctx.fillText('Weight', planeX - 48, planeY + 30 + weightScale * 20);
-                ctx.setLineDash([]);
-
-                ctx.strokeStyle = 'rgba(251, 191, 36, 0.4)';
+                
+                // Вес
+                ctx.strokeStyle = '#ff6b6b';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(planeX + 60, planeY);
-                ctx.lineTo(planeX + 90, planeY);
+                ctx.moveTo(x - 30, y);
+                ctx.lineTo(x - 30, y + state.weight * scale);
                 ctx.stroke();
-                ctx.fillStyle = 'rgba(251, 191, 36, 0.4)';
-                ctx.fillText('Thrust', planeX + 92, planeY + 4);
+                
+                // Тяга
+                ctx.strokeStyle = '#ffd93d';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x + 50, y);
+                ctx.lineTo(x + 50 + state.thrust * scale, y);
+                ctx.stroke();
             }
-
-            // === ИНДИКАТОРЫ ===
-            // Фон для индикаторов
-            ctx.fillStyle = 'rgba(0,0,0,0.5)';
-            ctx.roundRect(10, 10, 130, 44, 8);
-            ctx.fill();
-
-            ctx.fillStyle = 'rgba(255,255,255,0.2)';
-            ctx.font = '10px monospace';
-            ctx.fillText(`ALT ${state.altitude.toFixed(1)} m`, 16, 28);
-            ctx.fillText(`SPD ${state.horizontalSpeed.toFixed(1)} m/s`, 16, 44);
-
-            // Индикатор состояния
-            const statusText = state.running ? (state.paused ? '⏸ PAUSED' : '▶ RUNNING') : '⏹ STOPPED';
-            ctx.fillStyle = state.running ? (state.paused ? 'rgba(245,158,11,0.3)' : 'rgba(16,185,129,0.3)') : 'rgba(100,116,139,0.2)';
-            ctx.roundRect(W - 95, 10, 85, 24, 8);
-            ctx.fill();
-            ctx.fillStyle = state.running ? (state.paused ? '#f59e0b' : '#10b981') : '#64748b';
-            ctx.font = '9px monospace';
-            ctx.fillText(statusText, W - 88, 27);
-
-            // Маленькая стрелка направления камеры
-            ctx.fillStyle = 'rgba(255,255,255,0.1)';
-            ctx.font = '8px monospace';
-            const camDir = camY < -5 ? '▲' : (camY > 5 ? '▼' : '—');
-            ctx.fillText(`Cam ${camDir}`, 16, 64);
-        }
-
-        // ============================================================
-        // ГРАФИК
-        // ============================================================
-
-        function drawChart() {
-            const w = chartCanvas.width;
-            const h = chartCanvas.height;
-            chartCtx.clearRect(0, 0, w, h);
-
-            if (state.history.length < 2) {
-                chartCtx.fillStyle = 'rgba(255,255,255,0.05)';
-                chartCtx.font = '10px monospace';
-                chartCtx.fillText('Запустите симуляцию', w/2 - 60, h/2 + 4);
-                return;
+            
+            drawCanvasIndicators() {
+                const { ctx, canvas } = this;
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(10, 10, 200, 80);
+                
+                ctx.fillStyle = '#00ff88';
+                ctx.font = '12px monospace';
+                ctx.fillText(`Высота: ${this.state.altitude.toFixed(1)} м`, 20, 30);
+                ctx.fillText(`Скорость: ${(this.params.speed + this.params.wind).toFixed(1)} м/с`, 20, 50);
+                ctx.fillText(`Тангаж: ${this.state.pitch.toFixed(1)}°`, 20, 70);
             }
-
-            const data = state.history;
-            const maxAlt = Math.max(10, ...data.map(d => d.altitude)) * 1.2;
-
-            chartCtx.strokeStyle = 'rgba(255,255,255,0.03)';
-            chartCtx.lineWidth = 0.5;
-            for (let i = 0; i < 4; i++) {
-                const y = (i / 4) * h;
+            
+            drawChart() {
+                const { chartCtx, chartCanvas, state } = this;
+                const W = chartCanvas.width;
+                const H = chartCanvas.height;
+                
+                chartCtx.clearRect(0, 0, W, H);
+                
+                if (state.history.length < 2) return;
+                
+                // Сетка
+                chartCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+                chartCtx.lineWidth = 1;
+                for (let i = 0; i < 5; i++) {
+                    const y = (i / 4) * H;
+                    chartCtx.beginPath();
+                    chartCtx.moveTo(0, y);
+                    chartCtx.lineTo(W, y);
+                    chartCtx.stroke();
+                }
+                
+                // График высоты
+                const maxAlt = Math.max(...state.history.map(d => d.altitude)) * 1.1;
+                
+                chartCtx.strokeStyle = '#00ff88';
+                chartCtx.lineWidth = 2;
                 chartCtx.beginPath();
-                chartCtx.moveTo(0, y);
-                chartCtx.lineTo(w, y);
+                
+                state.history.forEach((d, i) => {
+                    const x = (i / (state.history.length - 1)) * W;
+                    const y = H - (d.altitude / maxAlt) * (H - 20) - 10;
+                    
+                    if (i === 0) {
+                        chartCtx.moveTo(x, y);
+                    } else {
+                        chartCtx.lineTo(x, y);
+                    }
+                });
+                
                 chartCtx.stroke();
+                
+                // Заполнение
+                chartCtx.lineTo(W, H);
+                chartCtx.lineTo(0, H);
+                chartCtx.closePath();
+                chartCtx.fillStyle = 'rgba(0, 255, 136, 0.1)';
+                chartCtx.fill();
+                
+                // Метки
+                chartCtx.fillStyle = '#94a3b8';
+                chartCtx.font = '10px monospace';
+                chartCtx.fillText(`${maxAlt.toFixed(1)} м`, 5, 15);
+                chartCtx.fillText('0 м', 5, H - 5);
             }
-
-            chartCtx.strokeStyle = 'rgba(34, 197, 94, 0.7)';
-            chartCtx.lineWidth = 2;
-            chartCtx.beginPath();
-            for (let i = 0; i < data.length; i++) {
-                const x = (i / data.length) * w;
-                const y = h - (data[i].altitude / maxAlt) * h * 0.85 - 5;
-                if (i === 0) chartCtx.moveTo(x, y);
-                else chartCtx.lineTo(x, y);
+            
+            updateDisplays() {
+                // HUD
+                document.getElementById('hudAltitude').textContent = this.state.altitude.toFixed(1) + ' м';
+                document.getElementById('hudSpeed').textContent = (this.params.speed + this.params.wind).toFixed(1) + ' м/с';
+                document.getElementById('hudPitch').textContent = this.state.pitch.toFixed(1) + '°';
+                
+                // Телеметрия
+                document.getElementById('telLift').textContent = this.state.lift.toFixed(1) + ' Н';
+                document.getElementById('telDrag').textContent = this.state.drag.toFixed(1) + ' Н';
+                document.getElementById('telThrust').textContent = this.state.thrust.toFixed(1) + ' Н';
+                document.getElementById('telAccel').textContent = this.state.acceleration.toFixed(2) + ' м/с²';
             }
-            chartCtx.stroke();
-
-            const lastX = w;
-            const lastY = h - (data[data.length - 1].altitude / maxAlt) * h * 0.85 - 5;
-            chartCtx.lineTo(lastX, h);
-            chartCtx.lineTo(0, h);
-            chartCtx.closePath();
-            chartCtx.fillStyle = 'rgba(34, 197, 94, 0.05)';
-            chartCtx.fill();
-
-            chartCtx.fillStyle = 'rgba(34, 197, 94, 0.8)';
-            chartCtx.beginPath();
-            chartCtx.arc(lastX - 3, lastY, 3, 0, Math.PI * 2);
-            chartCtx.fill();
-
-            chartCtx.fillStyle = 'rgba(255,255,255,0.15)';
-            chartCtx.font = '7px monospace';
-            chartCtx.fillText(maxAlt.toFixed(0) + 'm', 2, 10);
-            chartCtx.fillText('0m', 2, h - 2);
-        }
-
-        // ============================================================
-        // ЦИКЛ
-        // ============================================================
-
-        let lastTime = 0;
-
-        function loop(timestamp) {
-            if (lastTime === 0) lastTime = timestamp;
-            let delta = (timestamp - lastTime) / 1000;
-            lastTime = timestamp;
-
-            if (state.running && !state.paused) {
-                calculatePhysics(delta);
-                drawScene();
-                drawChart();
-                updateDisplays();
-                checkTasksAuto();
-            } else if (!state.running) {
-                drawScene();
-                drawChart();
-            } else {
-                drawScene();
-            }
-
-            requestAnimationFrame(loop);
-        }
-
-        function updateDisplays() {
-            altitudeDisplay.textContent = state.altitude.toFixed(1) + ' м';
-            speedDisplay.textContent = state.horizontalSpeed.toFixed(1) + ' м/с';
-            pitchDisplay.textContent = state.pitch.toFixed(1) + '°';
-            liftDisplay.textContent = state.lift.toFixed(1) + ' Н';
-        }
-
-        // ============================================================
-        // УПРАВЛЕНИЕ
-        // ============================================================
-
-        const altitudeDisplay = document.getElementById('altitudeDisplay');
-        const speedDisplay = document.getElementById('speedDisplay');
-        const pitchDisplay = document.getElementById('pitchDisplay');
-        const liftDisplay = document.getElementById('liftDisplay');
-
-        document.getElementById('btnRun').addEventListener('click', () => {
-            if (!state.running) {
-                state.running = true;
-                state.paused = false;
-                document.getElementById('btnRun').textContent = '▶ Запущено';
-                document.getElementById('btnRun').style.opacity = '0.7';
-                if (state.history.length === 0) {
-                    state.altitude = 0.5;
-                    state.verticalSpeed = 0;
-                    state.horizontalSpeed = params.speed;
-                    state.pitch = 0;
-                    state.cameraY = 0;
-                }
-            } else if (state.paused) {
-                state.paused = false;
-                document.getElementById('btnPause').textContent = '⏸ Пауза';
-            }
-        });
-
-        document.getElementById('btnPause').addEventListener('click', () => {
-            if (state.running) {
-                state.paused = !state.paused;
-                document.getElementById('btnPause').textContent = state.paused ? '▶ Продолжить' : '⏸ Пауза';
-            }
-        });
-
-        document.getElementById('btnReset').addEventListener('click', () => {
-            state.running = false;
-            state.paused = false;
-            state.altitude = 0.5;
-            state.verticalSpeed = 0;
-            state.horizontalSpeed = params.speed;
-            state.pitch = 0;
-            state.history = [];
-            state.time = 0;
-            state.cameraY = 0;
-            document.getElementById('btnRun').textContent = '▶ Запустить';
-            document.getElementById('btnRun').style.opacity = '1';
-            document.getElementById('btnPause').textContent = '⏸ Пауза';
-            drawScene();
-            drawChart();
-            updateDisplays();
-        });
-
-        // Слайдеры
-        document.getElementById('speedSlider').addEventListener('input', function() {
-            params.speed = parseFloat(this.value);
-            document.getElementById('speedVal').textContent = params.speed + ' м/с';
-            if (!state.running) {
-                state.horizontalSpeed = params.speed;
-                drawScene();
-            }
-        });
-
-        document.getElementById('aoaSlider').addEventListener('input', function() {
-            params.aoa = parseFloat(this.value);
-            document.getElementById('aoaVal').textContent = params.aoa + '°';
-            if (!state.running) drawScene();
-        });
-
-        document.getElementById('massSlider').addEventListener('input', function() {
-            params.mass = parseFloat(this.value);
-            document.getElementById('massVal').textContent = params.mass + ' г';
-            if (!state.running) drawScene();
-        });
-
-        document.getElementById('cgSlider').addEventListener('input', function() {
-            params.cg = parseFloat(this.value);
-            document.getElementById('cgVal').textContent = params.cg + '%';
-            if (!state.running) drawScene();
-        });
-
-        // ============================================================
-        // ЗАДАНИЯ
-        // ============================================================
-
-        let tasks = { task1: false, task2: false, task3: false };
-
-        function checkTask1() {
-            const alt = state.altitude;
-            const speed = params.speed;
-            const aoa = params.aoa;
-            if (alt > 5 && speed > 10 && speed < 30 && aoa > 0 && aoa < 12) {
-                tasks.task1 = true;
-                document.getElementById('task1Status').textContent = '✅ Выполнено!';
-                document.getElementById('task1Status').className = 'task-status done';
-            } else {
-                alert('❌ Не выполнено. Попробуй: скорость 15-25 м/с, угол атаки 2-8°, набери высоту > 5 м.');
+            
+            animate() {
+                const loop = (timestamp) => {
+                    if (this.state.running && !this.state.paused) {
+                        const dt = 0.016; // ~60 FPS
+                        this.updatePhysics(dt);
+                    }
+                    
+                    this.draw();
+                    this.drawChart();
+                    this.updateDisplays();
+                    
+                    requestAnimationFrame(loop);
+                };
+                
+                requestAnimationFrame(loop);
             }
         }
-
-        function checkTask2() {
-            const alt = state.altitude;
-            const speed = params.speed;
-            if (alt > 15 && speed >= 14 && speed <= 16) {
-                tasks.task2 = true;
-                document.getElementById('task2Status').textContent = '✅ Выполнено!';
-                document.getElementById('task2Status').className = 'task-status done';
-            } else {
-                alert('❌ Не выполнено. Установи скорость 15 м/с, набери высоту > 15 м.');
-            }
-        }
-
-        function checkTask3() {
-            const pitch = state.pitch;
-            const cg = params.cg;
-            if (Math.abs(pitch) < 5 && cg > 28 && cg < 38) {
-                tasks.task3 = true;
-                document.getElementById('task3Status').textContent = '✅ Выполнено!';
-                document.getElementById('task3Status').className = 'task-status done';
-            } else {
-                alert('❌ Не выполнено. Настрой центровку 28-38% и добейся угла тангажа < 5°.');
-            }
-        }
-
-        function checkTasksAuto() {
-            const alt = state.altitude;
-            const speed = params.speed;
-            const aoa = params.aoa;
-            const pitch = state.pitch;
-            const cg = params.cg;
-
-            if (!tasks.task1 && alt > 5 && speed > 10 && speed < 30 && aoa > 0 && aoa < 12) {
-                tasks.task1 = true;
-                document.getElementById('task1Status').textContent = '✅ Выполнено!';
-                document.getElementById('task1Status').className = 'task-status done';
-            }
-            if (!tasks.task2 && alt > 15 && speed >= 14 && speed <= 16) {
-                tasks.task2 = true;
-                document.getElementById('task2Status').textContent = '✅ Выполнено!';
-                document.getElementById('task2Status').className = 'task-status done';
-            }
-            if (!tasks.task3 && Math.abs(pitch) < 5 && cg > 28 && cg < 38) {
-                tasks.task3 = true;
-                document.getElementById('task3Status').textContent = '✅ Выполнено!';
-                document.getElementById('task3Status').className = 'task-status done';
-            }
-        }
-
-        function resetAllTasks() {
-            tasks = { task1: false, task2: false, task3: false };
-            document.querySelectorAll('.task-status').forEach(el => {
-                el.textContent = '⏳ Не выполнено';
-                el.className = 'task-status pending';
-            });
-            document.getElementById('btnReset').click();
-        }
-
-        function exportData() {
-            if (state.history.length === 0) {
-                alert('Нет данных для экспорта. Запусти симуляцию.');
-                return;
-            }
-            let csv = 'Время,Высота,Скорость,Угол тангажа,Подъёмная сила\n';
-            state.history.forEach(d => {
-                csv += `${d.time.toFixed(2)},${d.altitude.toFixed(2)},${params.speed.toFixed(2)},${d.pitch.toFixed(2)},${d.lift.toFixed(2)}\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'flight_data.csv';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // ============================================================
-        // ИНИЦИАЛИЗАЦИЯ
-        // ============================================================
-
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-                if (typeof r === 'number') r = [r, r, r, r];
-                const [tl, tr, br, bl] = r;
-                this.moveTo(x + tl, y);
-                this.lineTo(x + w - tr, y);
-                this.quadraticCurveTo(x + w, y, x + w, y + tr);
-                this.lineTo(x + w, y + h - br);
-                this.quadraticCurveTo(x + w, y + h, x + w - br, y + h);
-                this.lineTo(x + bl, y + h);
-                this.quadraticCurveTo(x, y + h, x, y + h - bl);
-                this.lineTo(x, y + tl);
-                this.quadraticCurveTo(x, y, x + tl, y);
-                this.closePath();
-                return this;
-            };
-        }
-
+        
+        // Инициализация
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
-            }, 600);
-            drawScene();
-            drawChart();
-            updateDisplays();
+            }, 500);
+            
+            const simulator = new FlightSimulator();
         });
-
-        const cursorGlow = document.getElementById('cursorGlow');
-        document.addEventListener('mousemove', (e) => {
-            cursorGlow.style.left = e.clientX + 'px';
-            cursorGlow.style.top = e.clientY + 'px';
-        });
-
-        function createParticles() {
-            const container = document.getElementById('particles');
-            const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
-            for (let i = 0; i < 20; i++) {
-                const p = document.createElement('div');
-                p.classList.add('particle');
-                const size = Math.random() * 3 + 1;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.background = colors[Math.floor(Math.random() * colors.length)];
-                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
-                p.style.animationDelay = Math.random() * 15 + 's';
-                container.appendChild(p);
-            }
-        }
-        createParticles();
-
-        window.addEventListener('scroll', () => {
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
-        });
-
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
-        let menuOpen = false;
-
-        mobileMenuBtn.addEventListener('click', () => {
-            menuOpen = !menuOpen;
-            if (menuOpen) {
-                navLinks.style.display = 'flex';
-                navLinks.style.flexDirection = 'column';
-                navLinks.style.position = 'absolute';
-                navLinks.style.top = '100%';
-                navLinks.style.left = '0';
-                navLinks.style.width = '100%';
-                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
-                navLinks.style.padding = '20px 32px';
-                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-                mobileMenuBtn.textContent = '✕';
-            } else {
-                navLinks.style.display = 'none';
-                mobileMenuBtn.textContent = '☰';
-            }
-        });
-
-        navLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (menuOpen) {
-                    menuOpen = false;
-                    navLinks.style.display = 'none';
-                    mobileMenuBtn.textContent = '☰';
-                }
-            });
-        });
-
-        requestAnimationFrame(loop);
-
-        if (window.location.hash) {
-            window.scrollTo(0, 0);
-            history.pushState("", document.title, window.location.pathname + window.location.search);
-        }
     </script>
-
 </body>
 </html>
