@@ -10,6 +10,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
+        /* Все ваши стили остаются без изменений */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -617,6 +618,8 @@
             <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="/" class="active">Главная</a></li>
+                <!-- ⬇️ НОВАЯ ССЫЛКА НА ACADEMY ⬇️ -->
+                <li><a href="/articles/">Academy</a></li>
                 <li><a href="/uav-project.html">БПЛА</a></li>
                 <li><a href="/lab.html">Lab</a></li>
                 <li><a href="/simulator.html">Simulator</a></li>
@@ -642,6 +645,7 @@
             <p>ThunderLight — это открытая образовательная среда, где ты можешь изучить основы Python, Arduino, схемотехники и управления БПЛА.</p>
             <div class="hero-buttons">
                 <a href="#courses" class="btn btn-primary">🎓 Начать обучение</a>
+                <a href="/articles/" class="btn btn-outline">📖 Перейти в Academy</a>
                 <a href="/uav-project.html" class="btn btn-outline">🚀 Перейти к БПЛА</a>
             </div>
         </div>
@@ -667,8 +671,9 @@
             </div>
 
             <div class="course-grid">
+                <!-- ⬇️ ВСЕ ССЫЛКИ ВЕДУТ НА /articles/ ⬇️ -->
                 <!-- Python -->
-                <a href="/articles.html?course=python" class="course-card">
+                <a href="/articles/" class="course-card">
                     <span class="badge-new">Новый</span>
                     <span class="icon">🐍</span>
                     <h3>Python для инженеров</h3>
@@ -682,7 +687,7 @@
                 </a>
 
                 <!-- Arduino -->
-                <a href="/articles.html?course=arduino" class="course-card">
+                <a href="/articles/" class="course-card">
                     <span class="badge-new">Новый</span>
                     <span class="icon">⚡</span>
                     <h3>Arduino для начинающих</h3>
@@ -696,7 +701,7 @@
                 </a>
 
                 <!-- Электроника -->
-                <a href="/articles.html?course=electronics" class="course-card">
+                <a href="/articles/" class="course-card">
                     <span class="icon">🔌</span>
                     <h3>Основы электроники</h3>
                     <p>Закон Ома, схемы, компоненты. Чтение принципиальных схем и пайка.</p>
@@ -709,7 +714,7 @@
                 </a>
 
                 <!-- БПЛА -->
-                <a href="/uav-project.html" class="course-card">
+                <a href="/articles/" class="course-card">
                     <span class="icon">✈️</span>
                     <h3>Введение в БПЛА</h3>
                     <p>Устройство и управление дронами. ПИД-регуляторы, телеметрия, полётные контроллеры.</p>
@@ -722,7 +727,7 @@
                 </a>
 
                 <!-- ПИД -->
-                <a href="/simulator.html" class="course-card">
+                <a href="/articles/" class="course-card">
                     <span class="icon">🎯</span>
                     <h3>ПИД-регуляторы на практике</h3>
                     <p>Теория и настройка ПИД-регулятора в симуляторе. Отладка коэффициентов.</p>
@@ -735,7 +740,7 @@
                 </a>
 
                 <!-- Программирование дронов -->
-                <a href="/drone-sim.html" class="course-card">
+                <a href="/articles/" class="course-card">
                     <span class="icon">💻</span>
                     <h3>Программирование дронов</h3>
                     <p>Пиши код на Python, управляй виртуальным дроном. Взлёт, маршруты, миссии.</p>
@@ -760,7 +765,8 @@
             </div>
 
             <div class="ecosystem-grid">
-                <a href="/articles.html" class="eco-link">
+                <!-- ⬇️ ИСПРАВЛЕННАЯ ССЫЛКА НА ACADEMY ⬇️ -->
+                <a href="/articles/" class="eco-link">
                     <span class="icon">📖</span>
                     <span class="name">Academy</span>
                     <span class="desc">Уроки и теория</span>
@@ -842,6 +848,7 @@
                 </p>
                 <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
                     <a href="#courses" class="btn btn-primary">🎓 Выбрать курс</a>
+                    <a href="/articles/" class="btn btn-outline">📖 Перейти в Academy</a>
                     <a href="https://github.com/LightRain-K/ThunderLight" target="_blank" class="btn btn-outline">
                         <i class="fab fa-github"></i> GitHub
                     </a>
@@ -863,7 +870,8 @@
             <div class="footer-col">
                 <h4>Экосистема</h4>
                 <ul>
-                    <li><a href="/articles.html">Academy</a></li>
+                    <!-- ⬇️ ИСПРАВЛЕННАЯ ССЫЛКА НА ACADEMY ⬇️ -->
+                    <li><a href="/articles/">Academy</a></li>
                     <li><a href="/lab.html">Lab</a></li>
                     <li><a href="/simulator.html">Simulator</a></li>
                     <li><a href="/builder.html">Builder</a></li>
@@ -898,21 +906,19 @@
     </footer>
 
     <script>
-        // Предзагрузчик
+        // Все ваши скрипты остаются без изменений
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
             }, 600);
         });
 
-        // Курсор
         const cursorGlow = document.getElementById('cursorGlow');
         document.addEventListener('mousemove', (e) => {
             cursorGlow.style.left = e.clientX + 'px';
             cursorGlow.style.top = e.clientY + 'px';
         });
 
-        // Частицы
         function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
@@ -931,12 +937,10 @@
         }
         createParticles();
 
-        // Навбар
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
 
-        // Мобильное меню
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const navLinks = document.getElementById('navLinks');
         let menuOpen = false;
@@ -970,7 +974,6 @@
             });
         });
 
-        // Анимация появления
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -987,7 +990,6 @@
             observer.observe(el);
         });
 
-        // Убираем якорь из URL
         if (window.location.hash) {
             window.scrollTo(0, 0);
             history.pushState("", document.title, window.location.pathname + window.location.search);
