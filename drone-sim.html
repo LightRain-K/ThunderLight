@@ -682,46 +682,28 @@ def on_start():
 
     <script>
         // ================================================================
-        // ПРОФЕССИОНАЛЬНЫЙ СИМУЛЯТОР С РЕАЛИСТИЧНОЙ ФИЗИКОЙ
+        // СИМУЛЯТОР С ИСПРАВЛЕННОЙ СИСТЕМОЙ ДВИЖЕНИЯ
         // ================================================================
 
         let scene, camera, renderer, droneGroup, propellers = [];
         let gridHelper, trajectoryLine;
 
         const droneState = {
-    x: 0, y: 0, z: 0,
-    vx: 0, vy: 0, vz: 0,
-    targetX: 0, targetY: 0, targetZ: 0,
-    tiltX: 0, tiltZ: 0,
-    flying: false,
-    hovering: false,
-    battery: 100,
-    path: [],
-    propAngle: 0,
-    propSpeed: 0,
-    time: 0,
-    // Упрощенные PID состояния
-    pidIntegrals: { x: 0, y: 0, z: 0 },
-    lastErrors: { x: 0, y: 0, z: 0 },
-    // Флаг достижения цели
-    reachedTarget: false
-};
-
-        const dronePhysics = {
-    mass: 1.0,
-    maxSpeed: 2.5,          // Умеренная скорость
-    maxAcceleration: 4.0,   // Достаточное ускорение
-    gravity: 9.81,
-    dragCoefficient: 0.5,   // Сильное демпфирование
-    // Мягкие PID коэффициенты для точности
-    pidX: { kp: 3.0, ki: 0.0, kd: 2.0 },
-    pidY: { kp: 4.0, ki: 0.0, kd: 2.5 },
-    pidZ: { kp: 3.0, ki: 0.0, kd: 2.0 },
-    // Порог достижения цели
-    positionThreshold: 0.15,
-    // Ветер (отключен для точности)
-    wind: { x: 0, y: 0, z: 0, gustiness: 0 }
-};
+            x: 0, y: 0, z: 0,
+            targetX: 0, targetY: 0, targetZ: 0,
+            flying: false,
+            hovering: false,
+            battery: 100,
+            path: [],
+            propAngle: 0,
+            propSpeed: 0,
+            time: 0,
+            moveStartX: 0, moveStartY: 0, moveStartZ: 0,
+            moveProgress: 1,
+            moveDuration: 2,
+            isMoving: false,
+            tiltX: 0, tiltZ: 0
+        };
 
         const missions = {
             takeoff: {
@@ -888,37 +870,25 @@ def on_start():
         function createBeautifulDrone() {
             droneGroup = new THREE.Group();
             
-            // Карбоновая рама
             const frameGeometry = new THREE.BoxGeometry(0.6, 0.08, 0.6);
             const frameMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0x1a1a1a,
-                metalness: 0.8,
-                roughness: 0.2
+                color: 0x1a1a1a, metalness: 0.8, roughness: 0.2 
             });
             const frame = new THREE.Mesh(frameGeometry, frameMaterial);
             frame.castShadow = true;
-            frame.receiveShadow = true;
             droneGroup.add(frame);
             
-            // Обтекатель
             const domeGeometry = new THREE.SphereGeometry(0.25, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
             const domeMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0x4f46e5,
-                metalness: 0.5,
-                roughness: 0.3,
-                shininess: 100
+                color: 0x4f46e5, metalness: 0.5, roughness: 0.3 
             });
             const dome = new THREE.Mesh(domeGeometry, domeMaterial);
             dome.position.y = 0.05;
-            dome.castShadow = true;
             droneGroup.add(dome);
             
-            // Лучи
             const armGeometry = new THREE.CylinderGeometry(0.03, 0.04, 0.9, 12);
             const armMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0x2a2a2a,
-                metalness: 0.7,
-                roughness: 0.3
+                color: 0x2a2a2a, metalness: 0.7, roughness: 0.3 
             });
             
             const armPositions = [
@@ -932,16 +902,12 @@ def on_start():
                 const arm = new THREE.Mesh(armGeometry, armMaterial);
                 arm.position.set(pos.x, 0, pos.z);
                 arm.rotation.z = pos.rotZ;
-                arm.castShadow = true;
                 droneGroup.add(arm);
             });
             
-            // Моторы
             const motorGeometry = new THREE.CylinderGeometry(0.1, 0.11, 0.1, 16);
             const motorMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0x444444,
-                metalness: 0.9,
-                roughness: 0.1
+                color: 0x444444, metalness: 0.9, roughness: 0.1 
             });
             
             const motorPositions = [
@@ -954,11 +920,9 @@ def on_start():
             motorPositions.forEach(pos => {
                 const motor = new THREE.Mesh(motorGeometry, motorMaterial);
                 motor.position.set(pos.x, 0.07, pos.z);
-                motor.castShadow = true;
                 droneGroup.add(motor);
             });
             
-            // Пропеллеры
             motorPositions.forEach((pos, index) => {
                 const propGroup = new THREE.Group();
                 
@@ -966,24 +930,16 @@ def on_start():
                     const bladeGeometry = new THREE.BoxGeometry(0.5, 0.01, 0.1);
                     const bladeMaterial = new THREE.MeshPhongMaterial({ 
                         color: index % 2 === 0 ? 0xcccccc : 0x999999,
-                        metalness: 0.3,
-                        roughness: 0.5,
-                        transparent: true,
-                        opacity: 0.8
+                        transparent: true, opacity: 0.8
                     });
                     const blade = new THREE.Mesh(bladeGeometry, bladeMaterial);
                     blade.rotation.x = i === 0 ? 0 : Math.PI;
                     blade.position.x = i === 0 ? 0.25 : -0.25;
-                    blade.castShadow = true;
                     propGroup.add(blade);
                 }
                 
                 const hubGeometry = new THREE.CylinderGeometry(0.04, 0.04, 0.04, 8);
-                const hubMaterial = new THREE.MeshPhongMaterial({ 
-                    color: 0x333333,
-                    metalness: 0.9,
-                    roughness: 0.1
-                });
+                const hubMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 });
                 const hub = new THREE.Mesh(hubGeometry, hubMaterial);
                 propGroup.add(hub);
                 
@@ -992,18 +948,14 @@ def on_start():
                 droneGroup.add(propGroup);
             });
             
-            // Камера
             const cameraGeometry = new THREE.SphereGeometry(0.07, 16, 16);
             const cameraMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0x06b6d4,
-                emissive: 0x06b6d4,
-                emissiveIntensity: 0.4
+                color: 0x06b6d4, emissive: 0x06b6d4, emissiveIntensity: 0.4 
             });
             const cameraMesh = new THREE.Mesh(cameraGeometry, cameraMaterial);
             cameraMesh.position.set(0, -0.08, 0.3);
             droneGroup.add(cameraMesh);
             
-            // Светодиоды
             const ledPositions = [
                 { x: 0.5, z: 0.5, color: 0xff0000 },
                 { x: -0.5, z: 0.5, color: 0x00ff00 },
@@ -1014,9 +966,7 @@ def on_start():
             ledPositions.forEach(pos => {
                 const ledGeometry = new THREE.SphereGeometry(0.025, 8, 8);
                 const ledMaterial = new THREE.MeshPhongMaterial({ 
-                    color: pos.color,
-                    emissive: pos.color,
-                    emissiveIntensity: 1.0
+                    color: pos.color, emissive: pos.color, emissiveIntensity: 1.0 
                 });
                 const led = new THREE.Mesh(ledGeometry, ledMaterial);
                 led.position.set(pos.x, 0.02, pos.z);
@@ -1026,135 +976,69 @@ def on_start():
             scene.add(droneGroup);
         }
 
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        function startMoveTo(targetX, targetY, targetZ, duration = 2) {
+            droneState.moveStartX = droneState.x;
+            droneState.moveStartY = droneState.y;
+            droneState.moveStartZ = droneState.z;
+            droneState.targetX = targetX;
+            droneState.targetY = targetY;
+            droneState.targetZ = targetZ;
+            droneState.moveProgress = 0;
+            droneState.moveDuration = duration;
+            droneState.isMoving = true;
+        }
+
+        function waitForMove() {
+            return new Promise(resolve => {
+                const checkInterval = setInterval(() => {
+                    if (!droneState.isMoving) {
+                        clearInterval(checkInterval);
+                        setTimeout(resolve, 300);
+                    }
+                }, 50);
+            });
+        }
+
         function updatePhysics(dt) {
-    if (!droneState.flying && !droneState.hovering) return;
-    
-    // Ошибки по осям
-    const errorX = droneState.targetX - droneState.x;
-    const errorY = droneState.targetY - droneState.y;
-    const errorZ = droneState.targetZ - droneState.z;
-    
-    // Проверка достижения цели
-    const distanceToTarget = Math.sqrt(errorX * errorX + errorY * errorY + errorZ * errorZ);
-    droneState.reachedTarget = distanceToTarget < dronePhysics.positionThreshold;
-    
-    // Если цель достигнута, останавливаемся
-    if (droneState.reachedTarget) {
-        droneState.vx *= 0.9; // Плавное замедление
-        droneState.vy *= 0.9;
-        droneState.vz *= 0.9;
-        
-        if (Math.abs(droneState.vx) < 0.01) droneState.vx = 0;
-        if (Math.abs(droneState.vy) < 0.01) droneState.vy = 0;
-        if (Math.abs(droneState.vz) < 0.01) droneState.vz = 0;
-        
-        // Точная установка позиции
-        droneState.x = droneState.targetX;
-        droneState.y = droneState.targetY;
-        droneState.z = droneState.targetZ;
-        
-        // Обновление пропеллеров для зависания
-        droneState.propSpeed = 30;
-        droneState.propAngle += droneState.propSpeed * dt;
-        
-        return;
-    }
-    
-    // PID управление
-    const controlX = calculatePID('x', errorX, dt);
-    const controlY = calculatePID('y', errorY, dt);
-    const controlZ = calculatePID('z', errorZ, dt);
-    
-    // Гравитация (компенсируется при полёте)
-    const gravityCompensation = droneState.flying ? dronePhysics.gravity : 0;
-    
-    // Ускорения (без ограничения для точности)
-    let accelX = controlX;
-    let accelY = controlY + gravityCompensation;
-    let accelZ = controlZ;
-    
-    // Демпфирование (критическое для точности)
-    const damping = dronePhysics.dragCoefficient;
-    accelX -= damping * droneState.vx;
-    accelY -= damping * droneState.vy;
-    accelZ -= damping * droneState.vz;
-    
-    // Обновление скорости
-    droneState.vx += accelX * dt;
-    droneState.vy += accelY * dt;
-    droneState.vz += accelZ * dt;
-    
-    // Ограничение максимальной скорости
-    const currentSpeed = Math.sqrt(droneState.vx * droneState.vx + droneState.vy * droneState.vy + droneState.vz * droneState.vz);
-    if (currentSpeed > dronePhysics.maxSpeed) {
-        const scale = dronePhysics.maxSpeed / currentSpeed;
-        droneState.vx *= scale;
-        droneState.vy *= scale;
-        droneState.vz *= scale;
-    }
-    
-    // Обновление позиции
-    droneState.x += droneState.vx * dt;
-    droneState.y += droneState.vy * dt;
-    droneState.z += droneState.vz * dt;
-    
-    // Ограничение высоты
-    if (droneState.y < 0) {
-        droneState.y = 0;
-        droneState.vy = 0;
-    }
-    
-    // Границы
-    const boundary = 10;
-    if (Math.abs(droneState.x) > boundary) {
-        droneState.x = Math.sign(droneState.x) * boundary;
-        droneState.vx = 0;
-    }
-    if (Math.abs(droneState.z) > boundary) {
-        droneState.z = Math.sign(droneState.z) * boundary;
-        droneState.vz = 0;
-    }
-    
-    // Батарея
-    droneState.battery -= 0.2 * dt;
-    if (droneState.battery < 0) droneState.battery = 0;
-    
-    // Пропеллеры
-    const targetPropSpeed = droneState.flying ? 
-        40 + Math.abs(droneState.vy) * 5 : 30;
-    
-    droneState.propSpeed += (targetPropSpeed - droneState.propSpeed) * dt * 3;
-    droneState.propAngle += droneState.propSpeed * dt;
-    
-    // Наклон дрона
-    const tiltX = -droneState.vz * 0.03;
-    const tiltZ = droneState.vx * 0.03;
-    droneState.tiltX += (tiltX - droneState.tiltX) * dt * 5;
-    droneState.tiltZ += (tiltZ - droneState.tiltZ) * dt * 5;
-    
-    droneState.time += dt;
-}
-
-function calculatePID(axis, error, dt) {
-    const pid = dronePhysics['pid' + axis.toUpperCase()];
-    
-    // Пропорциональная составляющая
-    const P = pid.kp * error;
-    
-    // Интегральная (отключена для точности)
-    const I = 0;
-    
-    // Дифференциальная (с ограничением)
-    const derivative = (error - droneState.lastErrors[axis]) / dt;
-    const D = pid.kd * derivative;
-    
-    // Обновление lastError
-    droneState.lastErrors[axis] = error;
-    
-    return P + I + D;
-}
-
-        
+            if (!droneState.flying && !droneState.hovering) return;
+            
+            if (droneState.isMoving) {
+                droneState.moveProgress += dt / droneState.moveDuration;
+                
+                if (droneState.moveProgress >= 1) {
+                    droneState.moveProgress = 1;
+                    droneState.x = droneState.targetX;
+                    droneState.y = droneState.targetY;
+                    droneState.z = droneState.targetZ;
+                    droneState.isMoving = false;
+                } else {
+                    const t = easeInOutCubic(droneState.moveProgress);
+                    droneState.x = droneState.moveStartX + (droneState.targetX - droneState.moveStartX) * t;
+                    droneState.y = droneState.moveStartY + (droneState.targetY - droneState.moveStartY) * t;
+                    droneState.z = droneState.moveStartZ + (droneState.targetZ - droneState.moveStartZ) * t;
+                }
+            }
+            
+            const targetPropSpeed = droneState.flying || droneState.hovering ? 40 : 0;
+            droneState.propSpeed += (targetPropSpeed - droneState.propSpeed) * dt * 5;
+            droneState.propAngle += droneState.propSpeed * dt;
+            
+            if (droneState.flying || droneState.hovering) {
+                droneState.battery -= 0.1 * dt;
+                if (droneState.battery < 0) droneState.battery = 0;
+            }
+            
+            if (droneState.flying || droneState.hovering) {
+                droneState.path.push({ x: droneState.x, y: droneState.y, z: droneState.z });
+                if (droneState.path.length > 500) droneState.path.shift();
+            }
+            
+            droneState.time += dt;
+        }
 
         function parseCode(code) {
             const commands = [];
@@ -1171,6 +1055,7 @@ function calculatePID(axis, error, dt) {
                 }
                 
                 if (!inFunction) continue;
+                if (trimmed === '' || trimmed.startsWith('#')) continue;
                 
                 if (trimmed.startsWith('for ')) {
                     const forMatch = trimmed.match(/for\s+\w+\s+in\s+range\((\d+)\)/);
@@ -1189,7 +1074,7 @@ function calculatePID(axis, error, dt) {
                             }
                             
                             const indent = bodyLine.length - bodyTrimmed.length;
-                            if (indent <= 4 && bodyTrimmed !== '') {
+                            if (indent < 4) {
                                 i--;
                                 break;
                             }
@@ -1198,15 +1083,7 @@ function calculatePID(axis, error, dt) {
                                 const match = bodyTrimmed.match(/drone\.(\w+)\(([^)]*)\)/);
                                 if (match) {
                                     const cmd = match[1];
-                                    const args = match[2].split(',').map(a => {
-                                        a = a.trim();
-                                        if (a === '') return 0;
-                                        try {
-                                            return eval(a.replace(/math\./g, 'Math.'));
-                                        } catch {
-                                            return parseFloat(a) || 0;
-                                        }
-                                    });
+                                    const args = parseArgs(match[2]);
                                     bodyCommands.push({ cmd, args });
                                 }
                             }
@@ -1215,24 +1092,17 @@ function calculatePID(axis, error, dt) {
                         }
                         
                         for (let j = 0; j < count; j++) {
-                            commands.push(...bodyCommands);
+                            commands.push(...bodyCommands.map(c => ({...c})));
                         }
                     }
+                    continue;
                 }
                 
                 if (trimmed.startsWith('drone.')) {
                     const match = trimmed.match(/drone\.(\w+)\(([^)]*)\)/);
                     if (match) {
                         const cmd = match[1];
-                        const args = match[2].split(',').map(a => {
-                            a = a.trim();
-                            if (a === '') return 0;
-                            try {
-                                return eval(a.replace(/math\./g, 'Math.'));
-                            } catch {
-                                return parseFloat(a) || 0;
-                            }
-                        });
+                        const args = parseArgs(match[2]);
                         commands.push({ cmd, args });
                     }
                 }
@@ -1241,104 +1111,94 @@ function calculatePID(axis, error, dt) {
             return commands;
         }
 
-        async function executeCommands(commands) {
-    for (let i = 0; i < commands.length; i++) {
-        const command = commands[i];
-        
-        switch (command.cmd) {
-            case 'takeoff':
-                const height = command.args[0] || 3;
-                droneState.targetY = height;
-                droneState.flying = true;
-                droneState.hovering = true;
-                droneState.reachedTarget = false;
-                document.getElementById('telStatus').textContent = 'Взлёт';
-                document.getElementById('telStatus').style.color = '#00ff88';
-                addLog(`🛫 Взлёт на ${height} м`, 'success');
-                await waitForAltitude(height);
-                break;
-                
-            case 'land':
-                droneState.targetY = 0;
-                droneState.flying = false;
-                droneState.hovering = false;
-                droneState.reachedTarget = false;
-                document.getElementById('telStatus').textContent = 'Посадка';
-                document.getElementById('telStatus').style.color = '#ff9f43';
-                addLog('🛬 Посадка', 'info');
-                await waitForAltitude(0);
-                break;
-                
-            case 'hover':
-                const seconds = command.args[0] || 2;
-                droneState.hovering = true;
-                droneState.targetX = droneState.x;
-                droneState.targetY = droneState.y;
-                droneState.targetZ = droneState.z;
-                document.getElementById('telStatus').textContent = 'Зависание';
-                document.getElementById('telStatus').style.color = '#6bcfff';
-                addLog(`⏳ Зависание на ${seconds} с`, 'info');
-                await new Promise(resolve => setTimeout(resolve, seconds * 1000));
-                break;
-                
-            case 'go_to':
-                const x = command.args[0] || 0;
-                const z = command.args[1] || 0;
-                const y = command.args[2] || droneState.y;
-                droneState.targetX = x;
-                droneState.targetZ = z;
-                droneState.targetY = y;
-                droneState.flying = true;
-                droneState.reachedTarget = false;
-                document.getElementById('telStatus').textContent = 'Полёт';
-                document.getElementById('telStatus').style.color = '#ffd93d';
-                addLog(`🎯 Перемещение к (${x.toFixed(1)}, ${z.toFixed(1)}, ${y.toFixed(1)})`, 'info');
-                await waitForPosition(x, z, y);
-                break;
-        }
-    }
-    
-    addLog('✅ Программа завершена', 'success');
-    document.getElementById('telStatus').textContent = 'Завершено';
-    document.getElementById('telStatus').style.color = '#10b981';
-}
-        function waitForAltitude(targetAlt) {
-    return new Promise(resolve => {
-        const checkInterval = setInterval(() => {
-            const diff = Math.abs(droneState.y - targetAlt);
-            if (diff < 0.1 && Math.abs(droneState.vy) < 0.1) {
-                clearInterval(checkInterval);
-                // Точная установка
-                droneState.y = targetAlt;
-                droneState.vy = 0;
-                setTimeout(resolve, 200); // Небольшая пауза
-            }
-        }, 50);
-    });
-}
-
-function waitForPosition(targetX, targetZ, targetY) {
-    return new Promise(resolve => {
-        const checkInterval = setInterval(() => {
-            const dx = Math.abs(droneState.x - targetX);
-            const dz = Math.abs(droneState.z - targetZ);
-            const dy = Math.abs(droneState.y - targetY);
-            const speed = Math.sqrt(droneState.vx * droneState.vx + droneState.vy * droneState.vy + droneState.vz * droneState.vz);
+        function parseArgs(argsStr) {
+            if (!argsStr || argsStr.trim() === '') return [];
             
-            if (dx < 0.15 && dz < 0.15 && dy < 0.15 && speed < 0.1) {
-                clearInterval(checkInterval);
-                // Точная установка
-                droneState.x = targetX;
-                droneState.z = targetZ;
-                droneState.y = targetY;
-                droneState.vx = 0;
-                droneState.vy = 0;
-                droneState.vz = 0;
-                setTimeout(resolve, 200); // Небольшая пауза
+            return argsStr.split(',').map(arg => {
+                arg = arg.trim();
+                if (arg === '') return 0;
+                
+                try {
+                    let expr = arg.replace(/math\./g, 'Math.');
+                    const result = eval(expr);
+                    return typeof result === 'number' ? result : parseFloat(result) || 0;
+                } catch {
+                    return parseFloat(arg) || 0;
+                }
+            });
+        }
+
+        async function executeCommands(commands) {
+            addLog(`🚀 Начало выполнения (${commands.length} команд)`, 'info');
+            
+            for (let i = 0; i < commands.length; i++) {
+                const command = commands[i];
+                
+                switch (command.cmd) {
+                    case 'takeoff':
+                        const height = command.args[0] || 3;
+                        droneState.flying = true;
+                        droneState.hovering = false;
+                        document.getElementById('telStatus').textContent = 'Взлёт';
+                        document.getElementById('telStatus').style.color = '#00ff88';
+                        addLog(`🛫 Взлёт на ${height} м`, 'success');
+                        startMoveTo(droneState.x, height, droneState.z, 2);
+                        await waitForMove();
+                        droneState.hovering = true;
+                        droneState.flying = false;
+                        document.getElementById('telStatus').textContent = 'Зависание';
+                        document.getElementById('telStatus').style.color = '#6bcfff';
+                        break;
+                        
+                    case 'land':
+                        droneState.flying = false;
+                        droneState.hovering = false;
+                        document.getElementById('telStatus').textContent = 'Посадка';
+                        document.getElementById('telStatus').style.color = '#ff9f43';
+                        addLog('🛬 Посадка', 'info');
+                        startMoveTo(droneState.x, 0, droneState.z, 2);
+                        await waitForMove();
+                        document.getElementById('telStatus').textContent = 'На земле';
+                        document.getElementById('telStatus').style.color = '#94a3b8';
+                        addLog('✅ Дрон на земле', 'success');
+                        break;
+                        
+                    case 'hover':
+                        const seconds = command.args[0] || 2;
+                        droneState.hovering = true;
+                        droneState.flying = false;
+                        document.getElementById('telStatus').textContent = 'Зависание';
+                        document.getElementById('telStatus').style.color = '#6bcfff';
+                        addLog(`⏳ Зависание на ${seconds} с`, 'info');
+                        await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+                        break;
+                        
+                    case 'go_to':
+                        const x = command.args[0] || 0;
+                        const z = command.args[1] || 0;
+                        const y = command.args[2] !== undefined ? command.args[2] : droneState.y;
+                        droneState.flying = true;
+                        droneState.hovering = false;
+                        document.getElementById('telStatus').textContent = 'Полёт';
+                        document.getElementById('telStatus').style.color = '#ffd93d';
+                        addLog(`🎯 Перемещение к (${x.toFixed(1)}, ${z.toFixed(1)}, ${y.toFixed(1)})`, 'info');
+                        const dx = x - droneState.x;
+                        const dz = z - droneState.z;
+                        const dy = y - droneState.y;
+                        const distance = Math.sqrt(dx*dx + dz*dz + dy*dy);
+                        const duration = Math.max(1, distance / 2);
+                        startMoveTo(x, y, z, duration);
+                        await waitForMove();
+                        droneState.hovering = true;
+                        droneState.flying = false;
+                        break;
+                }
             }
-        }, 50);
-    });
-}
+            
+            document.getElementById('telStatus').textContent = 'Завершено';
+            document.getElementById('telStatus').style.color = '#10b981';
+            addLog('✅ Программа завершена успешно', 'success');
+        }
 
         function animate() {
             requestAnimationFrame(animate);
@@ -1347,17 +1207,12 @@ function waitForPosition(targetX, targetZ, targetY) {
             updatePhysics(dt);
             
             droneGroup.position.set(droneState.x, droneState.y, droneState.z);
-            droneGroup.rotation.x = droneState.tiltX;
-            droneGroup.rotation.z = droneState.tiltZ;
             
             propellers.forEach(prop => {
                 prop.rotation.y = droneState.propAngle;
             });
             
-            if (droneState.flying || droneState.hovering) {
-                droneState.path.push({ x: droneState.x, y: droneState.y, z: droneState.z });
-                if (droneState.path.length > 500) droneState.path.shift();
-                
+            if (droneState.path.length > 1) {
                 const points = droneState.path.map(p => new THREE.Vector3(p.x, p.y, p.z));
                 trajectoryLine.geometry.dispose();
                 trajectoryLine.geometry = new THREE.BufferGeometry().setFromPoints(points);
@@ -1368,11 +1223,9 @@ function waitForPosition(targetX, targetZ, targetY) {
             camera.position.z = droneState.z + 6;
             camera.lookAt(droneGroup.position);
             
-            const speed = Math.sqrt(droneState.vx * droneState.vx + droneState.vy * droneState.vy + droneState.vz * droneState.vz);
             document.getElementById('telAltitude').textContent = droneState.y.toFixed(1) + ' м';
             document.getElementById('telX').textContent = droneState.x.toFixed(1) + ' м';
             document.getElementById('telY').textContent = droneState.z.toFixed(1) + ' м';
-            document.getElementById('telSpeed').textContent = speed.toFixed(1) + ' м/с';
             document.getElementById('telBattery').textContent = droneState.battery.toFixed(0) + '%';
             
             renderer.render(scene, camera);
@@ -1396,6 +1249,7 @@ function waitForPosition(targetX, targetZ, targetY) {
         document.getElementById('btnStop').addEventListener('click', () => {
             droneState.flying = false;
             droneState.hovering = false;
+            droneState.isMoving = false;
             droneState.targetX = droneState.x;
             droneState.targetY = droneState.y;
             droneState.targetZ = droneState.z;
@@ -1406,9 +1260,6 @@ function waitForPosition(targetX, targetZ, targetY) {
             droneState.x = 0;
             droneState.y = 0;
             droneState.z = 0;
-            droneState.vx = 0;
-            droneState.vy = 0;
-            droneState.vz = 0;
             droneState.targetX = 0;
             droneState.targetY = 0;
             droneState.targetZ = 0;
@@ -1416,8 +1267,8 @@ function waitForPosition(targetX, targetZ, targetY) {
             droneState.hovering = false;
             droneState.battery = 100;
             droneState.path = [];
-            droneState.pidIntegrals = { x: 0, y: 0, z: 0 };
-            droneState.lastErrors = { x: 0, y: 0, z: 0 };
+            droneState.isMoving = false;
+            droneState.moveProgress = 1;
             
             document.getElementById('telAltitude').textContent = '0.0 м';
             document.getElementById('telX').textContent = '0.0 м';
