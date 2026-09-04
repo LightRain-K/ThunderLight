@@ -1,1 +1,795 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Переменные и типы данных — ThunderLight Academy</title>
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --accent: #06b6d4;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --gray-light: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.7;
+            color: var(--light);
+            background: var(--darker);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        .cursor-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.08), transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+            opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        .preloader-logo {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: preloaderPulse 1.5s infinite;
+            display: block;
+        }
+        .preloader-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes preloaderPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            background: rgba(2, 6, 23, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .nav-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .nav-logo:hover { transform: scale(1.05); }
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            animation: logoGlow 2s infinite;
+        }
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.6); }
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+        .nav-links a:hover::after { width: 60%; }
+        .nav-links a:hover { color: var(--light); }
+        .nav-links a.active {
+            color: var(--light);
+            background: rgba(79, 70, 229, 0.15);
+        }
+        .nav-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            animation: downloadPulse 2s infinite;
+        }
+        .nav-download:hover {
+            transform: translateY(-2px);
+            animation: none;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        @keyframes downloadPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        }
+
+        .hero {
+            padding: 140px 32px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            from { transform: translate(0, 0); }
+            to { transform: translate(60px, 60px); }
+        }
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: glowFloat 10s ease-in-out infinite;
+        }
+        .hero-glow-1 { background: var(--primary); top: -200px; left: -100px; }
+        .hero-glow-2 { background: var(--accent); bottom: -200px; right: -100px; animation-delay: -5s; }
+        @keyframes glowFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .hero h1 {
+            font-size: 2.5em;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+        .hero .topic-badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+            margin-bottom: 12px;
+        }
+        .hero p {
+            font-size: 1.1em;
+            color: var(--gray-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .article-container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 20px 32px 60px;
+        }
+        .article-container h2 {
+            font-size: 1.6em;
+            font-weight: 800;
+            margin: 32px 0 12px;
+            color: var(--light);
+        }
+        .article-container h3 {
+            font-size: 1.2em;
+            font-weight: 700;
+            margin: 24px 0 10px;
+            color: #a5b4fc;
+        }
+        .article-container p {
+            color: var(--gray-light);
+            font-size: 0.95em;
+            line-height: 1.8;
+            margin: 8px 0;
+        }
+        .article-container ul, .article-container ol {
+            padding-left: 24px;
+            margin: 10px 0;
+        }
+        .article-container li {
+            color: var(--gray-light);
+            font-size: 0.95em;
+            line-height: 1.8;
+            margin-bottom: 4px;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.8em;
+            color: #a5b4fc;
+            overflow-x: auto;
+            margin: 12px 0;
+            line-height: 1.6;
+        }
+        .code-block .comment { color: #64748b; }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .string { color: #34d399; }
+        .code-block .function { color: #60a5fa; }
+        .code-block .number { color: #f59e0b; }
+
+        .note {
+            background: rgba(79, 70, 229, 0.08);
+            border-left: 3px solid var(--primary);
+            padding: 12px 18px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .note .label { font-weight: 600; color: var(--primary); }
+        .note p { margin: 4px 0; }
+
+        .task-box {
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 16px 0;
+        }
+        .task-box .label {
+            font-weight: 600;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .task-box p { margin: 4px 0; }
+
+        .btn {
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85em;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--light);
+        }
+        .btn-outline:hover {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .article-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+        .article-nav a {
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .article-nav a:hover { color: var(--light); }
+
+        .footer {
+            padding: 50px 32px 30px;
+            background: var(--darker);
+            border-top: 1px solid var(--border);
+        }
+        .footer-grid {
+            max-width: 1280px;
+            margin: 0 auto 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        .footer-col h4 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            margin-bottom: 16px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+        .footer-col a:hover { color: var(--light); }
+        .footer-brand p {
+            color: var(--gray);
+            font-size: 0.85em;
+            margin: 10px 0 16px;
+            max-width: 300px;
+        }
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-bottom p { color: var(--gray); font-size: 0.75em; }
+        .footer-social {
+            display: flex;
+            gap: 10px;
+        }
+        .footer-social a {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer-social a:hover {
+            background: rgba(79, 70, 229, 0.2);
+            color: var(--light);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .nav-content { padding: 12px 20px; }
+            .hero { padding: 120px 20px 30px; }
+            .hero h1 { font-size: 1.8em; }
+            .article-container { padding: 16px; }
+            .article-nav { flex-direction: column; gap: 12px; align-items: center; }
+            .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+            .footer { padding: 30px 20px 20px; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+        }
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 1.4em; }
+            .code-block { font-size: 0.65em; padding: 12px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-glow" id="cursorGlow"></div>
+    <div class="particles-container" id="particles"></div>
+
+    <div class="preloader" id="preloader">
+        <div class="preloader-content">
+            <span class="preloader-logo">⚡ ThunderLight</span>
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <span class="nav-logo-icon">⚡</span>
+                ThunderLight
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+                <li><a href="/lab.html">Lab</a></li>
+                <li><a href="/simulator.html">Simulator</a></li>
+                <li><a href="/builder.html">Builder</a></li>
+                <li><a href="/docs.html">Документация</a></li>
+                <li><a href="/articles/" class="active">Academy</a></li>
+                <li><a href="/drone-sim.html">Drone Sim</a></li>
+                <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ======== HERO ======== -->
+    <section class="hero">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-content">
+            <span class="topic-badge">🐍 Python</span>
+            <h1>Переменные и типы данных</h1>
+            <p>Изучаем основы хранения данных: числа, строки, списки и словари. Учимся работать с переменными.</p>
+        </div>
+    </section>
+
+    <!-- ======== СОДЕРЖАНИЕ ======== -->
+    <div class="article-container">
+
+        <p><strong>Цель урока:</strong> Научиться создавать переменные, понимать основные типы данных и работать с ними.</p>
+
+        <h2>Что такое переменная?</h2>
+        <p><strong>Переменная</strong> — это контейнер для хранения данных. Представь себе коробку с названием, в которую можно положить что угодно: число, текст, список.</p>
+
+        <div class="code-block">
+            <span class="comment"># Создание переменных</span>
+            name = <span class="string">"Алексей"</span>   <span class="comment"># строка (текст)</span>
+            age = 25                <span class="comment"># целое число</span>
+            height = 1.75           <span class="comment"># число с плавающей точкой</span>
+            is_student = True       <span class="comment"># булево значение (True/False)</span>
+        </div>
+
+        <div class="note">
+            <span class="label">💡 Правила именования:</span>
+            <ul style="margin:4px 0 0 20px;font-size:0.9em;color:var(--gray-light);">
+                <li>Имя переменной должно начинаться с буквы или подчёркивания</li>
+                <li>Может содержать буквы, цифры и подчёркивания</li>
+                <li>Регистр имеет значение: <code>age</code> и <code>Age</code> — разные переменные</li>
+            </ul>
+        </div>
+
+        <h2>Основные типы данных</h2>
+        <p>В Python есть несколько встроенных типов данных. Самые распространённые:</p>
+
+        <h3>1. Числа (int, float)</h3>
+        <ul>
+            <li><strong>int</strong> — целые числа: <code>10</code>, <code>-5</code>, <code>0</code></li>
+            <li><strong>float</strong> — числа с плавающей точкой: <code>3.14</code>, <code>-0.5</code>, <code>2.0</code></li>
+        </ul>
+
+        <div class="code-block">
+            <span class="comment"># Работа с числами</span>
+            x = 10
+            y = 3.5
+            sum = x + y
+            <span class="keyword">print</span>(sum)  <span class="comment"># 13.5</span>
+        </div>
+
+        <h3>2. Строки (str)</h3>
+        <p><strong>Строка</strong> — это последовательность символов. Записывается в кавычках (одинарных или двойных).</p>
+
+        <div class="code-block">
+            <span class="comment"># Работа со строками</span>
+            name = <span class="string">"Алексей"</span>
+            greeting = <span class="string">"Привет, "</span> + name
+            <span class="keyword">print</span>(greeting)  <span class="comment"># "Привет, Алексей"</span>
+        </div>
+
+        <h3>3. Списки (list)</h3>
+        <p><strong>Список</strong> — это упорядоченная коллекция элементов. Элементы могут быть разных типов.</p>
+
+        <div class="code-block">
+            <span class="comment"># Создание списка</span>
+            fruits = [<span class="string">"яблоко"</span>, <span class="string">"банан"</span>, <span class="string">"апельсин"</span>]
+            <span class="keyword">print</span>(fruits[0])  <span class="comment"># "яблоко" (индексация с 0)</span>
+            fruits.append(<span class="string">"киви"</span>)  <span class="comment"># добавление элемента</span>
+            <span class="keyword">print</span>(fruits)  <span class="comment"># ["яблоко", "банан", "апельсин", "киви"]</span>
+        </div>
+
+        <h3>4. Словари (dict)</h3>
+        <p><strong>Словарь</strong> — это коллекция пар <code>ключ: значение</code>. Позволяет хранить структурированные данные.</p>
+
+        <div class="code-block">
+            <span class="comment"># Создание словаря</span>
+            person = {
+                <span class="string">"name"</span>: <span class="string">"Алексей"</span>,
+                <span class="string">"age"</span>: 25,
+                <span class="string">"city"</span>: <span class="string">"Москва"</span>
+            }
+            <span class="keyword">print</span>(person[<span class="string">"name"</span>])  <span class="comment"># "Алексей"</span>
+            person[<span class="string">"job"</span>] = <span class="string">"инженер"</span>  <span class="comment"># добавление нового ключа</span>
+        </div>
+
+        <h3>5. Булевы значения (bool)</h3>
+        <p><strong>Булевы значения</strong> — это <code>True</code> (истина) и <code>False</code> (ложь). Используются в условиях и сравнениях.</p>
+
+        <div class="code-block">
+            is_student = True
+            is_teacher = False
+            <span class="keyword">print</span>(is_student <span class="keyword">and</span> is_teacher)  <span class="comment"># False</span>
+        </div>
+
+        <h2>Определение типа данных</h2>
+        <p>Функция <code>type()</code> показывает тип данных переменной:</p>
+
+        <div class="code-block">
+            <span class="keyword">print</span>(<span class="keyword">type</span>(10))          <span class="comment"># <class 'int'></span>
+            <span class="keyword">print</span>(<span class="keyword">type</span>(3.14))        <span class="comment"># <class 'float'></span>
+            <span class="keyword">print</span>(<span class="keyword">type</span>(<span class="string">"Hello"</span>))    <span class="comment"># <class 'str'></span>
+            <span class="keyword">print</span>(<span class="keyword">type</span>([1, 2, 3]))    <span class="comment"># <class 'list'></span>
+            <span class="keyword">print</span>(<span class="keyword">type</span>({<span class="string">"a"</span>: 1}))  <span class="comment"># <class 'dict'></span>
+        </div>
+
+        <h2>Преобразование типов</h2>
+        <p>Иногда нужно преобразовать данные из одного типа в другой:</p>
+
+        <div class="code-block">
+            <span class="comment"># Преобразование типов</span>
+            x = 10
+            y = <span class="string">"5"</span>
+            result = x + <span class="keyword">int</span>(y)  <span class="comment"># преобразуем строку в число</span>
+            <span class="keyword">print</span>(result)  <span class="comment"># 15</span>
+
+            text = <span class="string">"Число: "</span> + <span class="keyword">str</span>(x)  <span class="comment"># преобразуем число в строку</span>
+            <span class="keyword">print</span>(text)  <span class="comment"># "Число: 10"</span>
+        </div>
+
+        <div class="task-box">
+            <span class="label">📌 Практическое задание</span>
+            <p>Создай переменные для хранения твоих данных:</p>
+            <ul>
+                <li>Имя (строка)</li>
+                <li>Возраст (целое число)</li>
+                <li>Рост (число с плавающей точкой)</li>
+                <li>Любимые цвета (список из 3 строк)</li>
+                <li>Информация о себе (словарь с ключами: name, age, city)</li>
+            </ul>
+            <p style="margin-top:8px;">Выведи все данные на экран с помощью <code>print()</code>.</p>
+        </div>
+
+        <div class="note">
+            <span class="label">🔍 Что дальше?</span>
+            <p>В следующем уроке мы изучим <strong>условные операторы и циклы</strong> — научимся управлять потоком программы.</p>
+        </div>
+
+        <!-- Навигация по статье -->
+        <div class="article-nav">
+            <a href="/articles/python/01-intro.html" class="btn btn-outline">← Предыдущий урок</a>
+            <a href="/articles/" class="btn btn-outline">📚 К списку уроков</a>
+            <a href="/articles/python/03-conditions.html" class="btn btn-primary">Следующий урок →</a>
+        </div>
+
+    </div>
+
+    <!-- ======== ФУТЕР ======== -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">⚡</span>
+                    ThunderLight
+                </a>
+                <p>Образовательная экосистема БПЛА. Учись, проектируй, летай.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Экосистема</h4>
+                <ul>
+                    <li><a href="/articles/">Academy</a></li>
+                    <li><a href="/lab.html">Lab</a></li>
+                    <li><a href="/simulator.html">Simulator</a></li>
+                    <li><a href="/builder.html">Builder</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                    <li><a href="/drone-sim.html">Drone Sim</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Документы</h4>
+                <ul>
+                    <li><a href="/privacy.html">Конфиденциальность</a></li>
+                    <li><a href="/terms.html">Условия использования</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><a href="https://t.me/thunderlight_online" target="_blank">Telegram</a></li>
+                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderLight/" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
+            <div class="footer-social">
+                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
+                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
+                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 600);
+        });
+
+        const cursorGlow = document.getElementById('cursorGlow');
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                const size = Math.random() * 3 + 1;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = Math.random() * 15 + 's';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        window.addEventListener('scroll', () => {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        let menuOpen = false;
+
+        mobileMenuBtn.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            if (menuOpen) {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
+                navLinks.style.padding = '20px 32px';
+                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+                mobileMenuBtn.textContent = '✕';
+            } else {
+                navLinks.style.display = 'none';
+                mobileMenuBtn.textContent = '☰';
+            }
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (menuOpen) {
+                    menuOpen = false;
+                    navLinks.style.display = 'none';
+                    mobileMenuBtn.textContent = '☰';
+                }
+            });
+        });
+
+        if (window.location.hash) {
+            window.scrollTo(0, 0);
+            history.pushState("", document.title, window.location.pathname + window.location.search);
+        }
+    </script>
+
+</body>
+</html>
