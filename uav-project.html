@@ -9,7 +9,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Стили те же, что в предыдущей версии, оставляем без изменений */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -210,11 +209,87 @@
             font-size: 1.5em;
             cursor: pointer;
             transition: var(--transition);
+            padding: 8px;
+            border-radius: 8px;
         }
-        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
-        @keyframes downloadPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        .mobile-menu-btn:hover { color: var(--primary); background: rgba(255,255,255,0.05); }
+        .mobile-menu-btn.open { color: var(--primary); }
+
+        /* АНИМИРОВАННОЕ МОБИЛЬНОЕ МЕНЮ */
+        .nav-links-mobile {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.98);
+            backdrop-filter: blur(20px);
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border);
+            flex-direction: column;
+            gap: 4px;
+            animation: slideDown 0.3s ease;
+        }
+        .nav-links-mobile.open {
+            display: flex;
+        }
+        .nav-links-mobile a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: 500;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+        .nav-links-mobile a:hover {
+            color: var(--light);
+            background: rgba(255,255,255,0.05);
+        }
+        .nav-links-mobile a.active {
+            color: var(--light);
+            background: rgba(79, 70, 229, 0.15);
+        }
+        .nav-links-mobile .nav-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            text-align: center;
+            margin-top: 4px;
+        }
+        .nav-links-mobile .nav-download:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.15); }
+            50% { box-shadow: 0 0 40px rgba(79, 70, 229, 0.3); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .hero {
@@ -256,7 +331,13 @@
             33% { transform: translate(30px, -30px) scale(1.1); }
             66% { transform: translate(-20px, 20px) scale(0.9); }
         }
-        .hero-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease;
+        }
         .hero-badge {
             display: inline-flex;
             align-items: center;
@@ -268,6 +349,7 @@
             font-size: 0.85em;
             color: #a5b4fc;
             margin-bottom: 32px;
+            animation: pulseGlow 3s infinite;
         }
         .hero-badge-dot {
             width: 8px;
@@ -326,6 +408,24 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .btn:hover::after {
+            width: 400px;
+            height: 400px;
         }
         .btn-primary {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -333,8 +433,8 @@
             box-shadow: 0 4px 24px rgba(79, 70, 229, 0.4);
         }
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(79, 70, 229, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(79, 70, 229, 0.6);
         }
         .btn-download {
             background: linear-gradient(135deg, #10b981, #059669);
@@ -342,8 +442,8 @@
             box-shadow: 0 4px 24px rgba(16, 185, 129, 0.4);
         }
         .btn-download:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(16, 185, 129, 0.6);
         }
         .btn-outline {
             border: 2px solid rgba(255, 255, 255, 0.15);
@@ -353,7 +453,7 @@
         .btn-outline:hover {
             border-color: rgba(255, 255, 255, 0.4);
             background: rgba(255, 255, 255, 0.05);
-            transform: translateY(-2px);
+            transform: translateY(-3px);
         }
 
         section { padding: 80px 32px; }
@@ -399,14 +499,64 @@
             padding: 28px 24px;
             text-align: center;
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
+        .benefit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        .benefit-card:hover::before { transform: scaleX(1); }
         .benefit-card:hover {
             border-color: rgba(79, 70, 229, 0.3);
-            transform: translateY(-4px);
+            transform: translateY(-6px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
         .benefit-card .icon { font-size: 2.5em; display: block; margin-bottom: 12px; }
         .benefit-card h3 { font-size: 1.1em; font-weight: 700; margin-bottom: 8px; }
         .benefit-card p { color: var(--gray-light); font-size: 0.9em; line-height: 1.6; }
+
+        /* Счётчики */
+        .counters-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .counter-item {
+            text-align: center;
+            padding: 24px 16px;
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+        .counter-item:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: translateY(-4px);
+        }
+        .counter-item .number {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+        .counter-item .label {
+            color: var(--gray-light);
+            font-size: 0.85em;
+            margin-top: 4px;
+        }
 
         .course-grid {
             display: grid;
@@ -424,9 +574,22 @@
             position: relative;
             overflow: hidden;
         }
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+        .course-card:hover::before { transform: scaleX(1); }
         .course-card:hover {
             border-color: rgba(79, 70, 229, 0.3);
-            transform: translateY(-4px);
+            transform: translateY(-6px);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
         }
         .course-card .icon { font-size: 2.2em; display: block; margin-bottom: 12px; }
@@ -469,7 +632,7 @@
 
         .ecosystem-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 16px;
         }
         .eco-link {
@@ -481,37 +644,99 @@
             text-decoration: none;
             color: var(--light);
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
+        .eco-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        .eco-link:hover::before { transform: scaleX(1); }
         .eco-link:hover {
             border-color: rgba(79, 70, 229, 0.3);
-            transform: translateY(-3px);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
         }
         .eco-link .icon { font-size: 2em; display: block; margin-bottom: 6px; }
         .eco-link .name { font-size: 0.85em; font-weight: 600; }
         .eco-link .desc { font-size: 0.65em; color: var(--gray-light); }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
+        /* Интерактивная временная шкала */
+        .timeline {
+            position: relative;
             max-width: 800px;
             margin: 0 auto;
+            padding: 20px 0;
         }
-        .stat-item {
-            text-align: center;
-            background: rgba(15, 23, 42, 0.4);
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--primary), var(--secondary), transparent);
+            transform: translateX(-50%);
+        }
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .timeline-item:nth-child(odd) { flex-direction: row; }
+        .timeline-item:nth-child(even) { flex-direction: row-reverse; }
+        .timeline-item .content {
+            width: 42%;
+            padding: 20px 24px;
+            background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 20px 16px;
+            transition: var(--transition);
         }
-        .stat-item .number {
-            font-size: 2.5em;
-            font-weight: 900;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .timeline-item .content:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: scale(1.02);
         }
-        .stat-item .label { color: var(--gray-light); font-size: 0.85em; }
+        .timeline-item .content .date {
+            font-size: 0.75em;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        .timeline-item .content h4 {
+            font-size: 1.05em;
+            font-weight: 700;
+            margin: 4px 0;
+            color: var(--light);
+        }
+        .timeline-item .content p {
+            font-size: 0.85em;
+            color: var(--gray-light);
+            margin: 0;
+        }
+        .timeline-item .dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 3px solid var(--darker);
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+            z-index: 1;
+            animation: pulseGlow 2s infinite;
+        }
+        .timeline-item .dot.done { background: var(--success); }
+        .timeline-item .dot.current { background: #f59e0b; animation: pulseGlow 1s infinite; }
 
         .testimonial {
             background: rgba(15, 23, 42, 0.4);
@@ -521,6 +746,17 @@
             max-width: 700px;
             margin: 0 auto;
             text-align: center;
+            position: relative;
+        }
+        .testimonial::before {
+            content: '"';
+            font-size: 4em;
+            color: var(--primary);
+            opacity: 0.2;
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            font-family: Georgia, serif;
         }
         .testimonial .quote {
             font-size: 1.1em;
@@ -565,7 +801,7 @@
             font-size: 0.9em;
             transition: var(--transition);
         }
-        .footer-col a:hover { color: var(--light); }
+        .footer-col a:hover { color: var(--light); transform: translateX(4px); }
         .footer-brand p {
             color: var(--gray);
             font-size: 0.9em;
@@ -603,11 +839,13 @@
         .footer-social a:hover {
             background: rgba(79, 70, 229, 0.2);
             color: var(--light);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
         }
 
         @media (max-width: 1024px) {
+            .counters-grid { grid-template-columns: 1fr 1fr; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
+            .timeline-item .content { width: 38%; }
         }
         @media (max-width: 768px) {
             .nav-links { display: none; }
@@ -618,11 +856,17 @@
             .hero p { font-size: 1em; }
             section { padding: 60px 20px; }
             .section-title { font-size: 2em; }
+            .counters-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .counter-item .number { font-size: 2.2em; }
             .course-grid { grid-template-columns: 1fr; }
             .benefits-grid { grid-template-columns: 1fr; }
             .ecosystem-grid { grid-template-columns: 1fr 1fr; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
             .testimonial { padding: 20px; }
+            .timeline::before { left: 20px; }
+            .timeline-item,
+            .timeline-item:nth-child(even) { flex-direction: row; }
+            .timeline-item .content { width: calc(100% - 50px); margin-left: 40px; }
+            .timeline-item .dot { left: 20px; }
             .footer-grid { grid-template-columns: 1fr; gap: 24px; }
             .footer { padding: 40px 20px 24px; }
             .footer-bottom { flex-direction: column; text-align: center; }
@@ -630,8 +874,13 @@
         @media (max-width: 480px) {
             .hero h1 { font-size: 1.6em; }
             .hero-buttons .btn { width: 100%; justify-content: center; }
+            .counters-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .counter-item { padding: 16px 12px; }
+            .counter-item .number { font-size: 1.8em; }
             .ecosystem-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr; }
+            .timeline-item .content { padding: 14px 16px; }
+            .timeline-item .content h4 { font-size: 0.9em; }
+            .timeline-item .content p { font-size: 0.75em; }
         }
     </style>
 </head>
@@ -647,13 +896,16 @@
         </div>
     </div>
 
+    <!-- ======== НАВИГАЦИЯ ======== -->
     <nav class="navbar" id="navbar">
         <div class="nav-content">
             <a href="/" class="nav-logo">
                 <span class="nav-logo-icon">⚡</span>
                 ThunderLight
             </a>
-            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Открыть меню">
+                <i class="fas fa-bars"></i>
+            </button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="/" class="active">Главная</a></li>
                 <li><a href="/articles/">Academy</a></li>
@@ -665,6 +917,18 @@
                 <li><a href="/drone-sim.html">Drone Sim</a></li>
                 <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
             </ul>
+            <!-- Мобильное меню -->
+            <div class="nav-links-mobile" id="navLinksMobile">
+                <a href="/" class="active">Главная</a>
+                <a href="/articles/">Academy</a>
+                <a href="/uav-project.html">БПЛА</a>
+                <a href="/lab.html">Lab</a>
+                <a href="/simulator.html">Simulator</a>
+                <a href="/builder.html">Builder</a>
+                <a href="/docs.html">Документация</a>
+                <a href="/drone-sim.html">Drone Sim</a>
+                <a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a>
+            </div>
         </div>
     </nav>
 
@@ -693,42 +957,54 @@
         </div>
     </section>
 
-    <!-- ======== СТАТИСТИКА ======== -->
+    <!-- ======== СЧЁТЧИКИ ======== -->
     <section style="padding: 0 32px 60px;">
-        <div class="stats-grid">
-            <div class="stat-item"><div class="number">6</div><div class="label">Компонентов экосистемы</div></div>
-            <div class="stat-item"><div class="number">4</div><div class="label">Курса для начинающих</div></div>
-            <div class="stat-item"><div class="number">12+</div><div class="label">Лабораторных работ</div></div>
-            <div class="stat-item"><div class="number">100%</div><div class="label">Открытый код</div></div>
+        <div class="counters-grid">
+            <div class="counter-item animate-on-scroll">
+                <div class="number" data-target="6">0</div>
+                <div class="label">Компонентов экосистемы</div>
+            </div>
+            <div class="counter-item animate-on-scroll">
+                <div class="number" data-target="6">0</div>
+                <div class="label">Образовательных курсов</div>
+            </div>
+            <div class="counter-item animate-on-scroll">
+                <div class="number" data-target="12">0</div>
+                <div class="label">Лабораторных работ</div>
+            </div>
+            <div class="counter-item animate-on-scroll">
+                <div class="number" data-target="100">0</div>
+                <div class="label">% открытого кода</div>
+            </div>
         </div>
     </section>
 
     <!-- ======== О ПРОЕКТЕ ======== -->
     <section id="about">
         <div class="section-container">
-            <div class="section-header">
+            <div class="section-header animate-on-scroll">
                 <span class="section-label">⚡ О проекте</span>
                 <h2 class="section-title">Образовательная экосистема нового поколения</h2>
                 <p class="section-subtitle">ThunderLight — это не просто конструктор БПЛА. Это полноценная среда для обучения, где теория соединяется с практикой.</p>
             </div>
 
             <div class="benefits-grid">
-                <div class="benefit-card">
+                <div class="benefit-card animate-on-scroll">
                     <span class="icon">🧩</span>
                     <h3>Открытая архитектура</h3>
                     <p>Гибридная система управления на Arduino + Raspberry Pi. Полностью открытый код и схемы — всё доступно на GitHub.</p>
                 </div>
-                <div class="benefit-card">
+                <div class="benefit-card animate-on-scroll">
                     <span class="icon">💡</span>
                     <h3>Образовательная методика</h3>
                     <p>Структурированные курсы, интерактивные лаборатории и симуляторы. От изучения Python до программирования дронов.</p>
                 </div>
-                <div class="benefit-card">
+                <div class="benefit-card animate-on-scroll">
                     <span class="icon">🛠️</span>
                     <h3>Доступность и ремонт</h3>
                     <p>Все детали можно распечатать на 3D-принтере. Стоимость комплекта ~12 000 ₽, а замена деталей — без инструментов.</p>
                 </div>
-                <div class="benefit-card">
+                <div class="benefit-card animate-on-scroll">
                     <span class="icon">🔒</span>
                     <h3>Безопасность</h3>
                     <p>Критические компоненты защищены корпусом. Li-Po аккумуляторы и полётный контроллер — в надёжном кожухе.</p>
@@ -737,17 +1013,63 @@
         </div>
     </section>
 
-    <!-- ======== КУРСЫ ======== -->
-    <section id="courses" style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <!-- ======== ИНТЕРАКТИВНАЯ ВРЕМЕННАЯ ШКАЛА ======== -->
+    <section style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div class="section-container">
-            <div class="section-header">
+            <div class="section-header animate-on-scroll">
+                <span class="section-label">🗺️ Дорожная карта</span>
+                <h2 class="section-title">Как создавался проект</h2>
+                <p class="section-subtitle">От идеи до готовой образовательной экосистемы.</p>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item animate-on-scroll">
+                    <div class="content">
+                        <div class="date">Сентябрь 2026</div>
+                        <h4>🚀 Запуск платформы</h4>
+                        <p>Презентация образовательной экосистемы ThunderLight. Доступны Academy, Lab, Simulator, Builder, Drone Sim и документация.</p>
+                    </div>
+                    <div class="dot current"></div>
+                </div>
+                <div class="timeline-item animate-on-scroll">
+                    <div class="content">
+                        <div class="date">Август 2026</div>
+                        <h4>🛠️ Создание прототипа</h4>
+                        <p>Разработан и собран макет системы управления VRD FC. Проведены успешные испытания на стенде.</p>
+                    </div>
+                    <div class="dot done"></div>
+                </div>
+                <div class="timeline-item animate-on-scroll">
+                    <div class="content">
+                        <div class="date">Июль 2026</div>
+                        <h4>📝 Разработка контента</h4>
+                        <p>Написаны первые статьи по Python, Arduino и электронике. Созданы интерактивные лабораторные работы.</p>
+                    </div>
+                    <div class="dot done"></div>
+                </div>
+                <div class="timeline-item animate-on-scroll">
+                    <div class="content">
+                        <div class="date">Май 2026</div>
+                        <h4>💡 Зарождение идеи</h4>
+                        <p>Появилась концепция образовательной экосистемы для изучения БПЛА. Начата разработка архитектуры.</p>
+                    </div>
+                    <div class="dot done"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== КУРСЫ ======== -->
+    <section id="courses">
+        <div class="section-container">
+            <div class="section-header animate-on-scroll">
                 <span class="section-label">🎓 Образовательная программа</span>
                 <h2 class="section-title">Инженерный трек</h2>
                 <p class="section-subtitle">От основ программирования до управления реальным БПЛА. Выбери свой путь.</p>
             </div>
 
             <div class="course-grid">
-                <a href="/articles/" class="course-card">
+                <a href="/articles/" class="course-card animate-on-scroll">
                     <span class="badge-new">Новый</span>
                     <span class="icon">🐍</span>
                     <h3>Python для инженеров</h3>
@@ -760,7 +1082,7 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <a href="/articles/" class="course-card">
+                <a href="/articles/" class="course-card animate-on-scroll">
                     <span class="badge-new">Новый</span>
                     <span class="icon">⚡</span>
                     <h3>Arduino для начинающих</h3>
@@ -773,7 +1095,7 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <a href="/articles/" class="course-card">
+                <a href="/articles/" class="course-card animate-on-scroll">
                     <span class="icon">🔌</span>
                     <h3>Основы электроники</h3>
                     <p>Закон Ома, схемы, компоненты. Чтение принципиальных схем и пайка.</p>
@@ -785,7 +1107,7 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <a href="/articles/" class="course-card">
+                <a href="/articles/" class="course-card animate-on-scroll">
                     <span class="icon">✈️</span>
                     <h3>Введение в БПЛА</h3>
                     <p>Устройство и управление дронами. ПИД-регуляторы, телеметрия, полётные контроллеры.</p>
@@ -797,7 +1119,7 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <a href="/articles/" class="course-card">
+                <a href="/articles/" class="course-card animate-on-scroll">
                     <span class="icon">🎯</span>
                     <h3>ПИД-регуляторы на практике</h3>
                     <p>Теория и настройка ПИД-регулятора в симуляторе. Отладка коэффициентов.</p>
@@ -809,7 +1131,7 @@
                     <div class="progress"><div class="bar" style="width:0%;"></div></div>
                 </a>
 
-                <a href="/articles/" class="course-card">
+                <a href="/articles/" class="course-card animate-on-scroll">
                     <span class="icon">💻</span>
                     <h3>Программирование дронов</h3>
                     <p>Пиши код на Python, управляй виртуальным дроном. Взлёт, маршруты, миссии.</p>
@@ -825,41 +1147,41 @@
     </section>
 
     <!-- ======== ЭКОСИСТЕМА ======== -->
-    <section id="ecosystem">
+    <section id="ecosystem" style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div class="section-container">
-            <div class="section-header">
+            <div class="section-header animate-on-scroll">
                 <span class="section-label">🧩 Экосистема</span>
                 <h2 class="section-title">Все инструменты в одном месте</h2>
                 <p class="section-subtitle">От теории к практике — каждый компонент решает свою задачу.</p>
             </div>
 
             <div class="ecosystem-grid">
-                <a href="/articles/" class="eco-link">
+                <a href="/articles/" class="eco-link animate-on-scroll">
                     <span class="icon">📖</span>
                     <span class="name">Academy</span>
                     <span class="desc">Уроки и теория</span>
                 </a>
-                <a href="/lab.html" class="eco-link">
+                <a href="/lab.html" class="eco-link animate-on-scroll">
                     <span class="icon">🧪</span>
                     <span class="name">Lab</span>
                     <span class="desc">Эксперименты</span>
                 </a>
-                <a href="/simulator.html" class="eco-link">
+                <a href="/simulator.html" class="eco-link animate-on-scroll">
                     <span class="icon">💻</span>
                     <span class="name">Simulator</span>
                     <span class="desc">ПИД-симулятор</span>
                 </a>
-                <a href="/builder.html" class="eco-link">
+                <a href="/builder.html" class="eco-link animate-on-scroll">
                     <span class="icon">🛠️</span>
                     <span class="name">Builder</span>
                     <span class="desc">Конструктор БПЛА</span>
                 </a>
-                <a href="/docs.html" class="eco-link">
+                <a href="/docs.html" class="eco-link animate-on-scroll">
                     <span class="icon">📚</span>
                     <span class="name">Документация</span>
                     <span class="desc">Технические материалы</span>
                 </a>
-                <a href="/drone-sim.html" class="eco-link">
+                <a href="/drone-sim.html" class="eco-link animate-on-scroll">
                     <span class="icon">✈️</span>
                     <span class="name">Drone Sim</span>
                     <span class="desc">Программирование дронов</span>
@@ -868,10 +1190,10 @@
         </div>
     </section>
 
-    <!-- ======== ОТЗЫВ / ЦИТАТА ======== -->
-    <section style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <!-- ======== ОТЗЫВ ======== -->
+    <section>
         <div class="section-container">
-            <div class="testimonial">
+            <div class="testimonial animate-on-scroll">
                 <div class="quote">
                     «ThunderLight — это не просто конструктор. Это полноценная образовательная среда, где ученики проходят путь от теории к реальной инженерии. Всё открыто, доступно и безопасно.»
                 </div>
@@ -881,9 +1203,9 @@
     </section>
 
     <!-- ======== CTA ======== -->
-    <section>
+    <section style="background:radial-gradient(ellipse at center, rgba(79,70,229,0.08), transparent 70%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div class="section-container" style="text-align:center;">
-            <div style="max-width:600px;margin:0 auto;">
+            <div style="max-width:600px;margin:0 auto;" class="animate-on-scroll">
                 <h2 style="font-size:2.2em;font-weight:900;margin-bottom:16px;">Готов начать?</h2>
                 <p style="color:var(--gray-light);font-size:1.1em;margin-bottom:32px;">
                     Всё, что нужно для старта, уже есть на сайте. Бесплатно, с открытым кодом и документацией.
@@ -944,27 +1266,35 @@
         <div class="footer-bottom">
             <p>&copy; 2026 ThunderLight. Все права защищены.</p>
             <div class="footer-social">
-                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
-                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
-                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
+                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="mailto:thunderlight@internet.ru" title="Email"><i class="fas fa-envelope"></i></a>
             </div>
         </div>
     </footer>
 
     <script>
-        // Все скрипты остаются без изменений
+        // ============================================================
+        // ПРЕДЗАГРУЗЧИК
+        // ============================================================
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
             }, 600);
         });
 
+        // ============================================================
+        // КУРСОР
+        // ============================================================
         const cursorGlow = document.getElementById('cursorGlow');
         document.addEventListener('mousemove', (e) => {
             cursorGlow.style.left = e.clientX + 'px';
             cursorGlow.style.top = e.clientY + 'px';
         });
 
+        // ============================================================
+        // ЧАСТИЦЫ
+        // ============================================================
         function createParticles() {
             const container = document.getElementById('particles');
             const colors = ['#4f46e5', '#7c3aed', '#06b6d4', '#818cf8', '#c084fc'];
@@ -983,59 +1313,94 @@
         }
         createParticles();
 
+        // ============================================================
+        // НАВБАР
+        // ============================================================
         window.addEventListener('scroll', () => {
             document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
         });
 
+        // ============================================================
+        // МОБИЛЬНОЕ МЕНЮ
+        // ============================================================
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const navLinks = document.getElementById('navLinks');
+        const mobileMenu = document.getElementById('navLinksMobile');
         let menuOpen = false;
 
         mobileMenuBtn.addEventListener('click', () => {
             menuOpen = !menuOpen;
-            if (menuOpen) {
-                navLinks.style.display = 'flex';
-                navLinks.style.flexDirection = 'column';
-                navLinks.style.position = 'absolute';
-                navLinks.style.top = '100%';
-                navLinks.style.left = '0';
-                navLinks.style.width = '100%';
-                navLinks.style.background = 'rgba(2, 6, 23, 0.98)';
-                navLinks.style.padding = '20px 32px';
-                navLinks.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-                mobileMenuBtn.textContent = '✕';
-            } else {
-                navLinks.style.display = 'none';
-                mobileMenuBtn.textContent = '☰';
-            }
+            mobileMenu.classList.toggle('open', menuOpen);
+            mobileMenuBtn.classList.toggle('open', menuOpen);
+            mobileMenuBtn.innerHTML = menuOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
         });
 
-        navLinks.querySelectorAll('a').forEach(link => {
+        // Закрываем меню при клике на ссылку
+        mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
-                if (menuOpen) {
-                    menuOpen = false;
-                    navLinks.style.display = 'none';
-                    mobileMenuBtn.textContent = '☰';
-                }
+                menuOpen = false;
+                mobileMenu.classList.remove('open');
+                mobileMenuBtn.classList.remove('open');
+                mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
             });
         });
 
+        // ============================================================
+        // АНИМАЦИЯ ПОЯВЛЕНИЯ ПРИ СКРОЛЛЕ
+        // ============================================================
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.classList.add('visible');
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-        document.querySelectorAll('.course-card, .eco-link, .stat-item, .benefit-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(20px)';
-            el.style.transition = 'all 0.6s ease';
+        document.querySelectorAll('.animate-on-scroll').forEach(el => {
             observer.observe(el);
         });
 
+        // ============================================================
+        // АНИМАЦИЯ СЧЁТЧИКОВ
+        // ============================================================
+        function animateCounters() {
+            const counters = document.querySelectorAll('.counter-item .number');
+            counters.forEach(counter => {
+                const target = parseInt(counter.dataset.target);
+                const duration = 2000;
+                const startTime = performance.now();
+
+                function updateCounter(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    const current = Math.round(eased * target);
+                    counter.textContent = current;
+                    if (progress < 1) {
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target + (target === 100 ? '%' : '');
+                    }
+                }
+                requestAnimationFrame(updateCounter);
+            });
+        }
+
+        // Запускаем счётчики, когда они появляются в поле зрения
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    counterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const counterSection = document.querySelector('.counters-grid');
+        if (counterSection) counterObserver.observe(counterSection);
+
+        // ============================================================
+        // УБИРАЕМ ЯКОРЬ ИЗ URL
+        // ============================================================
         if (window.location.hash) {
             window.scrollTo(0, 0);
             history.pushState("", document.title, window.location.pathname + window.location.search);
