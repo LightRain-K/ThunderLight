@@ -9,7 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        /* ============ ОСНОВНЫЕ СТИЛИ (сохранены из оригинала) ============ */
+        /* ============ БАЗОВЫЕ СТИЛИ THUNDERLIGHT ============ */
         :root {
             --primary: #4f46e5;
             --secondary: #7c3aed;
@@ -26,8 +26,10 @@
             --radius: 16px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
+        
         body {
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             line-height: 1.7;
@@ -36,8 +38,254 @@
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
         }
-
-        /* ============ НОВЫЕ СТИЛИ ДЛЯ ПРОФЕССИОНАЛЬНОГО СИМУЛЯТОРА ============ */
+        
+        /* Прелоадер */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .preloader.hidden { opacity: 0; visibility: hidden; }
+        
+        .preloader-logo {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: preloaderPulse 1.5s infinite;
+            display: block;
+        }
+        
+        .preloader-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto 0;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes preloaderPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.95); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Навигация */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(2, 6, 23, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .navbar.scrolled {
+            background: rgba(2, 6, 23, 0.95);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        .nav-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav-logo {
+            font-size: 1.5em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+        }
+        .nav-logo:hover { transform: scale(1.05); }
+        .nav-logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            animation: logoGlow 2s infinite;
+        }
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(79, 70, 229, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.6); }
+        }
+        .nav-links {
+            display: flex;
+            gap: 8px;
+            list-style: none;
+            align-items: center;
+        }
+        .nav-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: var(--transition);
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: var(--transition);
+            transform: translateX(-50%);
+        }
+        .nav-links a:hover::after { width: 60%; }
+        .nav-links a:hover { color: var(--light); }
+        .nav-links a.active {
+            color: var(--light);
+            background: rgba(79, 70, 229, 0.15);
+        }
+        .nav-download {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white !important;
+            padding: 10px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            animation: downloadPulse 2s infinite;
+        }
+        .nav-download:hover {
+            transform: translateY(-2px);
+            animation: none;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .mobile-menu-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        @keyframes downloadPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        }
+        
+        /* Hero */
+        .hero {
+            padding: 160px 32px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(79, 70, 229, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(79, 70, 229, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(circle at center, black 30%, transparent 70%);
+            animation: gridMove 20s linear infinite;
+        }
+        @keyframes gridMove {
+            from { transform: translate(0, 0); }
+            to { transform: translate(60px, 60px); }
+        }
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: glowFloat 10s ease-in-out infinite;
+        }
+        .hero-glow-1 { background: var(--primary); top: -200px; left: -100px; }
+        .hero-glow-2 { background: var(--accent); bottom: -200px; right: -100px; animation-delay: -5s; }
+        @keyframes glowFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .hero h1 {
+            font-size: 3em;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -2px;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease infinite;
+            background-size: 200% 200%;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .hero p {
+            font-size: 1.1em;
+            color: var(--gray-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Контейнер симулятора */
+        .sim-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px 32px 60px;
+        }
+        .sim-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .sim-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+        .sim-panel h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         
         /* 3D Контейнер */
         #drone3DContainer {
@@ -50,88 +298,54 @@
             position: relative;
         }
         
-        /* Панель инструментов */
-        .toolbar {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-        
-        .tool-btn {
-            padding: 8px 14px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--gray-light);
-            cursor: pointer;
-            font-size: 0.8em;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .tool-btn:hover {
-            background: rgba(79, 70, 229, 0.2);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .tool-btn.active {
-            background: rgba(79, 70, 229, 0.3);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        /* Редактор кода с подсветкой */
-        .code-container {
-            position: relative;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border);
+        /* Кнопки */
+        .btn {
+            padding: 8px 20px;
             border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 16px;
-            background: rgba(0, 0, 0, 0.3);
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .code-tabs {
-            display: flex;
-            gap: 4px;
-        }
-        
-        .code-tab {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.75em;
-            color: var(--gray-light);
-            background: transparent;
+            font-weight: 600;
+            font-size: 0.85em;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .code-tab.active {
-            background: rgba(79, 70, 229, 0.3);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--light);
+        }
+        .btn-outline:hover {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+        .btn-sm { padding: 4px 14px; font-size: 0.75em; }
         
+        /* Редактор кода */
         .code-editor {
             width: 100%;
             min-height: 300px;
             padding: 16px;
-            background: transparent;
-            border: none;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 10px;
             color: #a5b4fc;
             font-family: 'JetBrains Mono', 'Courier New', monospace;
             font-size: 0.85em;
@@ -140,15 +354,17 @@
             outline: none;
             tab-size: 4;
         }
+        .code-editor:focus {
+            border-color: rgba(79, 70, 229, 0.4);
+        }
         
-        /* Панель телеметрии */
+        /* Телеметрия */
         .telemetry-panel {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 10px;
             margin-top: 12px;
         }
-        
         .telemetry-item {
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
@@ -156,7 +372,6 @@
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
         .telemetry-value {
             font-size: 1.2em;
             font-weight: 700;
@@ -164,7 +379,6 @@
             color: var(--light);
             margin-bottom: 4px;
         }
-        
         .telemetry-label {
             font-size: 0.65em;
             color: var(--gray-light);
@@ -172,28 +386,32 @@
             letter-spacing: 0.5px;
         }
         
-        /* Панель задач */
-        .mission-panel {
-            background: rgba(79, 70, 229, 0.05);
-            border: 1px solid rgba(79, 70, 229, 0.2);
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 12px;
+        /* Выбор миссии */
+        .task-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 12px 0;
         }
-        
-        .mission-progress {
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 8px;
+        .task-btn {
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--gray-light);
+            font-size: 0.75em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
         }
-        
-        .mission-progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
-            border-radius: 2px;
-            transition: width 0.3s;
+        .task-btn:hover {
+            border-color: rgba(255,255,255,0.2);
+            color: var(--light);
+        }
+        .task-btn.active {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.15);
+            color: var(--light);
         }
         
         /* Логи */
@@ -208,71 +426,150 @@
             overflow-y: auto;
             line-height: 1.6;
         }
-        
         .log-entry {
             padding: 2px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
-        
-        .log-timestamp {
-            color: var(--gray);
-            margin-right: 8px;
-        }
-        
+        .log-timestamp { color: var(--gray); margin-right: 8px; }
         .log-info { color: var(--accent); }
         .log-success { color: var(--success); }
         .log-warning { color: var(--warning); }
         .log-error { color: var(--danger); }
         
-        /* Документация */
-        .docs-panel {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 16px;
-            margin-top: 12px;
+        /* Футер */
+        .footer {
+            padding: 50px 32px 30px;
+            background: var(--darker);
+            border-top: 1px solid var(--border);
         }
-        
-        .docs-item {
-            padding: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        .footer-grid {
+            max-width: 1280px;
+            margin: 0 auto 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 32px;
+        }
+        .footer-col h4 {
             font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray);
+            margin-bottom: 16px;
         }
-        
-        .docs-item:last-child {
-            border-bottom: none;
-        }
-        
-        .docs-command {
-            color: #a5b4fc;
-            font-family: monospace;
-            font-weight: 600;
-        }
-        
-        .docs-desc {
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col a {
             color: var(--gray-light);
-            margin-left: 8px;
+            text-decoration: none;
+            font-size: 0.85em;
+            transition: var(--transition);
+        }
+        .footer-col a:hover { color: var(--light); }
+        .footer-brand p {
+            color: var(--gray);
+            font-size: 0.85em;
+            margin: 10px 0 16px;
+            max-width: 300px;
+        }
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-bottom p { color: var(--gray); font-size: 0.75em; }
+        .footer-social { display: flex; gap: 10px; }
+        .footer-social a {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        .footer-social a:hover {
+            background: rgba(79, 70, 229, 0.2);
+            color: var(--light);
+            transform: translateY(-2px);
         }
         
         @media (max-width: 1024px) {
             .sim-layout { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
         }
-        
         @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .nav-content { padding: 12px 20px; }
+            .hero { padding: 130px 20px 30px; }
+            .hero h1 { font-size: 2em; }
+            .sim-container { padding: 16px; }
+            .sim-panel { padding: 16px; }
             #drone3DContainer { height: 300px; }
             .code-editor { min-height: 200px; font-size: 0.75em; }
+            .footer-grid { grid-template-columns: 1fr; gap: 20px; }
+            .footer { padding: 30px 20px 20px; }
         }
     </style>
 </head>
 <body>
-    <!-- Прелоадер, навигация, hero - БЕЗ ИЗМЕНЕНИЙ -->
-    <!-- ... -->
+    <!-- Прелоадер -->
+    <div class="preloader" id="preloader">
+        <div style="text-align: center;">
+            <span class="preloader-logo">⚡ ThunderLight</span>
+            <div class="preloader-spinner"></div>
+        </div>
+    </div>
 
+    <!-- Навигация -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo">
+                <span class="nav-logo-icon">⚡</span>
+                ThunderLight
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+                <li><a href="/lab.html">Lab</a></li>
+                <li><a href="/simulator.html">Simulator</a></li>
+                <li><a href="/builder.html">Builder</a></li>
+                <li><a href="/docs.html">Документация</a></li>
+                <li><a href="/drone-sim.html" class="active">Drone Sim</a></li>
+                <li><a href="https://github.com/LightRain-K/ThunderLight/releases/" target="_blank" class="nav-download">Скачать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-grid-bg"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-content">
+            <h1>✈️ Симулятор <span class="hero-gradient">программирования дронов</span></h1>
+            <p>Пиши код на Python, управляй виртуальным дроном и выполняй задания. Безопасное обучение программированию БПЛА.</p>
+        </div>
+    </section>
+
+    <!-- Основной контент -->
     <div class="sim-container">
         <!-- Выбор миссии -->
         <div class="sim-panel" style="margin-bottom: 20px;">
             <h3>🎯 Выбор миссии</h3>
-            <div class="task-selector" style="display:flex; gap:8px; flex-wrap:wrap;">
+            <div class="task-selector">
                 <button class="task-btn active" data-mission="takeoff">🛫 Взлёт и посадка</button>
                 <button class="task-btn" data-mission="square">⬜ Квадрат</button>
                 <button class="task-btn" data-mission="circle">🔄 Круг</button>
@@ -286,19 +583,10 @@
         </div>
 
         <div class="sim-layout">
-            <!-- Левая панель: 3D симуляция -->
+            <!-- Левая панель: 3D -->
             <div class="sim-panel">
                 <h3>🛩️ 3D Симуляция</h3>
                 <div id="drone3DContainer"></div>
-                
-                <!-- Панель инструментов -->
-                <div class="toolbar">
-                    <button class="tool-btn" id="btnViewTop" title="Вид сверху">🔝 Сверху</button>
-                    <button class="tool-btn" id="btnViewSide" title="Вид сбоку">👁 Сбоку</button>
-                    <button class="tool-btn" id="btnViewFollow" title="Следовать за дроном">🎥 Следовать</button>
-                    <button class="tool-btn" id="btnGrid" title="Показать сетку">📐 Сетка</button>
-                    <button class="tool-btn" id="btnTrajectory" title="Показать траекторию">📈 Траектория</button>
-                </div>
                 
                 <!-- Телеметрия -->
                 <div class="telemetry-panel">
@@ -329,20 +617,11 @@
                 </div>
             </div>
 
-            <!-- Правая панель: Код и управление -->
+            <!-- Правая панель: Код -->
             <div class="sim-panel">
                 <h3>💻 Программирование</h3>
                 
-                <!-- Код -->
-                <div class="code-container">
-                    <div class="code-header">
-                        <div class="code-tabs">
-                            <button class="code-tab active">main.py</button>
-                            <button class="code-tab">drone.py</button>
-                        </div>
-                        <span style="font-size:0.7em; color:var(--gray);">Python</span>
-                    </div>
-                    <textarea class="code-editor" id="codeEditor" spellcheck="false"># Импорт библиотеки
+                <textarea class="code-editor" id="codeEditor" spellcheck="false"># Импорт библиотеки
 from drone import Drone
 
 # Создание объекта дрона
@@ -357,25 +636,11 @@ def on_start():
     
     # Посадка
     drone.land()</textarea>
-                </div>
                 
-                <!-- Кнопки управления -->
                 <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
                     <button class="btn btn-primary" id="btnRun">▶ Запустить</button>
-                    <button class="btn btn-outline" id="btnPause">⏸ Пауза</button>
-                    <button class="btn btn-danger" id="btnStop">⏹ Стоп</button>
                     <button class="btn btn-outline" id="btnReset">⟳ Сброс</button>
-                </div>
-                
-                <!-- Прогресс миссии -->
-                <div class="mission-panel" style="margin-top:12px;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.8em;">
-                        <span id="missionName">Миссия: Взлёт и посадка</span>
-                        <span id="missionProgressText">0%</span>
-                    </div>
-                    <div class="mission-progress">
-                        <div class="mission-progress-bar" id="missionProgressBar" style="width: 0%;"></div>
-                    </div>
+                    <button class="btn btn-danger" id="btnStop">⏹ Стоп</button>
                 </div>
                 
                 <!-- Логи -->
@@ -388,49 +653,73 @@ def on_start():
                         </div>
                     </div>
                 </div>
-                
-                <!-- Документация -->
-                <div class="docs-panel">
-                    <h4 style="font-size:0.85em; color:var(--gray-light); margin-bottom:8px;">📚 Доступные команды</h4>
-                    <div class="docs-item">
-                        <span class="docs-command">drone.takeoff(height)</span>
-                        <span class="docs-desc">— взлёт на указанную высоту</span>
-                    </div>
-                    <div class="docs-item">
-                        <span class="docs-command">drone.land()</span>
-                        <span class="docs-desc">— посадка дрона</span>
-                    </div>
-                    <div class="docs-item">
-                        <span class="docs-command">drone.hover(seconds)</span>
-                        <span class="docs-desc">— зависание на время</span>
-                    </div>
-                    <div class="docs-item">
-                        <span class="docs-command">drone.go_to(x, y, z)</span>
-                        <span class="docs-desc">— перемещение в точку</span>
-                    </div>
-                    <div class="docs-item">
-                        <span class="docs-command">drone.rotate(degrees)</span>
-                        <span class="docs-desc">— поворот на угол</span>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
-    <!-- Футер без изменений -->
-    <!-- ... -->
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo">
+                    <span class="nav-logo-icon">⚡</span>
+                    ThunderLight
+                </a>
+                <p>Образовательная экосистема БПЛА. Программируй, симулируй, летай.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Экосистема</h4>
+                <ul>
+                    <li><a href="/articles.html">Academy</a></li>
+                    <li><a href="/lab.html">Lab</a></li>
+                    <li><a href="/simulator.html">Simulator</a></li>
+                    <li><a href="/builder.html">Builder</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Документы</h4>
+                <ul>
+                    <li><a href="/privacy.html">Конфиденциальность</a></li>
+                    <li><a href="/terms.html">Условия использования</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Контакты</h4>
+                <ul>
+                    <li><a href="https://t.me/thunderlight_online" target="_blank">Telegram</a></li>
+                    <li><a href="mailto:thunderlight@internet.ru">Email</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderLight/" target="_blank">GitHub</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 ThunderLight. Все права защищены.</p>
+            <div class="footer-social">
+                <a href="https://t.me/thunderlight_online" target="_blank" title="Telegram">TG</a>
+                <a href="https://github.com/LightRain-K/ThunderLight/" target="_blank" title="GitHub">GH</a>
+                <a href="mailto:thunderlight@internet.ru" title="Email">@</a>
+            </div>
+        </div>
+    </footer>
 
     <script>
         // ================================================================
-        // ПРОФЕССИОНАЛЬНЫЙ СИМУЛЯТОР ПРОГРАММИРОВАНИЯ ДРОНОВ
+        // ПРОФЕССИОНАЛЬНАЯ 3D МОДЕЛЬ ДРОНА
         // ================================================================
 
-        // Инициализация Three.js
-        let scene, camera, renderer, droneModel, droneGroup;
+        let scene, camera, renderer, droneGroup, propellers = [];
         let gridHelper, trajectoryLine;
-        let cameraMode = 'follow';
-        let showGrid = true;
-        let showTrajectory = true;
+        const droneState = {
+            x: 0, y: 0, z: 0,
+            targetX: 0, targetY: 0, targetZ: 0,
+            speed: 0.8,
+            flying: false,
+            battery: 100,
+            path: [],
+            rotation: 0,
+            propAngle: 0
+        };
 
         function initThreeJS() {
             const container = document.getElementById('drone3DContainer');
@@ -447,6 +736,7 @@ def on_start():
             
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             container.appendChild(renderer.domElement);
@@ -473,20 +763,20 @@ def on_start():
             gridHelper.position.y = 0;
             scene.add(gridHelper);
             
-            // Создание дрона
-            createDrone();
+            // Создание красивого дрона
+            createBeautifulDrone();
             
             // Траектория
             const trajectoryGeometry = new THREE.BufferGeometry();
             const trajectoryMaterial = new THREE.LineBasicMaterial({ 
                 color: 0x00ff88, 
                 transparent: true, 
-                opacity: 0.6 
+                opacity: 0.5 
             });
             trajectoryLine = new THREE.Line(trajectoryGeometry, trajectoryMaterial);
             scene.add(trajectoryLine);
             
-            // Обработка ресайза
+            // Ресайз
             window.addEventListener('resize', () => {
                 const w = container.clientWidth;
                 const h = container.clientHeight;
@@ -496,292 +786,174 @@ def on_start():
             });
         }
 
-        function createDrone() {
+        function createBeautifulDrone() {
             droneGroup = new THREE.Group();
             
-            // Корпус
-            const bodyGeometry = new THREE.BoxGeometry(0.8, 0.15, 0.8);
+            // Центральный корпус
+            const bodyGeometry = new THREE.BoxGeometry(0.7, 0.12, 0.7);
             const bodyMaterial = new THREE.MeshPhongMaterial({ 
                 color: 0x4f46e5, 
-                metalness: 0.3, 
-                roughness: 0.7 
+                metalness: 0.4, 
+                roughness: 0.6,
+                shininess: 80
             });
             const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
             body.castShadow = true;
+            body.receiveShadow = true;
             droneGroup.add(body);
             
-            // Лучи
-            const armGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.8, 8);
-            const armMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0x64748b, 
+            // Верхняя крышка
+            const topGeometry = new THREE.BoxGeometry(0.5, 0.06, 0.5);
+            const topMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x7c3aed, 
                 metalness: 0.5, 
                 roughness: 0.5 
             });
+            const top = new THREE.Mesh(topGeometry, topMaterial);
+            top.position.y = 0.09;
+            droneGroup.add(top);
+            
+            // Лучи (4 шт)
+            const armGeometry = new THREE.CylinderGeometry(0.04, 0.06, 0.9, 8);
+            const armMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x64748b, 
+                metalness: 0.6, 
+                roughness: 0.4 
+            });
             
             const armPositions = [
-                { x: 0.4, z: 0.4, rotY: Math.PI / 4 },
-                { x: -0.4, z: 0.4, rotY: -Math.PI / 4 },
-                { x: -0.4, z: -0.4, rotY: Math.PI / 4 },
-                { x: 0.4, z: -0.4, rotY: -Math.PI / 4 }
+                { x: 0.4, z: 0.4, rotZ: Math.PI / 4 },
+                { x: -0.4, z: 0.4, rotZ: -Math.PI / 4 },
+                { x: -0.4, z: -0.4, rotZ: Math.PI / 4 },
+                { x: 0.4, z: -0.4, rotZ: -Math.PI / 4 }
             ];
             
             armPositions.forEach(pos => {
                 const arm = new THREE.Mesh(armGeometry, armMaterial);
                 arm.position.set(pos.x, 0, pos.z);
-                arm.rotation.y = pos.rotY;
+                arm.rotation.z = pos.rotZ;
+                arm.castShadow = true;
                 droneGroup.add(arm);
             });
             
-            // Пропеллеры
-            const propGeometry = new THREE.BoxGeometry(0.5, 0.02, 0.1);
-            const propMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0x94a3b8, 
-                metalness: 0.2, 
-                roughness: 0.8 
+            // Моторы
+            const motorGeometry = new THREE.CylinderGeometry(0.09, 0.09, 0.08, 16);
+            const motorMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x334155, 
+                metalness: 0.7, 
+                roughness: 0.3 
             });
             
             const motorPositions = [
-                { x: 0.6, z: 0.6 },
-                { x: -0.6, z: 0.6 },
-                { x: -0.6, z: -0.6 },
-                { x: 0.6, z: -0.6 }
+                { x: 0.75, z: 0.75 },
+                { x: -0.75, z: 0.75 },
+                { x: -0.75, z: -0.75 },
+                { x: 0.75, z: -0.75 }
             ];
             
             motorPositions.forEach(pos => {
-                const motor = new THREE.Mesh(
-                    new THREE.CylinderGeometry(0.08, 0.08, 0.06, 8),
-                    new THREE.MeshPhongMaterial({ color: 0x334155 })
-                );
-                motor.position.set(pos.x, 0.08, pos.z);
+                const motor = new THREE.Mesh(motorGeometry, motorMaterial);
+                motor.position.set(pos.x, 0.06, pos.z);
                 droneGroup.add(motor);
-                
+            });
+            
+            // Пропеллеры
+            const propGroup1 = new THREE.Group();
+            const propGeometry = new THREE.BoxGeometry(0.55, 0.015, 0.12);
+            const propMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x94a3b8, 
+                metalness: 0.2, 
+                roughness: 0.7 
+            });
+            
+            motorPositions.forEach(pos => {
                 const prop = new THREE.Mesh(propGeometry, propMaterial);
                 prop.position.set(pos.x, 0.12, pos.z);
+                prop.castShadow = true;
+                propellers.push(prop);
                 droneGroup.add(prop);
             });
             
             // Камера
-            const cameraGeometry = new THREE.SphereGeometry(0.08, 8, 8);
+            const cameraGeometry = new THREE.SphereGeometry(0.07, 16, 16);
             const cameraMaterial = new THREE.MeshPhongMaterial({ 
                 color: 0x06b6d4, 
                 emissive: 0x06b6d4, 
-                emissiveIntensity: 0.3 
+                emissiveIntensity: 0.4 
             });
             const cameraMesh = new THREE.Mesh(cameraGeometry, cameraMaterial);
-            cameraMesh.position.set(0, -0.1, 0.35);
+            cameraMesh.position.set(0, -0.08, 0.3);
             droneGroup.add(cameraMesh);
+            
+            // Светодиоды
+            const ledGeometry = new THREE.SphereGeometry(0.03, 8, 8);
+            
+            const ledPositions = [
+                { x: 0.5, z: 0.5, color: 0xff0000 },
+                { x: -0.5, z: 0.5, color: 0x00ff00 },
+                { x: -0.5, z: -0.5, color: 0x0000ff },
+                { x: 0.5, z: -0.5, color: 0xffff00 }
+            ];
+            
+            ledPositions.forEach(pos => {
+                const ledMaterial = new THREE.MeshPhongMaterial({ 
+                    color: pos.color, 
+                    emissive: pos.color, 
+                    emissiveIntensity: 0.8 
+                });
+                const led = new THREE.Mesh(ledGeometry, ledMaterial);
+                led.position.set(pos.x, 0.06, pos.z);
+                droneGroup.add(led);
+            });
             
             scene.add(droneGroup);
         }
 
-        // Состояние дрона
-        const droneState = {
-            x: 0, y: 0, z: 0,
-            targetX: 0, targetY: 0, targetZ: 0,
-            speed: 1.0,
-            battery: 100,
-            flying: false,
-            path: [],
-            rotation: 0
-        };
-
-        // Миссии
-        const missions = {
-            takeoff: {
-                name: 'Взлёт и посадка',
-                description: '🛫 Взлёт и посадка: Освойте базовые команды управления дроном',
-                template: `# Импорт библиотеки
-from drone import Drone
-
-# Создание объекта дрона
-drone = Drone()
-
-def on_start():
-    # Взлёт на 3 метра
-    drone.takeoff(3)
-    
-    # Зависание на 2 секунды
-    drone.hover(2)
-    
-    # Посадка
-    drone.land()`,
-                checkCompletion: function(state, history) {
-                    return state.maxAltitude >= 2.5 && state.landed;
-                }
-            },
-            square: {
-                name: 'Полёт по квадрату',
-                description: '⬜ Квадрат: Облетите квадрат со стороной 4 метра',
-                template: `from drone import Drone
-
-drone = Drone()
-
-def on_start():
-    drone.takeoff(2)
-    drone.go_to(4, 0, 2)
-    drone.go_to(4, 0, 4)
-    drone.go_to(0, 0, 4)
-    drone.go_to(0, 0, 0)
-    drone.land()`,
-                checkCompletion: function(state, history) {
-                    // Проверка посещения всех углов квадрата
-                    const corners = [
-                        { x: 4, z: 4 },
-                        { x: 0, z: 4 },
-                        { x: 4, z: 0 }
-                    ];
-                    return corners.every(corner => 
-                        history.some(p => 
-                            Math.abs(p.x - corner.x) < 1 && 
-                            Math.abs(p.z - corner.z) < 1
-                        )
-                    );
-                }
-            },
-            circle: {
-                name: 'Полёт по кругу',
-                description: '🔄 Круг: Опишите круг радиусом 3 метра',
-                template: `from drone import Drone
-import math
-
-drone = Drone()
-
-def on_start():
-    drone.takeoff(3)
-    for i in range(36):
-        angle = i * 10 * math.pi / 180
-        x = 3 * math.cos(angle)
-        z = 3 * math.sin(angle)
-        drone.go_to(x, 0, z)
-    drone.land()`,
-                checkCompletion: function(state, history) {
-                    // Проверка посещения точек круга
-                    return history.length > 100;
-                }
-            },
-            figure8: {
-                name: 'Полёт восьмёркой',
-                description: '∞ Восьмёрка: Выполните полёт по траектории восьмёрки',
-                template: `from drone import Drone
-import math
-
-drone = Drone()
-
-def on_start():
-    drone.takeoff(3)
-    for i in range(72):
-        angle = i * 5 * math.pi / 180
-        x = 3 * math.sin(angle)
-        z = 3 * math.sin(angle * 2)
-        drone.go_to(x, 0, z)
-    drone.land()`,
-                checkCompletion: function(state, history) {
-                    return history.length > 150;
-                }
-            },
-            obstacle: {
-                name: 'Облёт препятствий',
-                description: '🚧 Облёт препятствий: Пролетите вокруг препятствий',
-                template: `from drone import Drone
-
-drone = Drone()
-
-def on_start():
-    drone.takeoff(2)
-    drone.go_to(2, 0, 0)
-    drone.go_to(4, 0, 2)
-    drone.go_to(2, 0, 4)
-    drone.go_to(0, 0, 2)
-    drone.land()`,
-                checkCompletion: function(state, history) {
-                    return history.some(p => Math.abs(p.x) > 3 && Math.abs(p.z) > 3);
-                }
-            },
-            free: {
-                name: 'Свободный полёт',
-                description: '✏️ Свободный полёт: Напишите свою программу',
-                template: `from drone import Drone
-
-drone = Drone()
-
-def on_start():
-    # Напишите свой код
-    drone.takeoff(2)
-    drone.hover(2)
-    drone.land()`,
-                checkCompletion: function(state, history) {
-                    return state.landed && history.length > 10;
-                }
-            }
-        };
-
-        // Инициализация симулятора
-        function initSimulator() {
-            initThreeJS();
-            setupEventListeners();
-            animate();
-        }
-
-        function setupEventListeners() {
-            // Кнопки управления
-            document.getElementById('btnRun').addEventListener('click', runCode);
-            document.getElementById('btnReset').addEventListener('click', resetSimulation);
-            document.getElementById('btnStop').addEventListener('click', stopSimulation);
-            document.getElementById('btnPause').addEventListener('click', togglePause);
+        // Анимация
+        function animate() {
+            requestAnimationFrame(animate);
             
-            // Кнопки видов
-            document.getElementById('btnViewTop').addEventListener('click', () => setCameraMode('top'));
-            document.getElementById('btnViewSide').addEventListener('click', () => setCameraMode('side'));
-            document.getElementById('btnViewFollow').addEventListener('click', () => setCameraMode('follow'));
-            document.getElementById('btnGrid').addEventListener('click', toggleGrid);
-            document.getElementById('btnTrajectory').addEventListener('click', toggleTrajectory);
+            // Обновление позиции
+            droneState.x += (droneState.targetX - droneState.x) * 0.1;
+            droneState.y += (droneState.targetY - droneState.y) * 0.1;
+            droneState.z += (droneState.targetZ - droneState.z) * 0.1;
             
-            // Выбор миссии
-            document.querySelectorAll('.task-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.task-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    loadMission(btn.dataset.mission);
+            droneGroup.position.set(droneState.x, droneState.y, droneState.z);
+            
+            // Вращение пропеллеров
+            if (droneState.flying) {
+                droneState.propAngle += 0.3;
+                propellers.forEach(prop => {
+                    prop.rotation.y = droneState.propAngle;
                 });
-            });
-            
-            // Ресайз
-            window.addEventListener('resize', () => {
-                const container = document.getElementById('drone3DContainer');
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            });
-        }
-
-        function loadMission(missionName) {
-            const mission = missions[missionName];
-            if (!mission) return;
-            
-            document.getElementById('missionName').textContent = 'Миссия: ' + mission.name;
-            document.getElementById('missionDescription').textContent = mission.description;
-            document.getElementById('codeEditor').value = mission.template;
-            
-            resetSimulation();
-            addLog('Загружена миссия: ' + mission.name, 'info');
-        }
-
-        function runCode() {
-            const code = document.getElementById('codeEditor').value;
-            addLog('Запуск программы...', 'info');
-            
-            // Здесь должен быть парсер Python-подобного кода
-            // Для простоты используем упрощенный парсер
-            const commands = parseCode(code);
-            
-            if (commands.length === 0) {
-                addLog('Ошибка: команды не найдены', 'error');
-                return;
             }
             
-            executeCommands(commands);
+            // Обновление траектории
+            if (droneState.flying) {
+                droneState.path.push({ x: droneState.x, y: droneState.y, z: droneState.z });
+                if (droneState.path.length > 500) droneState.path.shift();
+                
+                const points = droneState.path.map(p => new THREE.Vector3(p.x, p.y, p.z));
+                trajectoryLine.geometry.dispose();
+                trajectoryLine.geometry = new THREE.BufferGeometry().setFromPoints(points);
+            }
+            
+            // Камера следует за дроном
+            camera.position.x = droneState.x + 6;
+            camera.position.y = droneState.y + 4;
+            camera.position.z = droneState.z + 6;
+            camera.lookAt(droneGroup.position);
+            
+            // Обновление телеметрии
+            document.getElementById('telAltitude').textContent = droneState.y.toFixed(1) + ' м';
+            document.getElementById('telX').textContent = droneState.x.toFixed(1) + ' м';
+            document.getElementById('telY').textContent = droneState.z.toFixed(1) + ' м';
+            document.getElementById('telSpeed').textContent = droneState.speed.toFixed(1) + ' м/с';
+            
+            renderer.render(scene, camera);
         }
 
+        // Парсер кода
         function parseCode(code) {
             const commands = [];
             const lines = code.split('\n');
@@ -811,29 +983,18 @@ def on_start():
                         commands.push({ cmd, args });
                     }
                 }
-                
-                // Обработка циклов
-                if (inFunction && trimmed.startsWith('for')) {
-                    const match = trimmed.match(/for\s+\w+\s+in\s+range\((\d+)\)/);
-                    if (match) {
-                        const count = parseInt(match[1]);
-                        // Находим тело цикла
-                        const bodyCommands = [];
-                        // ... (упрощенная обработка)
-                    }
-                }
             }
             
             return commands;
         }
 
+        // Выполнение команд
         function executeCommands(commands) {
             let index = 0;
             
             function executeNext() {
                 if (index >= commands.length) {
                     addLog('Программа завершена', 'success');
-                    checkMissionCompletion();
                     return;
                 }
                 
@@ -842,22 +1003,26 @@ def on_start():
                 
                 switch (command.cmd) {
                     case 'takeoff':
-                        const height = command.args[0] || 2;
+                        const height = command.args[0] || 3;
                         droneState.targetY = height;
                         droneState.flying = true;
+                        document.getElementById('telStatus').textContent = 'Взлёт';
+                        document.getElementById('telStatus').style.color = '#00ff88';
                         addLog(`Взлёт на ${height} м`, 'success');
-                        setTimeout(executeNext, 500);
+                        setTimeout(executeNext, 800);
                         break;
                         
                     case 'land':
                         droneState.targetY = 0;
                         droneState.flying = false;
+                        document.getElementById('telStatus').textContent = 'Посадка';
+                        document.getElementById('telStatus').style.color = '#ff9f43';
                         addLog('Посадка', 'info');
-                        setTimeout(executeNext, 500);
+                        setTimeout(executeNext, 800);
                         break;
                         
                     case 'hover':
-                        const seconds = command.args[0] || 1;
+                        const seconds = command.args[0] || 2;
                         addLog(`Зависание на ${seconds} с`, 'info');
                         setTimeout(executeNext, seconds * 1000);
                         break;
@@ -870,7 +1035,7 @@ def on_start():
                         droneState.targetZ = z;
                         droneState.targetY = y;
                         addLog(`Перемещение к (${x}, ${z}, ${y})`, 'info');
-                        setTimeout(executeNext, 300);
+                        setTimeout(executeNext, 500);
                         break;
                         
                     default:
@@ -880,6 +1045,19 @@ def on_start():
             }
             
             executeNext();
+        }
+
+        function addLog(message, type = 'info') {
+            const consoleDiv = document.getElementById('logConsole');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const now = new Date();
+            const timestamp = now.toLocaleTimeString();
+            entry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span><span class="log-${type}">${message}</span>`;
+            
+            consoleDiv.appendChild(entry);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
         }
 
         function resetSimulation() {
@@ -899,109 +1077,103 @@ def on_start():
             document.getElementById('telSpeed').textContent = '0.0 м/с';
             document.getElementById('telBattery').textContent = '100%';
             document.getElementById('telStatus').textContent = 'Готов';
-            document.getElementById('missionProgressText').textContent = '0%';
-            document.getElementById('missionProgressBar').style.width = '0%';
+            document.getElementById('telStatus').style.color = '#a5b4fc';
             
             addLog('Симуляция сброшена', 'info');
         }
 
-        function stopSimulation() {
+        // Обработчики
+        document.getElementById('btnRun').addEventListener('click', () => {
+            const code = document.getElementById('codeEditor').value;
+            const commands = parseCode(code);
+            
+            if (commands.length === 0) {
+                addLog('Ошибка: команды не найдены', 'error');
+                return;
+            }
+            
+            addLog('Запуск программы...', 'info');
+            executeCommands(commands);
+        });
+
+        document.getElementById('btnReset').addEventListener('click', resetSimulation);
+        
+        document.getElementById('btnStop').addEventListener('click', () => {
+            droneState.targetX = droneState.x;
+            droneState.targetY = droneState.y;
+            droneState.targetZ = droneState.z;
             droneState.flying = false;
             addLog('Симуляция остановлена', 'warning');
-        }
+        });
 
-        function togglePause() {
-            // Логика паузы
-            addLog('Пауза', 'info');
-        }
+        // Выбор миссии
+        const missionTemplates = {
+            takeoff: `# Импорт библиотеки
+from drone import Drone
 
-        function setCameraMode(mode) {
-            cameraMode = mode;
-            
-            switch (mode) {
-                case 'top':
-                    camera.position.set(0, 15, 0);
-                    camera.lookAt(0, 0, 0);
-                    break;
-                case 'side':
-                    camera.position.set(10, 3, 0);
-                    camera.lookAt(0, 2, 0);
-                    break;
-                case 'follow':
-                    camera.position.set(5, 4, 5);
-                    camera.lookAt(droneGroup.position);
-                    break;
-            }
-            
-            addLog(`Вид: ${mode}`, 'info');
-        }
+# Создание объекта дрона
+drone = Drone()
 
-        function toggleGrid() {
-            showGrid = !showGrid;
-            gridHelper.visible = showGrid;
-        }
+def on_start():
+    # Взлёт на 3 метра
+    drone.takeoff(3)
+    
+    # Зависание на 2 секунды
+    drone.hover(2)
+    
+    # Посадка
+    drone.land()`,
+            square: `from drone import Drone
 
-        function toggleTrajectory() {
-            showTrajectory = !showTrajectory;
-            trajectoryLine.visible = showTrajectory;
-        }
+drone = Drone()
 
-        function addLog(message, type = 'info') {
-            const console = document.getElementById('logConsole');
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            
-            const timestamp = new Date().toLocaleTimeString();
-            entry.innerHTML = `<span class="log-timestamp">[${timestamp}]</span><span class="log-${type}">${message}</span>`;
-            
-            console.appendChild(entry);
-            console.scrollTop = console.scrollHeight;
-        }
+def on_start():
+    drone.takeoff(2)
+    drone.go_to(4, 0, 2)
+    drone.go_to(4, 4, 2)
+    drone.go_to(0, 4, 2)
+    drone.go_to(0, 0, 2)
+    drone.land()`,
+            circle: `from drone import Drone
+import math
 
-        function checkMissionCompletion() {
-            // Логика проверки выполнения миссии
-            const progress = Math.random() * 100;
-            document.getElementById('missionProgressText').textContent = progress.toFixed(0) + '%';
-            document.getElementById('missionProgressBar').style.width = progress + '%';
-        }
+drone = Drone()
 
-        // Анимация
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            // Обновление позиции дрона
-            const speed = 0.1;
-            droneState.x += (droneState.targetX - droneState.x) * speed;
-            droneState.y += (droneState.targetY - droneState.y) * speed;
-            droneState.z += (droneState.targetZ - droneState.z) * speed;
-            
-            // Обновление 3D модели
-            droneGroup.position.set(droneState.x, droneState.y, droneState.z);
-            
-            // Обновление траектории
-            if (droneState.flying) {
-                droneState.path.push({ x: droneState.x, y: droneState.y, z: droneState.z });
-                if (droneState.path.length > 500) droneState.path.shift();
+def on_start():
+    drone.takeoff(3)
+    for i in range(36):
+        angle = i * 10 * math.pi / 180
+        x = 3 * math.cos(angle)
+        z = 3 * math.sin(angle)
+        drone.go_to(x, z, 3)
+    drone.land()`
+        };
+
+        document.querySelectorAll('.task-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.task-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
                 
-                const points = droneState.path.map(p => new THREE.Vector3(p.x, p.y, p.z));
-                trajectoryLine.geometry.dispose();
-                trajectoryLine.geometry = new THREE.BufferGeometry().setFromPoints(points);
-            }
-            
-            // Обновление камеры
-            if (cameraMode === 'follow') {
-                camera.position.x = droneState.x + 5;
-                camera.position.z = droneState.z + 5;
-                camera.lookAt(droneGroup.position);
-            }
-            
-            // Обновление телеметрии
-            document.getElementById('telAltitude').textContent = droneState.y.toFixed(1) + ' м';
-            document.getElementById('telX').textContent = droneState.x.toFixed(1) + ' м';
-            document.getElementById('telY').textContent = droneState.z.toFixed(1) + ' м';
-            
-            renderer.render(scene, camera);
-        }
+                const mission = btn.dataset.mission;
+                const descriptions = {
+                    takeoff: '🛫 Взлёт и посадка: Освойте базовые команды управления дроном',
+                    square: '⬜ Квадрат: Облетите квадрат со стороной 4 метра',
+                    circle: '🔄 Круг: Опишите круг радиусом 3 метра',
+                    figure8: '∞ Восьмёрка: Выполните полёт по траектории восьмёрки',
+                    obstacle: '🚧 Облёт препятствий: Пролетите вокруг препятствий',
+                    free: '✏️ Свободный полёт: Напишите свою программу'
+                };
+                
+                document.getElementById('missionDescription').textContent = descriptions[mission];
+                
+                if (missionTemplates[mission]) {
+                    document.getElementById('codeEditor').value = missionTemplates[mission];
+                }
+                
+                resetSimulation();
+                addLog(`Загружена миссия: ${btn.textContent.trim()}`, 'info');
+            });
+        });
 
         // Инициализация
         window.addEventListener('load', () => {
@@ -1009,7 +1181,8 @@ def on_start():
                 document.getElementById('preloader').classList.add('hidden');
             }, 500);
             
-            initSimulator();
+            initThreeJS();
+            animate();
         });
     </script>
 </body>
