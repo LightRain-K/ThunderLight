@@ -689,34 +689,39 @@ def on_start():
         let gridHelper, trajectoryLine;
 
         const droneState = {
-            x: 0, y: 0, z: 0,
-            vx: 0, vy: 0, vz: 0,
-            targetX: 0, targetY: 0, targetZ: 0,
-            tiltX: 0, tiltZ: 0,
-            flying: false,
-            hovering: false,
-            battery: 100,
-            path: [],
-            propAngle: 0,
-            propSpeed: 0,
-            time: 0,
-            pidIntegrals: { x: 0, y: 0, z: 0 },
-            lastErrors: { x: 0, y: 0, z: 0 }
-        };
+    x: 0, y: 0, z: 0,
+    vx: 0, vy: 0, vz: 0,
+    targetX: 0, targetY: 0, targetZ: 0,
+    tiltX: 0, tiltZ: 0,
+    flying: false,
+    hovering: false,
+    battery: 100,
+    path: [],
+    propAngle: 0,
+    propSpeed: 0,
+    time: 0,
+    // Упрощенные PID состояния
+    pidIntegrals: { x: 0, y: 0, z: 0 },
+    lastErrors: { x: 0, y: 0, z: 0 },
+    // Флаг достижения цели
+    reachedTarget: false
+};
 
         const dronePhysics = {
-            mass: 1.5,
-            dragCoefficient: 0.4,
-            liftCoefficient: 1.2,
-            maxSpeed: 4.0,
-            maxAcceleration: 3.0,
-            gravity: 9.81,
-            airDensity: 1.225,
-            pidX: { kp: 2.5, ki: 0.3, kd: 1.5 },
-            pidY: { kp: 3.0, ki: 0.5, kd: 2.0 },
-            pidZ: { kp: 2.5, ki: 0.3, kd: 1.5 },
-            wind: { x: 0, y: 0, z: 0, gustiness: 0.1 }
-        };
+    mass: 1.0,
+    maxSpeed: 2.5,          // Умеренная скорость
+    maxAcceleration: 4.0,   // Достаточное ускорение
+    gravity: 9.81,
+    dragCoefficient: 0.5,   // Сильное демпфирование
+    // Мягкие PID коэффициенты для точности
+    pidX: { kp: 3.0, ki: 0.0, kd: 2.0 },
+    pidY: { kp: 4.0, ki: 0.0, kd: 2.5 },
+    pidZ: { kp: 3.0, ki: 0.0, kd: 2.0 },
+    // Порог достижения цели
+    positionThreshold: 0.15,
+    // Ветер (отключен для точности)
+    wind: { x: 0, y: 0, z: 0, gustiness: 0 }
+};
 
         const missions = {
             takeoff: {
@@ -1022,130 +1027,134 @@ def on_start():
         }
 
         function updatePhysics(dt) {
-            if (!droneState.flying && !droneState.hovering) return;
-            
-            // Обновление ветра
-            dronePhysics.wind.x += (Math.random() - 0.5) * dronePhysics.wind.gustiness * dt;
-            dronePhysics.wind.z += (Math.random() - 0.5) * dronePhysics.wind.gustiness * dt;
-            dronePhysics.wind.x = Math.max(-1, Math.min(1, dronePhysics.wind.x));
-            dronePhysics.wind.z = Math.max(-1, Math.min(1, dronePhysics.wind.z));
-            
-            // Ошибки
-            const errorX = droneState.targetX - droneState.x;
-            const errorY = droneState.targetY - droneState.y;
-            const errorZ = droneState.targetZ - droneState.z;
-            
-            // PID
-            const controlX = calculatePID('x', errorX, dt);
-            const controlY = calculatePID('y', errorY, dt);
-            const controlZ = calculatePID('z', errorZ, dt);
-            
-            // Гравитация
-            const gravityCompensation = droneState.flying ? dronePhysics.gravity : 0;
-            
-            // Ускорения
-            let accelX = controlX / dronePhysics.mass;
-            let accelY = (controlY + gravityCompensation * dronePhysics.mass) / dronePhysics.mass;
-            let accelZ = controlZ / dronePhysics.mass;
-            
-            // Ветер
-            accelX += dronePhysics.wind.x;
-            accelZ += dronePhysics.wind.z;
-            
-            // Сопротивление
-            const speed = Math.sqrt(droneState.vx * droneState.vx + droneState.vy * droneState.vy + droneState.vz * droneState.vz);
-            const dragForce = dronePhysics.dragCoefficient * dronePhysics.airDensity * speed * speed * 0.1;
-            
-            if (speed > 0) {
-                accelX -= dragForce * droneState.vx / speed / dronePhysics.mass;
-                accelY -= dragForce * droneState.vy / speed / dronePhysics.mass;
-                accelZ -= dragForce * droneState.vz / speed / dronePhysics.mass;
-            }
-            
-            // Ограничение ускорения
-            const maxAccel = dronePhysics.maxAcceleration;
-            const accelMag = Math.sqrt(accelX * accelX + accelY * accelY + accelZ * accelZ);
-            if (accelMag > maxAccel) {
-                const scale = maxAccel / accelMag;
-                accelX *= scale;
-                accelY *= scale;
-                accelZ *= scale;
-            }
-            
-            // Обновление скорости
-            droneState.vx += accelX * dt;
-            droneState.vy += accelY * dt;
-            droneState.vz += accelZ * dt;
-            
-            // Ограничение скорости
-            const currentSpeed = Math.sqrt(droneState.vx * droneState.vx + droneState.vy * droneState.vy + droneState.vz * droneState.vz);
-            if (currentSpeed > dronePhysics.maxSpeed) {
-                const scale = dronePhysics.maxSpeed / currentSpeed;
-                droneState.vx *= scale;
-                droneState.vy *= scale;
-                droneState.vz *= scale;
-            }
-            
-            // Обновление позиции
-            droneState.x += droneState.vx * dt;
-            droneState.y += droneState.vy * dt;
-            droneState.z += droneState.vz * dt;
-            
-            // Ограничение высоты
-            if (droneState.y < 0) {
-                droneState.y = 0;
-                droneState.vy = Math.max(0, droneState.vy);
-            }
-            
-            // Границы
-            const boundary = 10;
-            if (Math.abs(droneState.x) > boundary) {
-                droneState.x = Math.sign(droneState.x) * boundary;
-                droneState.vx *= -0.5;
-            }
-            if (Math.abs(droneState.z) > boundary) {
-                droneState.z = Math.sign(droneState.z) * boundary;
-                droneState.vz *= -0.5;
-            }
-            
-            // Батарея
-            const powerConsumption = 0.3 + Math.abs(accelY) * 0.2 + currentSpeed * 0.1;
-            droneState.battery -= powerConsumption * dt;
-            if (droneState.battery < 0) droneState.battery = 0;
-            
-            // Пропеллеры
-            const targetPropSpeed = droneState.flying ? 
-                50 + Math.abs(droneState.vy) * 10 + currentSpeed * 5 : 
-                (droneState.hovering ? 30 : 0);
-            
-            droneState.propSpeed += (targetPropSpeed - droneState.propSpeed) * dt * 5;
-            droneState.propAngle += droneState.propSpeed * dt;
-            
-            // Наклон
-            const tiltX = -droneState.vz * 0.05;
-            const tiltZ = droneState.vx * 0.05;
-            droneState.tiltX += (tiltX - droneState.tiltX) * dt * 3;
-            droneState.tiltZ += (tiltZ - droneState.tiltZ) * dt * 3;
-            
-            droneState.time += dt;
-        }
+    if (!droneState.flying && !droneState.hovering) return;
+    
+    // Ошибки по осям
+    const errorX = droneState.targetX - droneState.x;
+    const errorY = droneState.targetY - droneState.y;
+    const errorZ = droneState.targetZ - droneState.z;
+    
+    // Проверка достижения цели
+    const distanceToTarget = Math.sqrt(errorX * errorX + errorY * errorY + errorZ * errorZ);
+    droneState.reachedTarget = distanceToTarget < dronePhysics.positionThreshold;
+    
+    // Если цель достигнута, останавливаемся
+    if (droneState.reachedTarget) {
+        droneState.vx *= 0.9; // Плавное замедление
+        droneState.vy *= 0.9;
+        droneState.vz *= 0.9;
+        
+        if (Math.abs(droneState.vx) < 0.01) droneState.vx = 0;
+        if (Math.abs(droneState.vy) < 0.01) droneState.vy = 0;
+        if (Math.abs(droneState.vz) < 0.01) droneState.vz = 0;
+        
+        // Точная установка позиции
+        droneState.x = droneState.targetX;
+        droneState.y = droneState.targetY;
+        droneState.z = droneState.targetZ;
+        
+        // Обновление пропеллеров для зависания
+        droneState.propSpeed = 30;
+        droneState.propAngle += droneState.propSpeed * dt;
+        
+        return;
+    }
+    
+    // PID управление
+    const controlX = calculatePID('x', errorX, dt);
+    const controlY = calculatePID('y', errorY, dt);
+    const controlZ = calculatePID('z', errorZ, dt);
+    
+    // Гравитация (компенсируется при полёте)
+    const gravityCompensation = droneState.flying ? dronePhysics.gravity : 0;
+    
+    // Ускорения (без ограничения для точности)
+    let accelX = controlX;
+    let accelY = controlY + gravityCompensation;
+    let accelZ = controlZ;
+    
+    // Демпфирование (критическое для точности)
+    const damping = dronePhysics.dragCoefficient;
+    accelX -= damping * droneState.vx;
+    accelY -= damping * droneState.vy;
+    accelZ -= damping * droneState.vz;
+    
+    // Обновление скорости
+    droneState.vx += accelX * dt;
+    droneState.vy += accelY * dt;
+    droneState.vz += accelZ * dt;
+    
+    // Ограничение максимальной скорости
+    const currentSpeed = Math.sqrt(droneState.vx * droneState.vx + droneState.vy * droneState.vy + droneState.vz * droneState.vz);
+    if (currentSpeed > dronePhysics.maxSpeed) {
+        const scale = dronePhysics.maxSpeed / currentSpeed;
+        droneState.vx *= scale;
+        droneState.vy *= scale;
+        droneState.vz *= scale;
+    }
+    
+    // Обновление позиции
+    droneState.x += droneState.vx * dt;
+    droneState.y += droneState.vy * dt;
+    droneState.z += droneState.vz * dt;
+    
+    // Ограничение высоты
+    if (droneState.y < 0) {
+        droneState.y = 0;
+        droneState.vy = 0;
+    }
+    
+    // Границы
+    const boundary = 10;
+    if (Math.abs(droneState.x) > boundary) {
+        droneState.x = Math.sign(droneState.x) * boundary;
+        droneState.vx = 0;
+    }
+    if (Math.abs(droneState.z) > boundary) {
+        droneState.z = Math.sign(droneState.z) * boundary;
+        droneState.vz = 0;
+    }
+    
+    // Батарея
+    droneState.battery -= 0.2 * dt;
+    if (droneState.battery < 0) droneState.battery = 0;
+    
+    // Пропеллеры
+    const targetPropSpeed = droneState.flying ? 
+        40 + Math.abs(droneState.vy) * 5 : 30;
+    
+    droneState.propSpeed += (targetPropSpeed - droneState.propSpeed) * dt * 3;
+    droneState.propAngle += droneState.propSpeed * dt;
+    
+    // Наклон дрона
+    const tiltX = -droneState.vz * 0.03;
+    const tiltZ = droneState.vx * 0.03;
+    droneState.tiltX += (tiltX - droneState.tiltX) * dt * 5;
+    droneState.tiltZ += (tiltZ - droneState.tiltZ) * dt * 5;
+    
+    droneState.time += dt;
+}
 
-        function calculatePID(axis, error, dt) {
-            const pid = dronePhysics['pid' + axis.toUpperCase()];
-            
-            const P = pid.kp * error;
-            
-            droneState.pidIntegrals[axis] += error * dt;
-            droneState.pidIntegrals[axis] = Math.max(-2, Math.min(2, droneState.pidIntegrals[axis]));
-            const I = pid.ki * droneState.pidIntegrals[axis];
-            
-            const derivative = (error - droneState.lastErrors[axis]) / dt;
-            const D = pid.kd * derivative;
-            
-            droneState.lastErrors[axis] = error;
-            
-            return P + I + D;
-        }
+function calculatePID(axis, error, dt) {
+    const pid = dronePhysics['pid' + axis.toUpperCase()];
+    
+    // Пропорциональная составляющая
+    const P = pid.kp * error;
+    
+    // Интегральная (отключена для точности)
+    const I = 0;
+    
+    // Дифференциальная (с ограничением)
+    const derivative = (error - droneState.lastErrors[axis]) / dt;
+    const D = pid.kd * derivative;
+    
+    // Обновление lastError
+    droneState.lastErrors[axis] = error;
+    
+    return P + I + D;
+}
+
+        
 
         function parseCode(code) {
             const commands = [];
@@ -1233,86 +1242,103 @@ def on_start():
         }
 
         async function executeCommands(commands) {
-            for (let i = 0; i < commands.length; i++) {
-                const command = commands[i];
+    for (let i = 0; i < commands.length; i++) {
+        const command = commands[i];
+        
+        switch (command.cmd) {
+            case 'takeoff':
+                const height = command.args[0] || 3;
+                droneState.targetY = height;
+                droneState.flying = true;
+                droneState.hovering = true;
+                droneState.reachedTarget = false;
+                document.getElementById('telStatus').textContent = 'Взлёт';
+                document.getElementById('telStatus').style.color = '#00ff88';
+                addLog(`🛫 Взлёт на ${height} м`, 'success');
+                await waitForAltitude(height);
+                break;
                 
-                switch (command.cmd) {
-                    case 'takeoff':
-                        const height = command.args[0] || 3;
-                        droneState.targetY = height;
-                        droneState.flying = true;
-                        droneState.hovering = true;
-                        document.getElementById('telStatus').textContent = 'Взлёт';
-                        document.getElementById('telStatus').style.color = '#00ff88';
-                        addLog(`🛫 Взлёт на ${height} м`, 'success');
-                        await waitForAltitude(height);
-                        break;
-                        
-                    case 'land':
-                        droneState.targetY = 0;
-                        droneState.flying = false;
-                        droneState.hovering = false;
-                        document.getElementById('telStatus').textContent = 'Посадка';
-                        document.getElementById('telStatus').style.color = '#ff9f43';
-                        addLog('🛬 Посадка', 'info');
-                        await waitForAltitude(0);
-                        break;
-                        
-                    case 'hover':
-                        const seconds = command.args[0] || 2;
-                        droneState.hovering = true;
-                        document.getElementById('telStatus').textContent = 'Зависание';
-                        document.getElementById('telStatus').style.color = '#6bcfff';
-                        addLog(`⏳ Зависание на ${seconds} с`, 'info');
-                        await new Promise(resolve => setTimeout(resolve, seconds * 1000));
-                        break;
-                        
-                    case 'go_to':
-                        const x = command.args[0] || 0;
-                        const z = command.args[1] || 0;
-                        const y = command.args[2] || droneState.y;
-                        droneState.targetX = x;
-                        droneState.targetZ = z;
-                        droneState.targetY = y;
-                        droneState.flying = true;
-                        document.getElementById('telStatus').textContent = 'Полёт';
-                        document.getElementById('telStatus').style.color = '#ffd93d';
-                        addLog(`🎯 Перемещение к (${x.toFixed(1)}, ${z.toFixed(1)}, ${y.toFixed(1)})`, 'info');
-                        await waitForPosition(x, z, y);
-                        break;
-                }
-            }
-            
-            addLog('✅ Программа завершена', 'success');
-            document.getElementById('telStatus').textContent = 'Завершено';
-            document.getElementById('telStatus').style.color = '#10b981';
+            case 'land':
+                droneState.targetY = 0;
+                droneState.flying = false;
+                droneState.hovering = false;
+                droneState.reachedTarget = false;
+                document.getElementById('telStatus').textContent = 'Посадка';
+                document.getElementById('telStatus').style.color = '#ff9f43';
+                addLog('🛬 Посадка', 'info');
+                await waitForAltitude(0);
+                break;
+                
+            case 'hover':
+                const seconds = command.args[0] || 2;
+                droneState.hovering = true;
+                droneState.targetX = droneState.x;
+                droneState.targetY = droneState.y;
+                droneState.targetZ = droneState.z;
+                document.getElementById('telStatus').textContent = 'Зависание';
+                document.getElementById('telStatus').style.color = '#6bcfff';
+                addLog(`⏳ Зависание на ${seconds} с`, 'info');
+                await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+                break;
+                
+            case 'go_to':
+                const x = command.args[0] || 0;
+                const z = command.args[1] || 0;
+                const y = command.args[2] || droneState.y;
+                droneState.targetX = x;
+                droneState.targetZ = z;
+                droneState.targetY = y;
+                droneState.flying = true;
+                droneState.reachedTarget = false;
+                document.getElementById('telStatus').textContent = 'Полёт';
+                document.getElementById('telStatus').style.color = '#ffd93d';
+                addLog(`🎯 Перемещение к (${x.toFixed(1)}, ${z.toFixed(1)}, ${y.toFixed(1)})`, 'info');
+                await waitForPosition(x, z, y);
+                break;
         }
-
+    }
+    
+    addLog('✅ Программа завершена', 'success');
+    document.getElementById('telStatus').textContent = 'Завершено';
+    document.getElementById('telStatus').style.color = '#10b981';
+}
         function waitForAltitude(targetAlt) {
-            return new Promise(resolve => {
-                const checkInterval = setInterval(() => {
-                    if (Math.abs(droneState.y - targetAlt) < 0.1) {
-                        clearInterval(checkInterval);
-                        resolve();
-                    }
-                }, 100);
-            });
-        }
+    return new Promise(resolve => {
+        const checkInterval = setInterval(() => {
+            const diff = Math.abs(droneState.y - targetAlt);
+            if (diff < 0.1 && Math.abs(droneState.vy) < 0.1) {
+                clearInterval(checkInterval);
+                // Точная установка
+                droneState.y = targetAlt;
+                droneState.vy = 0;
+                setTimeout(resolve, 200); // Небольшая пауза
+            }
+        }, 50);
+    });
+}
 
-        function waitForPosition(targetX, targetZ, targetY) {
-            return new Promise(resolve => {
-                const checkInterval = setInterval(() => {
-                    const dx = Math.abs(droneState.x - targetX);
-                    const dz = Math.abs(droneState.z - targetZ);
-                    const dy = Math.abs(droneState.y - targetY);
-                    
-                    if (dx < 0.15 && dz < 0.15 && dy < 0.15) {
-                        clearInterval(checkInterval);
-                        resolve();
-                    }
-                }, 100);
-            });
-        }
+function waitForPosition(targetX, targetZ, targetY) {
+    return new Promise(resolve => {
+        const checkInterval = setInterval(() => {
+            const dx = Math.abs(droneState.x - targetX);
+            const dz = Math.abs(droneState.z - targetZ);
+            const dy = Math.abs(droneState.y - targetY);
+            const speed = Math.sqrt(droneState.vx * droneState.vx + droneState.vy * droneState.vy + droneState.vz * droneState.vz);
+            
+            if (dx < 0.15 && dz < 0.15 && dy < 0.15 && speed < 0.1) {
+                clearInterval(checkInterval);
+                // Точная установка
+                droneState.x = targetX;
+                droneState.z = targetZ;
+                droneState.y = targetY;
+                droneState.vx = 0;
+                droneState.vy = 0;
+                droneState.vz = 0;
+                setTimeout(resolve, 200); // Небольшая пауза
+            }
+        }, 50);
+    });
+}
 
         function animate() {
             requestAnimationFrame(animate);
