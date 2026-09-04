@@ -1003,42 +1003,185 @@ def on_start():
             });
         }
 
-        function updatePhysics(dt) {
-            if (!droneState.flying && !droneState.hovering) return;
-            
-            if (droneState.isMoving) {
-                droneState.moveProgress += dt / droneState.moveDuration;
-                
-                if (droneState.moveProgress >= 1) {
-                    droneState.moveProgress = 1;
-                    droneState.x = droneState.targetX;
-                    droneState.y = droneState.targetY;
-                    droneState.z = droneState.targetZ;
-                    droneState.isMoving = false;
-                } else {
-                    const t = easeInOutCubic(droneState.moveProgress);
-                    droneState.x = droneState.moveStartX + (droneState.targetX - droneState.moveStartX) * t;
-                    droneState.y = droneState.moveStartY + (droneState.targetY - droneState.moveStartY) * t;
-                    droneState.z = droneState.moveStartZ + (droneState.targetZ - droneState.moveStartZ) * t;
-                }
-            }
-            
-            const targetPropSpeed = droneState.flying || droneState.hovering ? 40 : 0;
-            droneState.propSpeed += (targetPropSpeed - droneState.propSpeed) * dt * 5;
-            droneState.propAngle += droneState.propSpeed * dt;
-            
-            if (droneState.flying || droneState.hovering) {
-                droneState.battery -= 0.1 * dt;
-                if (droneState.battery < 0) droneState.battery = 0;
-            }
-            
-            if (droneState.flying || droneState.hovering) {
-                droneState.path.push({ x: droneState.x, y: droneState.y, z: droneState.z });
-                if (droneState.path.length > 500) droneState.path.shift();
-            }
-            
-            droneState.time += dt;
+        // ================================================================
+// ИСПРАВЛЕННАЯ ФИЗИКА С РАБОТАЮЩЕЙ ПОСАДКОЙ
+// ================================================================
+
+function updatePhysics(dt) {
+    // Обновляем движение, если дрон движется к цели
+    if (droneState.isMoving) {
+        droneState.moveProgress += dt / droneState.moveDuration;
+        
+        if (droneState.moveProgress >= 1) {
+            // Достигли цели
+            droneState.moveProgress = 1;
+            droneState.x = droneState.targetX;
+            droneState.y = droneState.targetY;
+            droneState.z = droneState.targetZ;
+            droneState.isMoving = false;
+        } else {
+            // Плавная интерполяция
+            const t = easeInOutCubic(droneState.moveProgress);
+            droneState.x = droneState.moveStartX + (droneState.targetX - droneState.moveStartX) * t;
+            droneState.y = droneState.moveStartY + (droneState.targetY - droneState.moveStartY) * t;
+            droneState.z = droneState.moveStartZ + (droneState.targetZ - droneState.moveStartZ) * t;
         }
+    }
+    
+    // Пропеллеры вращаются, если дрон в воздухе или движется
+    const isAirborne = droneState.y > 0.1 || droneState.isMoving;
+    const targetPropSpeed = isAirborne ? 40 : 0;
+    droneState.propSpeed += (targetPropSpeed - droneState.propSpeed) * dt * 5;
+    droneState.propAngle += droneState.propSpeed * dt;
+    
+    // Батарея разряжается только в полёте
+    if (droneState.y > 0.1 || droneState.isMoving) {
+        droneState.battery -= 0.1 * dt;
+        if (droneState.battery < 0) droneState.battery = 0;
+    }
+    
+    // Траектория
+    if (droneState.y > 0.1 || droneState.isMoving) {
+        droneState.path.push({ x: droneState.x, y: droneState.y, z: droneState.z });
+        if (droneState.path.length > 500) droneState.path.shift();
+    }
+    
+    droneState.time += dt;
+}
+
+// ================================================================
+// ИСПРАВЛЕННОЕ ВЫПОЛНЕНИЕ КОМАНД
+// ================================================================
+
+async function executeCommands(commands) {
+    addLog(`🚀 Начало выполнения (${commands.length} команд)`, 'info');
+    
+    for (let i = 0; i < commands.length; i++) {
+        const command = commands[i];
+        
+        switch (command.cmd) {
+            case 'takeoff':
+                const height = command.args[0] || 3;
+                droneState.flying = true;
+                droneState.hovering = false;
+                droneState.isMoving = false;
+                
+                document.getElementById('telStatus').textContent = 'Взлёт';
+                document.getElementById('telStatus').style.color = '#00ff88';
+                addLog(`🛫 Взлёт на ${height} м`, 'success');
+                
+                // Запускаем движение вверх
+                startMoveTo(droneState.x, height, droneState.z, 2);
+                await waitForMove();
+                
+                // После взлёта - зависание
+                droneState.flying = false;
+                droneState.hovering = true;
+                droneState.isMoving = false;
+                document.getElementById('telStatus').textContent = 'Зависание';
+                document.getElementById('telStatus').style.color = '#6bcfff';
+                addLog(`✅ Дрон на высоте ${height} м`, 'success');
+                break;
+                
+            case 'land':
+                // Сохраняем текущие координаты X и Z
+                const landX = droneState.x;
+                const landZ = droneState.z;
+                
+                droneState.flying = false;
+                droneState.hovering = false;
+                
+                document.getElementById('telStatus').textContent = 'Посадка';
+                document.getElementById('telStatus').style.color = '#ff9f43';
+                addLog('🛬 Посадка...', 'info');
+                
+                // Запускаем движение вниз
+                startMoveTo(landX, 0, landZ, 2);
+                await waitForMove();
+                
+                // После посадки
+                droneState.y = 0;
+                droneState.isMoving = false;
+                droneState.propSpeed = 0;
+                document.getElementById('telStatus').textContent = 'На земле';
+                document.getElementById('telStatus').style.color = '#94a3b8';
+                addLog('✅ Дрон приземлился', 'success');
+                break;
+                
+            case 'hover':
+                const seconds = command.args[0] || 2;
+                droneState.hovering = true;
+                droneState.flying = false;
+                droneState.isMoving = false;
+                
+                document.getElementById('telStatus').textContent = 'Зависание';
+                document.getElementById('telStatus').style.color = '#6bcfff';
+                addLog(`⏳ Зависание на ${seconds} с`, 'info');
+                
+                await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+                break;
+                
+            case 'go_to':
+                const x = command.args[0] || 0;
+                const z = command.args[1] || 0;
+                const y = command.args[2] !== undefined ? command.args[2] : droneState.y;
+                
+                droneState.flying = true;
+                droneState.hovering = false;
+                droneState.isMoving = false;
+                
+                document.getElementById('telStatus').textContent = 'Полёт';
+                document.getElementById('telStatus').style.color = '#ffd93d';
+                addLog(`🎯 Перемещение к (${x.toFixed(1)}, ${z.toFixed(1)}, ${y.toFixed(1)})`, 'info');
+                
+                // Вычисляем дистанцию и длительность
+                const dx = x - droneState.x;
+                const dz = z - droneState.z;
+                const dy = y - droneState.y;
+                const distance = Math.sqrt(dx*dx + dz*dz + dy*dy);
+                const duration = Math.max(1, distance / 2); // 2 м/с
+                
+                startMoveTo(x, y, z, duration);
+                await waitForMove();
+                
+                // После достижения точки - зависание
+                droneState.flying = false;
+                droneState.hovering = true;
+                droneState.isMoving = false;
+                addLog(`✅ Достигнута точка (${x.toFixed(1)}, ${z.toFixed(1)}, ${y.toFixed(1)})`, 'success');
+                break;
+        }
+    }
+    
+    document.getElementById('telStatus').textContent = 'Завершено';
+    document.getElementById('telStatus').style.color = '#10b981';
+    addLog('✅ Программа завершена успешно', 'success');
+}
+
+// ================================================================
+// УЛУЧШЕННОЕ ОЖИДАНИЕ ЗАВЕРШЕНИЯ ДВИЖЕНИЯ
+// ================================================================
+
+function waitForMove() {
+    return new Promise(resolve => {
+        let checks = 0;
+        const maxChecks = 200; // Максимум 10 секунд ожидания
+        
+        const checkInterval = setInterval(() => {
+            checks++;
+            
+            if (!droneState.isMoving || checks >= maxChecks) {
+                clearInterval(checkInterval);
+                // Принудительно устанавливаем конечную позицию
+                droneState.x = droneState.targetX;
+                droneState.y = droneState.targetY;
+                droneState.z = droneState.targetZ;
+                droneState.isMoving = false;
+                setTimeout(resolve, 200);
+            }
+        }, 50);
+    });
+}
 
         function parseCode(code) {
             const commands = [];
@@ -1128,77 +1271,7 @@ def on_start():
             });
         }
 
-        async function executeCommands(commands) {
-            addLog(`🚀 Начало выполнения (${commands.length} команд)`, 'info');
-            
-            for (let i = 0; i < commands.length; i++) {
-                const command = commands[i];
-                
-                switch (command.cmd) {
-                    case 'takeoff':
-                        const height = command.args[0] || 3;
-                        droneState.flying = true;
-                        droneState.hovering = false;
-                        document.getElementById('telStatus').textContent = 'Взлёт';
-                        document.getElementById('telStatus').style.color = '#00ff88';
-                        addLog(`🛫 Взлёт на ${height} м`, 'success');
-                        startMoveTo(droneState.x, height, droneState.z, 2);
-                        await waitForMove();
-                        droneState.hovering = true;
-                        droneState.flying = false;
-                        document.getElementById('telStatus').textContent = 'Зависание';
-                        document.getElementById('telStatus').style.color = '#6bcfff';
-                        break;
-                        
-                    case 'land':
-                        droneState.flying = false;
-                        droneState.hovering = false;
-                        document.getElementById('telStatus').textContent = 'Посадка';
-                        document.getElementById('telStatus').style.color = '#ff9f43';
-                        addLog('🛬 Посадка', 'info');
-                        startMoveTo(droneState.x, 0, droneState.z, 2);
-                        await waitForMove();
-                        document.getElementById('telStatus').textContent = 'На земле';
-                        document.getElementById('telStatus').style.color = '#94a3b8';
-                        addLog('✅ Дрон на земле', 'success');
-                        break;
-                        
-                    case 'hover':
-                        const seconds = command.args[0] || 2;
-                        droneState.hovering = true;
-                        droneState.flying = false;
-                        document.getElementById('telStatus').textContent = 'Зависание';
-                        document.getElementById('telStatus').style.color = '#6bcfff';
-                        addLog(`⏳ Зависание на ${seconds} с`, 'info');
-                        await new Promise(resolve => setTimeout(resolve, seconds * 1000));
-                        break;
-                        
-                    case 'go_to':
-                        const x = command.args[0] || 0;
-                        const z = command.args[1] || 0;
-                        const y = command.args[2] !== undefined ? command.args[2] : droneState.y;
-                        droneState.flying = true;
-                        droneState.hovering = false;
-                        document.getElementById('telStatus').textContent = 'Полёт';
-                        document.getElementById('telStatus').style.color = '#ffd93d';
-                        addLog(`🎯 Перемещение к (${x.toFixed(1)}, ${z.toFixed(1)}, ${y.toFixed(1)})`, 'info');
-                        const dx = x - droneState.x;
-                        const dz = z - droneState.z;
-                        const dy = y - droneState.y;
-                        const distance = Math.sqrt(dx*dx + dz*dz + dy*dy);
-                        const duration = Math.max(1, distance / 2);
-                        startMoveTo(x, y, z, duration);
-                        await waitForMove();
-                        droneState.hovering = true;
-                        droneState.flying = false;
-                        break;
-                }
-            }
-            
-            document.getElementById('telStatus').textContent = 'Завершено';
-            document.getElementById('telStatus').style.color = '#10b981';
-            addLog('✅ Программа завершена успешно', 'success');
-        }
+        
 
         function animate() {
             requestAnimationFrame(animate);
