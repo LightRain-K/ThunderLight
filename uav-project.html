@@ -650,8 +650,15 @@
 
         .course-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 24px;
+            align-items: stretch;
+        }
+        @media (max-width: 1024px) {
+            .course-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 640px) {
+            .course-grid { grid-template-columns: 1fr; }
         }
         .course-card {
             background: rgba(15, 23, 42, 0.6);
@@ -663,6 +670,8 @@
             color: inherit;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .course-card::before {
             content: '';
@@ -672,11 +681,10 @@
             width: 100%;
             height: 3px;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.4s ease;
+            opacity: 0.5;
+            transition: opacity 0.4s ease;
         }
-        .course-card:hover::before { transform: scaleX(1); }
+        .course-card:hover::before { opacity: 1; }
         .course-card:hover {
             border-color: rgba(79, 70, 229, 0.3);
             transform: translateY(-6px);
@@ -689,6 +697,7 @@
             display: flex;
             gap: 12px;
             margin-top: 12px;
+            margin-bottom: 20px;
             font-size: 0.75em;
             color: var(--gray);
             flex-wrap: wrap;
@@ -719,6 +728,22 @@
             border-radius: 20px;
             font-weight: 600;
         }
+        .course-card .practice-chip {
+            margin-top: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.25);
+            font-size: 0.75em;
+            font-weight: 600;
+            color: #67e8f9;
+        }
+        .course-card .practice-chip a { color: #67e8f9; text-decoration: underline; }
+        .course-card .practice-chip a:hover { color: #a5f3fc; }
 
         .ecosystem-grid {
             display: grid;
@@ -1247,7 +1272,7 @@
                         <span>⏱ 4 часа</span>
                         <span>🏷️ Базовый</span>
                     </div>
-                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">✈️ Практика: <a href="/drone-sim.html" style="color:#67e8f9;text-decoration:underline;">Drone Sim</a></div>
+                    <div class="practice-chip">✈️ Практика: <a href="/drone-sim.html">Drone Sim</a></div>
                 </a>
 
                 <a href="/articles/arduino/01-intro.html" class="course-card animate-on-scroll">
@@ -1260,7 +1285,7 @@
                         <span>⏱ 5 часов</span>
                         <span>🏷️ Базовый</span>
                     </div>
-                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">🛠️ Практика: <a href="/builder.html" style="color:#67e8f9;text-decoration:underline;">Builder</a></div>
+                    <div class="practice-chip">🛠️ Практика: <a href="/builder.html">Builder</a></div>
                 </a>
 
                 <a href="/articles/electronics/01-intro.html" class="course-card animate-on-scroll">
@@ -1272,7 +1297,7 @@
                         <span>⏱ 3 часа</span>
                         <span>🏷️ Базовый</span>
                     </div>
-                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">🧪 Практика: <a href="/lab.html" style="color:#67e8f9;text-decoration:underline;">Aerodynamic Lab</a></div>
+                    <div class="practice-chip">🧪 Практика: <a href="/lab.html">Aerodynamic Lab</a></div>
                 </a>
 
                 <a href="/articles/bpla/01-intro.html" class="course-card animate-on-scroll">
@@ -1284,7 +1309,7 @@
                         <span>⏱ 6 часов</span>
                         <span>🏷️ Средний</span>
                     </div>
-                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">🛠️ Практика: <a href="/builder.html" style="color:#67e8f9;text-decoration:underline;">Builder</a> · <a href="/docs.html" style="color:#67e8f9;text-decoration:underline;">Документация</a></div>
+                    <div class="practice-chip">🛠️ Практика: <a href="/builder.html">Builder</a> · <a href="/docs.html">Документация</a></div>
                 </a>
 
                 <a href="/simulator.html" class="course-card animate-on-scroll">
@@ -1296,7 +1321,7 @@
                         <span>⏱ 3 часа</span>
                         <span>🏷️ Средний</span>
                     </div>
-                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">💻 Практика: <a href="/simulator.html" style="color:#67e8f9;text-decoration:underline;">PID Simulator</a></div>
+                    <div class="practice-chip">💻 Практика: <a href="/simulator.html">PID Simulator</a></div>
                 </a>
 
                 <a href="/drone-sim.html" class="course-card animate-on-scroll">
@@ -1308,7 +1333,7 @@
                         <span>⏱ 4 часа</span>
                         <span>🏷️ Продвинутый</span>
                     </div>
-                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">✈️ Практика: <a href="/drone-sim.html" style="color:#67e8f9;text-decoration:underline;">Drone Sim</a></div>
+                    <div class="practice-chip">✈️ Практика: <a href="/drone-sim.html">Drone Sim</a></div>
                 </a>
             </div>
         </div>
