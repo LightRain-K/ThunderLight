@@ -2417,7 +2417,7 @@
             if (prevBtn) prevBtn.disabled = asmStep === 0;
             if (nextBtn) nextBtn.textContent = asmStep === ASM_STEPS.length - 1 ? '✅ Готово' : 'Вперёд →';
 
-            drawAssembly(p.info, asmStep);
+            drawAssembly(p, asmStep);
         }
 
         function asmTips(step, p) {
