@@ -573,6 +573,10 @@
             <div id="missionDescription" style="font-size: 0.85em; color: var(--gray-light); margin-top: 8px;">
                 🛫 Взлёт и посадка: Освойте базовые команды управления дроном
             </div>
+            <label style="display:inline-flex; align-items:center; gap:8px; margin-top:10px; font-size:0.85em; color:var(--gray-light); cursor:pointer; user-select:none;">
+                <input type="checkbox" id="obstacleToggle" checked style="width:16px; height:16px; accent-color:var(--primary); cursor:pointer;">
+                🚧 Показывать препятствия
+            </label>
         </div>
 
         <div class="sim-panel" style="margin-bottom: 20px; border-color: rgba(79,70,229,0.2); background: rgba(15,23,42,0.4);">
@@ -1214,7 +1218,7 @@ def on_start():
 
                     const moveDirX = droneState.targetX - droneState.moveStartX;
                     const moveDirZ = droneState.targetZ - droneState.moveStartZ;
-                    const targetTiltX = -moveDirZ * 0.15;
+                    const targetTiltX = moveDirZ * 0.15;
                     const targetTiltZ = moveDirX * 0.15;
                     droneState.tiltX += (targetTiltX - droneState.tiltX) * dt * 5;
                     droneState.tiltZ += (targetTiltZ - droneState.tiltZ) * dt * 5;
@@ -1252,6 +1256,12 @@ def on_start():
         // ================================================================
 
         let obstacleMeshes = [];
+        let obstaclesVisible = true;
+
+        function setObstaclesVisible(visible) {
+            obstaclesVisible = visible;
+            obstacleMeshes.forEach(m => { m.visible = visible; });
+        }
 
         function show3DError(msg) {
             const c = document.getElementById('drone3DContainer');
@@ -1600,11 +1610,20 @@ def on_start():
                 if (mission) {
                     document.getElementById('missionDescription').textContent = mission.description;
                     document.getElementById('codeEditor').value = mission.template;
+                    if (btn.dataset.mission === 'obstacle') {
+                        if (obstacleToggle) obstacleToggle.checked = true;
+                        setObstaclesVisible(true);
+                    }
                     resetSimulation();
                     addLog(`📌 Миссия: ${mission.name}`, 'info');
                 }
             });
         });
+
+        const obstacleToggle = document.getElementById('obstacleToggle');
+        if (obstacleToggle) {
+            obstacleToggle.addEventListener('change', () => setObstaclesVisible(obstacleToggle.checked));
+        }
 
         window.addEventListener('load', () => {
             setTimeout(() => {
