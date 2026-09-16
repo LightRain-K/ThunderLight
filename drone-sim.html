@@ -1444,10 +1444,9 @@ def on_start():
             ];
 
             motorPos.forEach(p => {
-                droneGroup.add(Object.assign(
-                    new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.11, 0.1, 16), motorMat),
-                    { position: new THREE.Vector3(p.x, 0.07, p.z) }
-                ));
+                const motor = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.11, 0.1, 16), motorMat);
+                motor.position.set(p.x, 0.07, p.z);
+                droneGroup.add(motor);
             });
 
             motorPos.forEach((p, idx) => {
