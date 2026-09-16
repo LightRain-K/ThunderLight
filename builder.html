@@ -2487,8 +2487,8 @@
                     aCtx.ellipse(cx, cy, 14 * scale, 10 * scale, 0, 0, Math.PI * 2);
                     aCtx.fill();
                     // лучи
-                    for (let i = 0; i < p.motorCount; i++) {
-                        const a = (i / p.motorCount) * Math.PI * 2 - Math.PI / 2;
+                    for (let i = 0; i < info.motorCount; i++) {
+                        const a = (i / info.motorCount) * Math.PI * 2 - Math.PI / 2;
                         const ex = cx + Math.cos(a) * armLen;
                         const ey = cy + Math.sin(a) * armLen;
                         aCtx.strokeStyle = 'rgba(148,163,184,0.4)';
@@ -2503,8 +2503,8 @@
 
                 // моторы (шаг 1)
                 if (showMotors) {
-                    for (let i = 0; i < p.motorCount; i++) {
-                        const a = (i / p.motorCount) * Math.PI * 2 - Math.PI / 2;
+                    for (let i = 0; i < info.motorCount; i++) {
+                        const a = (i / info.motorCount) * Math.PI * 2 - Math.PI / 2;
                         const ex = cx + Math.cos(a) * armLen;
                         const ey = cy + Math.sin(a) * armLen;
                         const active = step === 1;
@@ -2517,8 +2517,8 @@
 
                 // ESC (шаг 2) — на лучах у центра
                 if (showEsc) {
-                    for (let i = 0; i < p.motorCount; i++) {
-                        const a = (i / p.motorCount) * Math.PI * 2 - Math.PI / 2;
+                    for (let i = 0; i < info.motorCount; i++) {
+                        const a = (i / info.motorCount) * Math.PI * 2 - Math.PI / 2;
                         const ex = cx + Math.cos(a) * armLen * 0.55;
                         const ey = cy + Math.sin(a) * armLen * 0.55;
                         const active = step === 2;
@@ -2550,8 +2550,8 @@
                 // Винты (шаг 5)
                 if (showProps) {
                     const ang = now * 40;
-                    for (let i = 0; i < p.motorCount; i++) {
-                        const a = (i / p.motorCount) * Math.PI * 2 - Math.PI / 2;
+                    for (let i = 0; i < info.motorCount; i++) {
+                        const a = (i / info.motorCount) * Math.PI * 2 - Math.PI / 2;
                         const ex = cx + Math.cos(a) * armLen;
                         const ey = cy + Math.sin(a) * armLen;
                         const active = step === 5;
