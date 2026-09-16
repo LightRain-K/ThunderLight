@@ -948,8 +948,8 @@
                 Всё, что нужно для школ и кружков: от первых строк кода до управления реальным дроном.
             </p>
             <div class="hero-buttons">
-                <a href="https://thuderlight.online/articles/" class="btn btn-primary">🎓 Начать обучение</a>
-                <a href="https://thuderlight.online/docs.html" class="btn btn-outline">🚀 Исследовать БПЛА</a>
+                <a href="/articles/" class="btn btn-primary">🎓 Начать обучение</a>
+                <a href="/docs.html" class="btn btn-outline">🚀 Исследовать БПЛА</a>
                 <a href="https://github.com/LightRain-K/VRD_flight_controller" target="_blank" class="btn btn-outline">
                     <i class="fab fa-github"></i> Открытый код
                 </a>
@@ -963,17 +963,15 @@
     <div class="counters-grid">
         <div class="counter-item animate-on-scroll">
             <div style="font-size:2em;margin-bottom:4px;">📚</div>
-            <div class="number" data-target="8">0</div>
-            <div class="label">Образовательных направлений</div>
-            <div style="font-size:0.65em;color:var(--gray);margin-top:4px;">От основ до профессиональной инженерии</div>
-            <div style="font-size:0.6em;color:var(--primary);margin-top:2px;opacity:0.6;">⬡ без ограничений по уровню</div>
+            <div class="number" data-target="6">0</div>
+            <div class="label">Образовательных курсов</div>
+            <div style="font-size:0.65em;color:var(--gray);margin-top:4px;">Python · Arduino · Электроника · БПЛА · ПИД · Дроны</div>
         </div>
         <div class="counter-item animate-on-scroll">
             <div style="font-size:2em;margin-bottom:4px;">🧪</div>
-            <div class="number" data-target="15">0</div>
-            <div class="label">Интерактивных лабораторий</div>
-            <div style="font-size:0.65em;color:var(--gray);margin-top:4px;">Эксперименты с реальными параметрами</div>
-            <div style="font-size:0.6em;color:var(--primary);margin-top:2px;opacity:0.6;">⬡ бесконечные комбинации настроек</div>
+            <div class="number" data-target="3">0</div>
+            <div class="label">Интерактивных симулятора</div>
+            <div style="font-size:0.65em;color:var(--gray);margin-top:4px;">PID Simulator · Aerodynamic Lab · Drone Sim</div>
         </div>
         <div class="counter-item animate-on-scroll">
             <div style="font-size:2em;margin-bottom:4px;">🛠️</div>
@@ -1025,47 +1023,69 @@
         </div>
     </section>
 
-    <!-- ======== ИНТЕРАКТИВНАЯ ВРЕМЕННАЯ ШКАЛА ======== -->
+    <!-- ======== ПУТЬ ОБУЧЕНИЯ ======== -->
     <section style="background:rgba(15,23,42,0.3);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div class="section-container">
             <div class="section-header animate-on-scroll">
-                <span class="section-label">🗺️ Дорожная карта</span>
-                <h2 class="section-title">Как создавался проект</h2>
-                <p class="section-subtitle">От идеи до готовой образовательной экосистемы.</p>
+                <span class="section-label">🗺️ Путь обучения</span>
+                <h2 class="section-title">С чего начать?</h2>
+                <p class="section-subtitle">Рекомендуемый порядок прохождения курсов. Начните с основ и двигайтесь к реальным полётам.</p>
             </div>
 
             <div class="timeline">
                 <div class="timeline-item animate-on-scroll">
                     <div class="content">
-                        <div class="date">Сентябрь 2026</div>
-                        <h4>🚀 Запуск платформы</h4>
-                        <p>Презентация образовательной экосистемы ThunderLight. Доступны Academy, Lab, Simulator, Builder, Drone Sim и документация.</p>
+                        <div class="date">Шаг 1 · Базовый</div>
+                        <h4>🐍 Python для инженеров</h4>
+                        <p>Основы программирования. Переменные, функции, циклы — язык для управления дронами.</p>
+                        <a href="/articles/python/01-intro.html" style="display:inline-block;margin-top:8px;font-size:0.8em;color:#818cf8;text-decoration:none;">Начать →</a>
+                    </div>
+                    <div class="dot done"></div>
+                </div>
+                <div class="timeline-item animate-on-scroll">
+                    <div class="content">
+                        <div class="date">Шаг 2 · Базовый</div>
+                        <h4>⚡ Arduino для начинающих</h4>
+                        <p>Микроконтроллеры и датчики. Основа полётного контроллера.</p>
+                        <a href="/articles/arduino/01-intro.html" style="display:inline-block;margin-top:8px;font-size:0.8em;color:#818cf8;text-decoration:none;">Начать →</a>
+                    </div>
+                    <div class="dot"></div>
+                </div>
+                <div class="timeline-item animate-on-scroll">
+                    <div class="content">
+                        <div class="date">Шаг 3 · Базовый</div>
+                        <h4>🔌 Основы электроники</h4>
+                        <p>Закон Ома, схемы, компоненты. Пайка и чтение схем.</p>
+                        <a href="/articles/electronics/01-intro.html" style="display:inline-block;margin-top:8px;font-size:0.8em;color:#818cf8;text-decoration:none;">Начать →</a>
+                    </div>
+                    <div class="dot"></div>
+                </div>
+                <div class="timeline-item animate-on-scroll">
+                    <div class="content">
+                        <div class="date">Шаг 4 · Средний</div>
+                        <h4>✈️ Введение в БПЛА</h4>
+                        <p>Устройство дронов, моторы, ESC, полётные контроллеры.</p>
+                        <a href="/articles/bpla/01-intro.html" style="display:inline-block;margin-top:8px;font-size:0.8em;color:#818cf8;text-decoration:none;">Начать →</a>
                     </div>
                     <div class="dot current"></div>
                 </div>
                 <div class="timeline-item animate-on-scroll">
                     <div class="content">
-                        <div class="date">Август 2026</div>
-                        <h4>🛠️ Создание прототипа</h4>
-                        <p>Разработан и собран макет системы управления VRD FC. Проведены успешные испытания на стенде.</p>
+                        <div class="date">Шаг 5 · Средний</div>
+                        <h4>🎯 ПИД-регуляторы на практике</h4>
+                        <p>Теория и настройка ПИД в симуляторе. Отладка коэффициентов.</p>
+                        <a href="/simulator.html" style="display:inline-block;margin-top:8px;font-size:0.8em;color:#818cf8;text-decoration:none;">Открыть симулятор →</a>
                     </div>
-                    <div class="dot done"></div>
+                    <div class="dot"></div>
                 </div>
                 <div class="timeline-item animate-on-scroll">
                     <div class="content">
-                        <div class="date">Июль 2026</div>
-                        <h4>📝 Разработка контента</h4>
-                        <p>Написаны первые статьи по Python, Arduino и электронике. Созданы интерактивные лабораторные работы.</p>
+                        <div class="date">Шаг 6 · Продвинутый</div>
+                        <h4>💻 Программирование дронов</h4>
+                        <p>Пиши код на Python, управляй виртуальным дроном в 3D-симуляторе.</p>
+                        <a href="/drone-sim.html" style="display:inline-block;margin-top:8px;font-size:0.8em;color:#818cf8;text-decoration:none;">Открыть Drone Sim →</a>
                     </div>
-                    <div class="dot done"></div>
-                </div>
-                <div class="timeline-item animate-on-scroll">
-                    <div class="content">
-                        <div class="date">Май 2026</div>
-                        <h4>💡 Зарождение идеи</h4>
-                        <p>Появилась концепция образовательной экосистемы для изучения БПЛА. Начата разработка архитектуры.</p>
-                    </div>
-                    <div class="dot done"></div>
+                    <div class="dot"></div>
                 </div>
             </div>
         </div>
@@ -1081,7 +1101,7 @@
             </div>
 
             <div class="course-grid">
-                <a href="/articles/" class="course-card animate-on-scroll">
+                <a href="/articles/python/01-intro.html" class="course-card animate-on-scroll">
                     <span class="badge-new">Новый</span>
                     <span class="icon">🐍</span>
                     <h3>Python для инженеров</h3>
@@ -1091,10 +1111,10 @@
                         <span>⏱ 4 часа</span>
                         <span>🏷️ Базовый</span>
                     </div>
-                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">✈️ Практика: <a href="/drone-sim.html" style="color:#67e8f9;text-decoration:underline;">Drone Sim</a></div>
                 </a>
 
-                <a href="/articles/" class="course-card animate-on-scroll">
+                <a href="/articles/arduino/01-intro.html" class="course-card animate-on-scroll">
                     <span class="badge-new">Новый</span>
                     <span class="icon">⚡</span>
                     <h3>Arduino для начинающих</h3>
@@ -1104,10 +1124,10 @@
                         <span>⏱ 5 часов</span>
                         <span>🏷️ Базовый</span>
                     </div>
-                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">🛠️ Практика: <a href="/builder.html" style="color:#67e8f9;text-decoration:underline;">Builder</a></div>
                 </a>
 
-                <a href="/articles/" class="course-card animate-on-scroll">
+                <a href="/articles/electronics/01-intro.html" class="course-card animate-on-scroll">
                     <span class="icon">🔌</span>
                     <h3>Основы электроники</h3>
                     <p>Закон Ома, схемы, компоненты. Чтение принципиальных схем и пайка.</p>
@@ -1116,10 +1136,10 @@
                         <span>⏱ 3 часа</span>
                         <span>🏷️ Базовый</span>
                     </div>
-                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">🧪 Практика: <a href="/lab.html" style="color:#67e8f9;text-decoration:underline;">Aerodynamic Lab</a></div>
                 </a>
 
-                <a href="/articles/" class="course-card animate-on-scroll">
+                <a href="/articles/bpla/01-intro.html" class="course-card animate-on-scroll">
                     <span class="icon">✈️</span>
                     <h3>Введение в БПЛА</h3>
                     <p>Устройство и управление дронами. ПИД-регуляторы, телеметрия, полётные контроллеры.</p>
@@ -1128,10 +1148,10 @@
                         <span>⏱ 6 часов</span>
                         <span>🏷️ Средний</span>
                     </div>
-                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">🛠️ Практика: <a href="/builder.html" style="color:#67e8f9;text-decoration:underline;">Builder</a> · <a href="/docs.html" style="color:#67e8f9;text-decoration:underline;">Документация</a></div>
                 </a>
 
-                <a href="/articles/" class="course-card animate-on-scroll">
+                <a href="/simulator.html" class="course-card animate-on-scroll">
                     <span class="icon">🎯</span>
                     <h3>ПИД-регуляторы на практике</h3>
                     <p>Теория и настройка ПИД-регулятора в симуляторе. Отладка коэффициентов.</p>
@@ -1140,10 +1160,10 @@
                         <span>⏱ 3 часа</span>
                         <span>🏷️ Средний</span>
                     </div>
-                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">💻 Практика: <a href="/simulator.html" style="color:#67e8f9;text-decoration:underline;">PID Simulator</a></div>
                 </a>
 
-                <a href="/articles/" class="course-card animate-on-scroll">
+                <a href="/drone-sim.html" class="course-card animate-on-scroll">
                     <span class="icon">💻</span>
                     <h3>Программирование дронов</h3>
                     <p>Пиши код на Python, управляй виртуальным дроном. Взлёт, маршруты, миссии.</p>
@@ -1152,7 +1172,7 @@
                         <span>⏱ 4 часа</span>
                         <span>🏷️ Продвинутый</span>
                     </div>
-                    <div class="progress"><div class="bar" style="width:0%;"></div></div>
+                    <div style="margin-top:10px;padding:6px 12px;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;font-size:0.7em;color:#67e8f9;">✈️ Практика: <a href="/drone-sim.html" style="color:#67e8f9;text-decoration:underline;">Drone Sim</a></div>
                 </a>
             </div>
         </div>
