@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThunderLight — Образовательная экосистема БПЛА</title>
-    <meta name="description" content="ThunderLight — открытая образовательная экосистема для изучения БПЛА, программирования и инженерии. Всё для школ и кружков.">
+    <title>ThunderLight — Обучение БПЛА: от нуля до программирования дронов</title>
+    <meta name="description" content="Бесплатное обучение БПЛА и программированию дронов. Уроки Python, Arduino, электроники и ПИД-регуляторов. Симуляторы, конструктор и интерактивные лаборатории.">
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -523,6 +523,96 @@
         .benefit-card .icon { font-size: 2.5em; display: block; margin-bottom: 12px; }
         .benefit-card h3 { font-size: 1.1em; font-weight: 700; margin-bottom: 8px; }
         .benefit-card p { color: var(--gray-light); font-size: 0.9em; line-height: 1.6; }
+        a.benefit-card { color: inherit; text-decoration: none; display: block; }
+        .skill-tag {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: 600;
+            background: rgba(79, 70, 229, 0.12);
+            color: #a5b4fc;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+        }
+
+        /* Шаги обучения */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .step-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            position: relative;
+            text-align: center;
+            transition: var(--transition);
+        }
+        .step-card:hover {
+            border-color: rgba(79, 70, 229, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        .step-num {
+            width: 44px;
+            height: 44px;
+            margin: 0 auto 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1em;
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
+        }
+        .step-card h3 { font-size: 1.05em; font-weight: 700; margin-bottom: 8px; }
+        .step-card p { color: var(--gray-light); font-size: 0.85em; line-height: 1.6; }
+
+        /* FAQ */
+        .faq-list { max-width: 720px; margin: 0 auto; display: grid; gap: 12px; }
+        .faq-item {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+        .faq-item:hover { border-color: rgba(79, 70, 229, 0.3); }
+        .faq-q {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            color: var(--light);
+            font: inherit;
+            font-weight: 600;
+            font-size: 0.98em;
+            padding: 18px 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .faq-q:hover { color: #a5b4fc; }
+        .faq-icon { transition: transform 0.3s; color: var(--primary); font-weight: 800; font-size: 1.2em; }
+        .faq-item.open .faq-icon { transform: rotate(45deg); }
+        .faq-a {
+            display: none;
+            padding: 0 22px 18px;
+            color: var(--gray-light);
+            font-size: 0.9em;
+            line-height: 1.7;
+        }
+        .faq-a a { color: #818cf8; }
+        @media (max-width: 900px) { .steps-grid { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 480px) { .steps-grid { grid-template-columns: 1fr; } }
 
         /* Счётчики */
         .counters-grid {
@@ -940,25 +1030,22 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <span class="hero-badge-dot"></span>
-                Открытая образовательная экосистема
+                Обучение БПЛА с нуля — бесплатно
             </div>
-            <h1>От <span class="hero-gradient">теории</span> к реальному <span class="hero-gradient">полёту</span></h1>
+            <h1>Научись <span class="hero-gradient">программировать</span> и собирать дроны</h1>
             <p>
-                ThunderLight — это открытая образовательная платформа для изучения БПЛА, программирования и инженерии.
-                Всё, что нужно для школ и кружков: от первых строк кода до управления реальным дроном.
+                Пойми, как устроен беспилотник, и запрограммируй свой первый полёт. Python, Arduino,
+                электроника и ПИД-регуляторы — 6 шагов от теории к практике в симуляторах.
             </p>
             <div class="hero-buttons">
-                <a href="/articles/" class="btn btn-primary">🎓 Начать обучение</a>
-                <a href="/docs.html" class="btn btn-outline">🚀 Исследовать БПЛА</a>
-                <a href="https://github.com/LightRain-K/VRD_flight_controller" target="_blank" class="btn btn-outline">
-                    <i class="fab fa-github"></i> Открытый код
-                </a>
+                <a href="/articles/python/01-intro.html" class="btn btn-primary">🎓 Начать с нуля</a>
+                <a href="/drone-sim.html" class="btn btn-outline">✈️ Попробовать Drone Sim</a>
+                <a href="/builder.html" class="btn btn-outline">🛠️ Конструктор БПЛА</a>
             </div>
         </div>
     </section>
 
     <!-- ======== СЧЁТЧИКИ ======== -->
-<!-- ======== СЧЁТЧИКИ ======== -->
 <section style="padding: 0 32px 60px;">
     <div class="counters-grid">
         <div class="counter-item animate-on-scroll">
@@ -989,35 +1076,84 @@
         </div>
     </div>
 </section>
-    <!-- ======== О ПРОЕКТЕ ======== -->
+    <!-- ======== ЧЕМУ ТЫ НАУЧИШЬСЯ ======== -->
     <section id="about">
         <div class="section-container">
             <div class="section-header animate-on-scroll">
-                <span class="section-label">⚡ О проекте</span>
-                <h2 class="section-title">Образовательная экосистема нового поколения</h2>
-                <p class="section-subtitle">ThunderLight — это не просто конструктор БПЛА. Это полноценная среда для обучения, где теория соединяется с практикой.</p>
+                <span class="section-label">🎯 Программа обучения</span>
+                <h2 class="section-title">Чему ты научишься</h2>
+                <p class="section-subtitle">Каждый навык — это курс с уроками, практикой и интерактивным инструментом. Теория сразу закрепляется на симуляторах.</p>
             </div>
 
             <div class="benefits-grid">
-                <div class="benefit-card animate-on-scroll">
-                    <span class="icon">🧩</span>
-                    <h3>Открытая архитектура</h3>
-                    <p>Гибридная система управления на Arduino + Raspberry Pi. Полностью открытый код и схемы — всё доступно на GitHub.</p>
+                <a href="/articles/python/01-intro.html" class="benefit-card animate-on-scroll">
+                    <span class="icon">🐍</span>
+                    <h3>Программирование на Python</h3>
+                    <p>Переменные, циклы, функции. Язык, на котором управляют дронами.</p>
+                    <span class="skill-tag">Курс · 8 уроков</span>
+                </a>
+                <a href="/articles/arduino/01-intro.html" class="benefit-card animate-on-scroll">
+                    <span class="icon">⚡</span>
+                    <h3>Arduino и микроконтроллеры</h3>
+                    <p>Датчики, моторы, сервоприводы. Основа бортовой электроники дрона.</p>
+                    <span class="skill-tag">Курс · 10 уроков</span>
+                </a>
+                <a href="/articles/electronics/01-intro.html" class="benefit-card animate-on-scroll">
+                    <span class="icon">🔌</span>
+                    <h3>Основы электроники</h3>
+                    <p>Схемы, компоненты, закон Ома. Паяй и читай электрические схемы.</p>
+                    <span class="skill-tag">Курс · 6 уроков</span>
+                </a>
+                <a href="/articles/bpla/01-intro.html" class="benefit-card animate-on-scroll">
+                    <span class="icon">✈️</span>
+                    <h3>Устройство БПЛА</h3>
+                    <p>Моторы, ESC, полётные контроллеры. Как дрон держится в воздухе.</p>
+                    <span class="skill-tag">Курс · 12 уроков</span>
+                </a>
+                <a href="/simulator.html" class="benefit-card animate-on-scroll">
+                    <span class="icon">🎛️</span>
+                    <h3>ПИД-регуляторы</h3>
+                    <p>Стабильность и точное управление. Настраивай коэффициенты в симуляторе.</p>
+                    <span class="skill-tag">Практика · Simulator</span>
+                </a>
+                <a href="/drone-sim.html" class="benefit-card animate-on-scroll">
+                    <span class="icon">💻</span>
+                    <h3>Программирование полётов</h3>
+                    <p>Взлёт, маршруты, миссии. Пиши код и управляй дроном в 3D-симуляторе.</p>
+                    <span class="skill-tag">Практика · Drone Sim</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======== КАК ПРОХОДИТ ОБУЧЕНИЕ ======== -->
+    <section style="background:rgba(15,23,42,0.3);">
+        <div class="section-container">
+            <div class="section-header animate-on-scroll">
+                <span class="section-label">🔄 Формат</span>
+                <h2 class="section-title">Как проходит обучение</h2>
+                <p class="section-subtitle">Короткая теория → сразу практика. Никаких скучных лекций — только то, что используется в реальной инженерии.</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card animate-on-scroll">
+                    <div class="step-num">1</div>
+                    <h3>📖 Теория</h3>
+                    <p>Компактные уроки с примерами кода и схемами. Всё нужное — без воды.</p>
                 </div>
-                <div class="benefit-card animate-on-scroll">
-                    <span class="icon">💡</span>
-                    <h3>Образовательная методика</h3>
-                    <p>Структурированные курсы, интерактивные лаборатории и симуляторы. От изучения Python до программирования дронов.</p>
+                <div class="step-card animate-on-scroll">
+                    <div class="step-num">2</div>
+                    <h3>🧪 Эксперименты</h3>
+                    <p>Интерактивные лаборатории: аэродинамика, ПИД-регуляторы, физика полёта.</p>
                 </div>
-                <div class="benefit-card animate-on-scroll">
-                    <span class="icon">🛠️</span>
-                    <h3>Доступность и ремонт</h3>
-                    <p>Все детали можно распечатать на 3D-принтере. Стоимость комплекта ~12 000 ₽, а замена деталей — без инструментов.</p>
+                <div class="step-card animate-on-scroll">
+                    <div class="step-num">3</div>
+                    <h3>🛠️ Сборка</h3>
+                    <p>Изучай конструкцию дрона в Builder и документации. Готовься к сборке своими руками.</p>
                 </div>
-                <div class="benefit-card animate-on-scroll">
-                    <span class="icon">🔒</span>
-                    <h3>Безопасность</h3>
-                    <p>Критические компоненты защищены корпусом. Li-Po аккумуляторы и полётный контроллер — в надёжном кожухе.</p>
+                <div class="step-card animate-on-scroll">
+                    <div class="step-num">4</div>
+                    <h3>✈️ Полёт</h3>
+                    <p>Программируй дрона в симуляторе и выходи на реальные полёты с полётным контроллером.</p>
                 </div>
             </div>
         </div>
@@ -1222,14 +1358,31 @@
         </div>
     </section>
 
-    <!-- ======== ОТЗЫВ ======== -->
+    <!-- ======== FAQ ======== -->
     <section>
         <div class="section-container">
-            <div class="testimonial animate-on-scroll">
-                <div class="quote">
-                    «ThunderLight — это не просто конструктор. Это полноценная образовательная среда, где ученики проходят путь от теории к реальной инженерии. Всё открыто, доступно и безопасно.»
+            <div class="section-header animate-on-scroll">
+                <span class="section-label">❓ Вопросы</span>
+                <h2 class="section-title">Частые вопросы новичков</h2>
+                <p class="section-subtitle">Всё, что обычно спрашивают перед стартом обучения.</p>
+            </div>
+            <div class="faq-list animate-on-scroll">
+                <div class="faq-item">
+                    <button class="faq-q">Нужен ли опыт программирования для старта? <span class="faq-icon">+</span></button>
+                    <div class="faq-a">Нет. Начните с курса <a href="/articles/python/01-intro.html">Python для инженеров</a> — он рассчитан на полный ноль и объясняет всё с самого начала.</div>
                 </div>
-                <div class="author">Команда ThunderLight <span>— образовательная экосистема БПЛА</span></div>
+                <div class="faq-item">
+                    <button class="faq-q">Нужно ли покупать дрон, чтобы учиться? <span class="faq-icon">+</span></button>
+                    <div class="faq-a">Не обязательно. Теория и все практические задания выполняются в симуляторах: <a href="/simulator.html">PID Simulator</a>, <a href="/lab.html">Aerodynamic Lab</a> и <a href="/drone-sim.html">Drone Sim</a>. Реальный комплект (~12 000 ₽) нужен только для того, чтобы выйти на настоящие полёты.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q">Сколько времени занимает обучение? <span class="faq-icon">+</span></button>
+                    <div class="faq-a">Базовый путь из 6 шагов — примерно 25 часов. Дальше выбирайте направление для углубления: инженерия, программирование или полёты.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q">Где взять схемы и прошивки? <span class="faq-icon">+</span></button>
+                    <div class="faq-a">Всё открыто: схемы и прошивки на <a href="https://github.com/LightRain-K/VRD_flight_controller" target="_blank">GitHub</a>, подробная документация в разделе <a href="/docs.html">Документация</a>.</div>
+                </div>
             </div>
         </div>
     </section>
@@ -1238,16 +1391,14 @@
     <section style="background:radial-gradient(ellipse at center, rgba(79,70,229,0.08), transparent 70%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
         <div class="section-container" style="text-align:center;">
             <div style="max-width:600px;margin:0 auto;" class="animate-on-scroll">
-                <h2 style="font-size:2.2em;font-weight:900;margin-bottom:16px;">Готов начать?</h2>
+                <h2 style="font-size:2.2em;font-weight:900;margin-bottom:16px;">Начни первый урок прямо сейчас</h2>
                 <p style="color:var(--gray-light);font-size:1.1em;margin-bottom:32px;">
-                    Всё, что нужно для старта, уже есть на сайте. Бесплатно, с открытым кодом и документацией.
+                    Открой курс Python или сразу запусти Drone Sim — всё бесплатно и без регистрации.
                 </p>
                 <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-                    <a href="#courses" class="btn btn-primary">🎓 Выбрать курс</a>
-                    <a href="/docs.html" class="btn btn-outline">📚 Техническая документация</a>
-                    <a href="https://github.com/LightRain-K/ThunderLight" target="_blank" class="btn btn-outline">
-                        <i class="fab fa-github"></i> GitHub
-                    </a>
+                    <a href="/articles/python/01-intro.html" class="btn btn-primary">🎓 Первый урок Python</a>
+                    <a href="#courses" class="btn btn-outline">📚 Все курсы</a>
+                    <a href="/drone-sim.html" class="btn btn-outline">✈️ Drone Sim</a>
                 </div>
             </div>
         </div>
@@ -1437,6 +1588,18 @@
             window.scrollTo(0, 0);
             history.pushState("", document.title, window.location.pathname + window.location.search);
         }
+
+        // ============================================================
+        // FAQ АККОРДЕОН
+        // ============================================================
+        document.querySelectorAll('.faq-q').forEach(q => {
+            q.addEventListener('click', () => {
+                const item = q.parentElement;
+                const answer = q.nextElementSibling;
+                const open = item.classList.toggle('open');
+                answer.style.display = open ? 'block' : 'none';
+            });
+        });
     </script>
 
 </body>
