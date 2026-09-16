@@ -814,6 +814,75 @@
         .test-verdict.ok { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); color: var(--success); }
         .test-verdict.warn { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); color: var(--warning); }
         .test-verdict.fail { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); color: var(--danger); }
+
+        /* === МАСТЕР СБОРКИ (пошаговая) === */
+        .asm-panel {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border: 1px solid rgba(45, 212, 191, 0.22);
+            border-radius: 10px;
+            background: rgba(45, 212, 191, 0.05);
+        }
+        .asm-panel h4 {
+            font-size: 0.75em;
+            color: var(--light);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 700;
+        }
+        .asm-count { color: var(--gray-light); font-size: 0.85em; }
+        .asm-progress {
+            height: 5px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .asm-progress > div {
+            height: 100%;
+            width: 12.5%;
+            background: linear-gradient(90deg, #14b8a6, #22d3ee);
+            border-radius: 3px;
+            transition: width 0.35s ease;
+        }
+        .asm-step-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+        .asm-step-chip {
+            font-size: 0.6em;
+            padding: 3px 7px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            color: var(--gray-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.02);
+        }
+        .asm-step-chip:hover { border-color: rgba(34, 211, 238, 0.5); }
+        .asm-step-chip.done { border-color: rgba(34, 197, 94, 0.5); color: var(--success); }
+        .asm-step-chip.active {
+            border-color: #22d3ee;
+            color: #67e8f9;
+            background: rgba(34, 211, 238, 0.12);
+            box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+        }
+        .asm-desc {
+            font-size: 0.72em;
+            line-height: 1.5;
+            color: var(--gray-light);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-top: 8px;
+        }
+        .asm-desc b { color: #22d3ee; }
+        .asm-desc .asm-tip { margin-top: 6px; font-size: 0.9em; color: var(--gray); }
     </style>
 </head>
 <body>
@@ -1233,6 +1302,18 @@
                         <button class="btn btn-outline btn-sm" id="btnStopTest" style="display:none;">✋ Стоп</button>
                     </div>
                     <div id="testResults"></div>
+                </div>
+
+                <div class="asm-panel" id="asmPanel">
+                    <h4>🔧 Пошаговая сборка <span class="asm-count" id="asmCount">1/8</span></h4>
+                    <div class="asm-progress"><div id="asmProgress"></div></div>
+                    <canvas id="assemblyCanvas" class="preview-canvas" style="height:200px;"></canvas>
+                    <div class="asm-step-list" id="asmStepList"></div>
+                    <div class="asm-desc" id="asmDesc"></div>
+                    <div style="display:flex; gap:8px; margin-top:8px;">
+                        <button class="btn btn-outline btn-sm" id="btnAsmPrev">← Назад</button>
+                        <button class="btn btn-primary btn-sm" id="btnAsmNext">Вперёд →</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2273,6 +2354,340 @@
 
         document.getElementById('btnRunTest').addEventListener('click', runTest);
         document.getElementById('btnStopTest').addEventListener('click', stopTest);
+
+        // === МАСТЕР ПОШАГОВОЙ СБОРКИ ===
+        const ASM_STEPS = [
+            { icon: '🛠️', title: 'Рама и схема', desc: 'Основа аппарата. У самолёта это фюзеляж с крылом и профилем, у квадрокоптера — центральная плата с лучами. От рамы зависят размер, масса и то, сколько моторов поместится.' },
+            { icon: '🦾', title: 'Моторы', desc: 'Крепятся на концы лучей (мультиротор) или на нос/крыло (самолёт). Выбор мотора определяет тягу и ток — смотрите таблицу совместимости ниже.' },
+            { icon: '🔌', title: 'ESC (регуляторы)', desc: 'Ставятся вплотную к моторам или на центральную плату. Каждый ESC должен выдерживать ток мотора и совпадать с напряжением АКБ.' },
+            { icon: '🧠', title: 'Полётный контроллер', desc: 'Мозг аппарата — крепится в центре на демпферах. Подключается к приёмнику, GPS и ESC. Прошивка влияет на устойчивость и манёвренность.' },
+            { icon: '🔋', title: 'Аккумулятор', desc: 'Укладывается на раму и фиксируется ремнём. Ёмкость и «S»-число задают напряжение и время полёта.' },
+            { icon: '🌀', title: 'Винты', desc: 'Надеваются на валы моторов. Размер должен соответствовать раме и KV мотора — иначе будет вибрация или перегруз ESC.' },
+            { icon: '📦', title: 'Нагрузка и оборудование', desc: 'Камера, груз, GPS, телеметрия. Вес напрямую снижает время полёта — балансируйте массу и тяговооружённость.' },
+            { icon: '🚀', title: 'Проверка и первый полёт', desc: 'Испытание, оценка и рекомендации. Если показатель красный — вернитесь на шаг и поменяйте деталь.' },
+        ];
+
+        let asmStep = 0; // 0..7
+        let asmCanvas = null;
+        let aCtx = null;
+        let asmRAF = null;
+
+        function initAssembly() {
+            asmCanvas = document.getElementById('assemblyCanvas');
+            if (!asmCanvas) return;
+            aCtx = asmCanvas.getContext('2d');
+            asmCanvas.width = asmCanvas.clientWidth || 500;
+            asmCanvas.height = asmCanvas.clientHeight || 200;
+            renderAssembly();
+        }
+
+        function renderAssembly() {
+            if (!asmCanvas || !aCtx) return;
+            const p = calculateParams();
+
+            // Список шагов (чипы)
+            const listEl = document.getElementById('asmStepList');
+            if (listEl) {
+                listEl.innerHTML = ASM_STEPS.map((s, i) =>
+                    `<div class="asm-step-chip ${i < asmStep ? 'done' : ''} ${i === asmStep ? 'active' : ''}" data-i="${i}">${s.icon} ${s.title}</div>`
+                ).join('');
+                listEl.querySelectorAll('.asm-step-chip').forEach(ch => {
+                    ch.addEventListener('click', () => { asmStep = +ch.dataset.i; renderAssembly(); });
+                });
+            }
+
+            // Описание шага
+            const descEl = document.getElementById('asmDesc');
+            if (descEl) descEl.innerHTML = ASM_STEPS[asmStep].desc
+                + `<div class="asm-tip">💡 ${asmTips(asmStep, p)}</div>`;
+
+            // Прогресс
+            const progressEl = document.getElementById('asmProgress');
+            if (progressEl) progressEl.style.width = ((asmStep) / (ASM_STEPS.length - 1) * 97 + 1.5) + '%';
+            const stepVal = document.getElementById('asmStepVal');
+            if (stepVal) stepVal.textContent = asmStep + 1 + ' / ' + ASM_STEPS.length;
+
+            // Счётчик в заголовке
+            const asmCountEl = document.getElementById('asmCount');
+            if (asmCountEl) asmCountEl.textContent = (asmStep + 1) + '/' + ASM_STEPS.length;
+
+            // Кнопки
+            const prevBtn = document.getElementById('btnAsmPrev');
+            const nextBtn = document.getElementById('btnAsmNext');
+            if (prevBtn) prevBtn.disabled = asmStep === 0;
+            if (nextBtn) nextBtn.textContent = asmStep === ASM_STEPS.length - 1 ? '✅ Готово' : 'Вперёд →';
+
+            drawAssembly(p.info, asmStep);
+        }
+
+        function asmTips(step, p) {
+            const tips = [
+                p.isPlane ? `Взгляд сверху: фюзеляж (размах ${config.frameSize} мм).` : `Рама ${config.frameSize} мм, моторов на схеме — ${p.motorCount}.`,
+                `Крутящий мотор: ${config.motor} (${DB.motors[config.motor]?.thrust} г тяги).`,
+                `ESC: ${config.esc} (${DB.escs[config.esc]?.current} А).`,
+                `Контроллер: ${config.fc} — ${DB.flightControllers[config.fc]?.name}.`,
+                `АКБ: ${config.battery} — ${DB.batteries[config.battery]?.name}.`,
+                `Винты: ${config.prop} — ${DB.props[config.prop]?.name}.`,
+                p.payload !== 'none'
+                    ? `Нагрузка: ${DB.payloads[config.payload]?.name}.`
+                    : 'Нагрузки нет — максимальная манёвренность.',
+                `Тяговооружённость ${p.thrustWeight.toFixed(2)} — ${p.thrustWeight >= (p.isPlane ? 0.3 : 2.5) ? 'хорошо ✓' : 'мало ✗'}.`,
+            ];
+            return tips[step] || '';
+        }
+
+        function drawAssembly(info, step) {
+            const w = asmCanvas.width;
+            const h = asmCanvas.height;
+            aCtx.clearRect(0, 0, w, h);
+            const cx = w / 2;
+            const cy = h / 2 + 8;
+
+
+            const isPlane = info.isPlane;
+            const scale = w / 420;
+            const now = performance.now() / 1000;
+
+            // Фон
+            aCtx.fillStyle = '#0a0e27';
+            aCtx.fillRect(0, 0, w, h);
+            aCtx.strokeStyle = 'rgba(255,255,255,0.05)';
+            aCtx.strokeRect(0.5, 0.5, w - 1, h - 1);
+
+            // Сетка
+            aCtx.strokeStyle = 'rgba(79,70,229,0.12)';
+            aCtx.lineWidth = 0.6;
+            for (let i = 1; i < 8; i++) {
+                aCtx.beginPath();
+                aCtx.moveTo((w / 8) * i, 0);
+                aCtx.lineTo((w / 8) * i, h);
+                aCtx.stroke();
+            }
+
+            const installed = step; // шаги > этого ещё не установлены
+
+            // Какие детали показать
+            const showArms = installed >= 0.0;      // рама с 0 шага
+            const showMotors = installed >= 1;
+            const showEsc = installed >= 2;
+            const showFc = installed >= 3;
+            const showBattery = installed >= 4;
+            const showProps = installed >= 5;
+            const showPayload = installed >= 6 || (installed >= 62 && isPlane);
+
+            const pulse = (Math.sin(now * 3) + 1) / 2;
+
+            // Мультиротор
+            if (!isPlane) {
+                const armLen = 24 * scale;
+                // центральная плата (с шага 0)
+                if (showArms) {
+                    aCtx.fillStyle = 'rgba(148,163,184,0.35)';
+                    aCtx.beginPath();
+                    aCtx.ellipse(cx, cy, 14 * scale, 10 * scale, 0, 0, Math.PI * 2);
+                    aCtx.fill();
+                    // лучи
+                    for (let i = 0; i < p.motorCount; i++) {
+                        const a = (i / p.motorCount) * Math.PI * 2 - Math.PI / 2;
+                        const ex = cx + Math.cos(a) * armLen;
+                        const ey = cy + Math.sin(a) * armLen;
+                        aCtx.strokeStyle = 'rgba(148,163,184,0.4)';
+                        aCtx.lineWidth = 4.5 * scale;
+                        aCtx.lineCap = 'round';
+                        aCtx.beginPath();
+                        aCtx.moveTo(cx, cy);
+                        aCtx.lineTo(ex, ey);
+                        aCtx.stroke();
+                    }
+                }
+
+                // моторы (шаг 1)
+                if (showMotors) {
+                    for (let i = 0; i < p.motorCount; i++) {
+                        const a = (i / p.motorCount) * Math.PI * 2 - Math.PI / 2;
+                        const ex = cx + Math.cos(a) * armLen;
+                        const ey = cy + Math.sin(a) * armLen;
+                        const active = step === 1;
+                        aCtx.fillStyle = active ? `rgba(251,191,36,${0.7 + pulse * 0.3})` : 'rgba(148,163,184,0.8)';
+                        aCtx.beginPath();
+                        aCtx.arc(ex, ey, 4.5 * scale, 0, Math.PI * 2);
+                        aCtx.fill();
+                    }
+                }
+
+                // ESC (шаг 2) — на лучах у центра
+                if (showEsc) {
+                    for (let i = 0; i < p.motorCount; i++) {
+                        const a = (i / p.motorCount) * Math.PI * 2 - Math.PI / 2;
+                        const ex = cx + Math.cos(a) * armLen * 0.55;
+                        const ey = cy + Math.sin(a) * armLen * 0.55;
+                        const active = step === 2;
+                        aCtx.fillStyle = active ? `rgba(0,229,255,${0.8 + pulse * 0.2})` : 'rgba(56,189,248,0.8)';
+                        aCtx.fillRect(ex - 3 * scale, ey - 4 * scale, 6 * scale, 8 * scale);
+                    }
+                }
+
+                // FC (шаг 3)
+                if (showFc) {
+                    const active = step === 3;
+                    aCtx.fillStyle = active ? `rgba(34,197,94,${0.7 + pulse * 0.3})` : 'rgba(34,197,94,0.85)';
+                    aCtx.beginPath();
+                    aCtx.ellipse(cx, cy, 9 * scale, 7 * scale, 0, 0, Math.PI * 2);
+                    aCtx.fill();
+                }
+
+                // АКБ (шаг 4)
+                if (showBattery) {
+                    const active = step === 4;
+                    aCtx.fillStyle = active ? `rgba(255,140,66,${0.7 + pulse * 0.3})` : 'rgba(255,140,66,0.85)';
+                    aCtx.save();
+                    aCtx.translate(cx, cy + 16 * scale);
+                    aCtx.rotate(-Math.PI / 2);
+                    aCtx.fillRect(-12 * scale, -8 * scale, 24 * scale, 16 * scale);
+                    aCtx.restore();
+                }
+
+                // Винты (шаг 5)
+                if (showProps) {
+                    const ang = now * 40;
+                    for (let i = 0; i < p.motorCount; i++) {
+                        const a = (i / p.motorCount) * Math.PI * 2 - Math.PI / 2;
+                        const ex = cx + Math.cos(a) * armLen;
+                        const ey = cy + Math.sin(a) * armLen;
+                        const active = step === 5;
+                        aCtx.strokeStyle = active ? `rgba(192,132,252,${0.8 + pulse * 0.2})` : 'rgba(192,132,252,0.6)';
+                        aCtx.lineWidth =  pavable;
+                        aCtx.beginPath();
+                        aCtx.ellipse(ex, ey, 18 * scale, 6 * scale, a + ang, 0, Math.PI * 2);
+                        aCtx.stroke();
+                    }
+                }
+
+                // Нагрузка (шаг 6) — в центре сверху
+                if (showPayload) {
+                    const active = step === 6;
+                    aCtx.fillStyle = active ? `rgba(239,68,68,${0.7 + pulse * 0.3})` : 'rgba(239,68,68,0.85)';
+                    aCtx.strokeStyle = 'rgba(255,255,255,0.6)';
+                    aCtx.beginPath();
+                    aCtx.ellipse(cx, cy - 14 * scale, 13 * scale, 9 * scale, 0, 0, Math.PI * 2);
+                    aCtx.fill();
+                    aCtx.stroke();
+                }
+            } else {
+                // === САМОЛЁТ: фюзеляж + крыло + профиль ===
+                const len = config.frameSize / 2 * scale * 0.9;
+
+                // фюзеляж (шаг 0)
+                if (showArms) {
+                    aCtx.fillStyle = 'rgba(148,163,184,0.7)';
+                    aCtx.beginPath();
+                    aCtx.moveTo(cx + len * 1.1, cy);
+                    aCtx.lineTo(cx - len *  Lock, cy - 2);
+                    aCtx.lineTo(cx - len, cy + 4);
+                    aCtx.closePath();
+                    aCtx.fill();
+                }
+
+                // крыло (шаг 0/1)
+                let wingShow = step >= 0;
+                if (wingShow) {
+                    aCtx.fillStyle = 'rgba(79,70,229,0.45)';
+                    const half = len * 0.85;
+                    aCtx.beginPath();
+                    aCtx.moveTo(cx - len * 0.2, cy - 4);
+                    aCtx.lineTo(cx + len * 0.5, cy - 4);
+                    aCtx.lineTo(cx + len * 0.9, cy + 4);
+                    aCtx.lineTo(cx - len * 0.2, cy + 6);
+                    aCtx.closePath();
+                    aCtx.fill();
+                }
+
+                // мотор (шаг 1, один) — нос
+                if (showMotors) {
+                    const mx = cx + len * 1.15;
+                    const active = step === 1;
+                    aCtx.fillStyle = active ? `rgba(251,191,36,${0.7 + pulse * 0.3})` : 'rgba(148,163,184,0.8)';
+                    aCtx.beginPath();
+                    aCtx.arc(mx, cy, 3.5 * scale, 0, Math.PI * 2);
+                    aCtx.fill();
+                }
+                // Винт на носу
+                if (showProps) {
+                    const px = cx + len * 1.2;
+                    const ang = now * 40;
+                    const active = step === 5;
+                    aCtx.strokeStyle = active ? `rgba(192,132,252,${0.8 + pulse * 0.2})` : 'rgba(192,132,252,0.6)';
+                    aCtx.lineWidth = 1;
+                    aCtx.beginPath();
+                    aCtx.arc(px, cy, 12 * scale, 0, Math.PI * 2);
+                    aCtx.moveTo(px, cy - 11 * scale);
+                    aCtx.lineTo(px, cy + 11 * scale);
+                    aCtx.moveTo(px - 11 * scale, cy);
+                    aCtx.lineTo(px + 11 * scale, cy);
+                    aCtx.stroke();
+                }
+
+                // ESC (шаг 2) — в фюзеляже
+                if (showEsc) {
+                    const active = step === 2;
+                    aCtx.fillStyle = active ? `rgba(0,229,255,${0.8 + pulse * 0.2})` : 'rgba(56,189,248,0.8)';
+                    aCtx.fillRect(cx - len * 0.55, cy - 6 * scale, 8 * scale, 12 * scale);
+                }
+                // FC (шаг 3)
+                if (showFc) {
+                    const active = step === 3;
+                    aCtx.fillStyle = active ? `rgba(34,197,94,${0.7 + pulse * 0.3})` : 'rgba(34,197,94,0.85)';
+                    aCtx.beginPath();
+                    aCtx.arc(cx - len * 0.7, cy, 5 * scale, 0, Math.PI * 2);
+                    aCtx.fill();
+                }
+                // АКБ (шаг 4) — внутри фюзеляжа
+                if (showBattery) {
+                    const active = step === 4;
+                    aCtx.fillStyle = active ? `rgba(255,140,66,${0.7 + pulse * 0.3})` : 'rgba(255,140,66,0.85)';
+                    aCtx.fillRect(cx - len * 0.3, cy - 5 * scale, 22 * scale, 10 * scale);
+                }
+                // Нагрузка (шаг 6) — центр тяжести
+                if (showPayload) {
+                    const active = step === 6;
+                    aCtx.fillStyle = active ? `rgba(239,68,68,${0.7 + pulse * 0.3})` : 'rgba(239,68,68,0.85)';
+                    aCtx.strokeStyle = 'rgba(255,255,255,0.6)';
+                    aCtx.beginPath();
+                    aCtx.arc(cx + len * 0.05, cy, 7 * scale, 0, Math.PI * 2);
+                    aCtx.fill();
+                    aCtx.stroke();
+                }
+            }
+
+            // Подсветка активного шага + подпись
+            aCtx.fillStyle = 'rgba(255,255,255,0.45)';
+            aCtx.font = '9px monospace';
+            aCtx.fillText(ASM_STEPS[step].icon + ' ' + ASM_STEPS[step].title, 10, 24);
+            aCtx.fillText(`Шаг ${step + 1} из 8`, 10, 40);
+            aCtx.fillText(`Масса: ${info.totalMass} г · Тяга: ${info.thrustWeight.toFixed(2)}`, 10, 42);
+
+            if (asmRAF) return;
+            asmRAF = requestAnimationFrame(() => {
+                asmRAF = null;
+                drawAssembly(info, step);
+            });
+        }
+
+        function asmNav(dir) {
+            const p = calculateParams();
+            const max = ASM_STEPS.length - 1;
+            asmStep = Math.max(0, Math.min(max, asmStep + dir));
+            renderAssembly();
+            updateSelectors();
+            updateBuilder();
+        }
+
+        const btnAsmPrev = document.getElementById('btnAsmPrev');
+        const btnAsmNext = document.getElementById('btnAsmNext');
+        if (btnAsmPrev) btnAsmPrev.addEventListener('click', () => asmNav(-1));
+        if (btnAsmNext) btnAsmNext.addEventListener('click', () => asmNav(1));
+
+        initAssembly();
 
         // === КНОПКИ ===
         document.getElementById('btnRandom').addEventListener('click', () => {
