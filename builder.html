@@ -2482,21 +2482,26 @@
                 const armLen = 24 * scale;
                 // центральная плата (с шага 0)
                 if (showArms) {
-                    aCtx.fillStyle = 'rgba(148,163,184,0.35)';
+                    const bright = 0.35 + pulse * 0.45;
+                    aCtx.fillStyle = `rgba(251,191,36,${bright})`;
                     aCtx.beginPath();
-                    aCtx.ellipse(cx, cy, 14 * scale, 10 * scale, 0, 0, Math.PI * 2);
+                    aCtx.ellipse(cx, cy, 20 * scale, 14 * scale, 0, 0, Math.PI * 2);
                     aCtx.fill();
-                    // лучи
+                    aCtx.lineCap = 'round';
                     for (let i = 0; i < info.motorCount; i++) {
                         const a = (i / info.motorCount) * Math.PI * 2 - Math.PI / 2;
                         const ex = cx + Math.cos(a) * armLen;
                         const ey = cy + Math.sin(a) * armLen;
-                        aCtx.strokeStyle = 'rgba(148,163,184,0.4)';
-                        aCtx.lineWidth = 4.5 * scale;
-                        aCtx.lineCap = 'round';
+                        aCtx.strokeStyle = `rgba(251,191,36,${0.5 + pulse * 0.4})`;
+                        aCtx.lineWidth = (3 + pulse * 2.5) * scale;
                         aCtx.beginPath();
                         aCtx.moveTo(cx, cy);
                         aCtx.lineTo(ex, ey);
+                        aCtx.stroke();
+                        aCtx.strokeStyle = 'rgba(255,255,255,0.75)';
+                        aCtx.lineWidth = 1.4 * scale;
+                        aCtx.beginPath();
+                        aCtx.ellipse(ex, ey, 3.4 * scale, 3.4 * scale, 0, 0, Math.PI * 2);
                         aCtx.stroke();
                     }
                 }
