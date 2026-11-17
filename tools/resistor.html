@@ -3,10 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Цветовой код резисторов и SMD — ThunderLight</title>
-    <meta name="description" content="Определи номинал резистора по цветным полоскам или собери код по значению. Плюс расшифровка SMD-кодов. Работает в браузере.">
+    <title>Резисторы: цветовой код, SMD, LED, делитель — ThunderLight</title>
+    <meta name="description" content="Цветовой код резисторов (3, 4, 5 полос), ближайший номинал E24/E96, SMD-коды и EIA-96, калькулятор резистора для светодиода и делитель напряжения.">
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/tools/tools.css">
+    <style>
+        .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+        .tab { padding: 9px 16px; border-radius: 10px; border: 1px solid rgba(148,163,184,0.3); background: rgba(15,23,42,0.5); color: var(--gray-light); cursor: pointer; font-weight: 700; font-size: 0.88rem; }
+        .tab.active { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; border-color: transparent; }
+        .panel { display: none; }
+        .panel.active { display: block; }
+        .resistor-preview { display: flex; align-items: center; justify-content: center; padding: 26px 0; }
+        .resistor-body { position: relative; width: 200px; height: 58px; border-radius: 14px; background: linear-gradient(180deg, #e2c9a3, #c9a97c 55%, #a9895e); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .resistor-body::before, .resistor-body::after { content: ''; position: absolute; top: 50%; width: 48px; height: 3px; background: #cbd5e1; }
+        .resistor-body::before { left: -48px; }
+        .resistor-body::after { right: -48px; }
+        .band { width: 11px; height: 100%; border-radius: 2px; }
+        .band.gap { width: 22px; background: transparent !important; }
+        .unit-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .unit-table td, .unit-table th { padding: 8px; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.88rem; }
+        .unit-table th { color: var(--gray-light); font-weight: 600; }
+        .swatch { width: 22px; height: 22px; border-radius: 5px; display: inline-block; vertical-align: middle; border: 1px solid rgba(255,255,255,0.2); }
+        .result { margin-top: 16px; }
+        .muted { color: var(--gray); font-size: 0.85rem; }
+    </style>
 </head>
 <body>
     <nav class="navbar" id="navbar">
@@ -27,38 +48,36 @@
     <div class="wrap">
         <div class="page-head">
             <div class="breadcrumbs"><a href="/">Главная</a> / <a href="/tools/">Инструменты</a> / Резисторы</div>
-            <h1>Цветовой код резисторов</h1>
-            <p>Определите сопротивление по полоскам или подберите полоски по значению. Ниже — расшифровка SMD-кодов.</p>
+            <h1>Резисторы</h1>
+            <p>Цветовой код, стандартные номиналы, SMD, расчёт для светодиода и делитель напряжения.</p>
         </div>
 
-        <div class="card">
+        <div class="tabs">
+            <button class="tab active" data-tab="bands" type="button">По полоскам</button>
+            <button class="tab" data-tab="value" type="button">По значению</button>
+            <button class="tab" data-tab="smd" type="button">SMD</button>
+            <button class="tab" data-tab="led" type="button">Для LED</button>
+            <button class="tab" data-tab="divider" type="button">Делитель</button>
+            <button class="tab" data-tab="table" type="button">Таблица</button>
+        </div>
+
+        <div class="card panel active" id="panel-bands">
             <h2>По полоскам</h2>
-            <p class="hint">Классический резистор с 4 полосами: две цифры, множитель и допуск.</p>
-            <div class="resistor-preview">
-                <div class="resistor-body">
-                    <span class="resistor-band" id="band1Preview"></span>
-                    <span class="resistor-band" id="band2Preview"></span>
-                    <span class="resistor-band" id="band3Preview"></span>
-                    <span class="resistor-band" id="band4Preview"></span>
-                </div>
+            <div class="field">
+                <label for="bandCount">Количество полос</label>
+                <select id="bandCount">
+                    <option value="3">3 полосы</option>
+                    <option value="4" selected>4 полосы</option>
+                    <option value="5">5 полос (точный)</option>
+                </select>
             </div>
+            <div class="resistor-preview"><div class="resistor-body" id="bandPreview"></div></div>
             <div class="band-row">
-                <div class="field">
-                    <label for="band1">Полоса 1</label>
-                    <select id="band1"></select>
-                </div>
-                <div class="field">
-                    <label for="band2">Полоса 2</label>
-                    <select id="band2"></select>
-                </div>
-                <div class="field">
-                    <label for="band3">Множитель</label>
-                    <select id="band3"></select>
-                </div>
-                <div class="field">
-                    <label for="band4">Допуск</label>
-                    <select id="band4"></select>
-                </div>
+                <div class="field"><label for="b1">Полоса 1</label><select id="b1"></select></div>
+                <div class="field"><label for="b2">Полоса 2</label><select id="b2"></select></div>
+                <div class="field" id="b3Field"><label for="b3">Полоса 3</label><select id="b3"></select></div>
+                <div class="field"><label for="bMult">Множитель</label><select id="bMult"></select></div>
+                <div class="field" id="bTolField"><label for="bTol">Допуск</label><select id="bTol"></select></div>
             </div>
             <div class="result">
                 <div class="value" id="bandResult">—</div>
@@ -66,36 +85,69 @@
             </div>
         </div>
 
-        <div class="card">
+        <div class="card panel" id="panel-value">
             <h2>По значению</h2>
-            <p class="hint">Введите сопротивление в омах — покажем полоски.</p>
             <div class="grid-2">
-                <div class="field">
-                    <label for="ohmInput">Сопротивление, Ом</label>
-                    <input type="number" id="ohmInput" value="4700" min="0" step="any">
-                </div>
-                <div class="field">
-                    <label for="ohmTolerance">Допуск</label>
-                    <select id="ohmTolerance"></select>
-                </div>
+                <div class="field"><label for="ohmInput">Сопротивление, Ом</label><input type="number" id="ohmInput" value="4700" min="0" step="any"></div>
+                <div class="field"><label for="ohmTol">Допуск</label><select id="ohmTol"></select></div>
             </div>
+            <div class="resistor-preview"><div class="resistor-body" id="valuePreview"></div></div>
             <div class="result">
-                <div class="value" id="ohmResult">—</div>
-                <div class="meta" id="ohmMeta"></div>
+                <div class="value" id="valueResult">—</div>
+                <div class="meta" id="valueMeta"></div>
             </div>
         </div>
 
-        <div class="card">
+        <div class="card panel" id="panel-smd">
             <h2>SMD-код</h2>
-            <p class="hint">Трёхзначный (472) и четырёхзначный (1001) код, а также запись с буквой R (4R7).</p>
-            <div class="field">
-                <label for="smdInput">Код</label>
-                <input type="text" id="smdInput" value="472" placeholder="например, 472, 1001 или 4R7">
-            </div>
+            <p class="hint">3 или 4 цифры, запись с R (4R7) и код EIA-96 (например, 01C).</p>
+            <div class="field"><label for="smdInput">Код</label><input type="text" id="smdInput" value="472" placeholder="472, 1001, 4R7 или 01C"></div>
             <div class="result">
                 <div class="value" id="smdResult">—</div>
                 <div class="meta" id="smdMeta"></div>
             </div>
+        </div>
+
+        <div class="card panel" id="panel-led">
+            <h2>Резистор для светодиода</h2>
+            <div class="grid-2">
+                <div class="field"><label for="ledVs">Напряжение питания, В</label><input type="number" id="ledVs" value="5" step="any"></div>
+                <div class="field"><label for="ledVf">Падение на LED, В</label><input type="number" id="ledVf" value="2" step="any"></div>
+                <div class="field"><label for="ledI">Ток LED, мА</label><input type="number" id="ledI" value="20" step="any"></div>
+                <div class="field"><label for="ledCount">LED последовательно</label><input type="number" id="ledCount" value="1" min="1" step="1"></div>
+            </div>
+            <div class="result">
+                <div class="value" id="ledResult">—</div>
+                <div class="meta" id="ledMeta"></div>
+            </div>
+        </div>
+
+        <div class="card panel" id="panel-divider">
+            <h2>Делитель напряжения</h2>
+            <div class="grid-2">
+                <div class="field"><label for="dvVin">Входное напряжение, В</label><input type="number" id="dvVin" value="12" step="any"></div>
+                <div class="field"><label for="dvR1">R1, Ом</label><input type="number" id="dvR1" value="10000" step="any"></div>
+                <div class="field"><label for="dvR2">R2, Ом</label><input type="number" id="dvR2" value="10000" step="any"></div>
+            </div>
+            <div class="result">
+                <div class="value" id="dvResult">—</div>
+                <div class="meta" id="dvMeta"></div>
+            </div>
+        </div>
+
+        <div class="card panel" id="panel-table">
+            <h2>Таблица цветов</h2>
+            <table class="unit-table">
+                <thead><tr><th>Цвет</th><th>Цифра</th><th>Множитель</th><th>Допуск</th></tr></thead>
+                <tbody id="colorTable"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>Частые вопросы</h2>
+            <p class="small"><strong>Что такое E24?</strong> Ряд стандартных номиналов резисторов. Вместо «любого» значения выбирают ближайшее из ряда — такие резисторы выпускаются массово.</p>
+            <p class="small"><strong>Зачем 5 полос?</strong> Три значащие цифры и точность 1% — для прецизионных схем.</p>
+            <p class="small"><strong>Куда ставить резистор для LED?</strong> Последовательно со светодиодом, со стороны питания.</p>
         </div>
     </div>
 
@@ -109,9 +161,9 @@
                 <h4>Инструменты</h4>
                 <ul>
                     <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/image.html">Изображения</a></li>
+                    <li><a href="/tools/pdf.html">PDF</a></li>
                     <li><a href="/tools/units.html">Конвертер единиц</a></li>
-                    <li><a href="/tools/drone-calc.html">Калькулятор БПЛА</a></li>
-                    <li><a href="/tools/json.html">JSON и Base64</a></li>
                     <li><a href="/tools/qr.html">QR-генератор</a></li>
                 </ul>
             </div>
@@ -134,160 +186,248 @@
 
     <script src="/tools/tools.js"></script>
     <script>
-        var DIGIT_COLORS = [
-            ['black', 'Чёрный', 0, '#111111'],
-            ['brown', 'Коричневый', 1, '#7c4a1e'],
-            ['red', 'Красный', 2, '#dc2626'],
-            ['orange', 'Оранжевый', 3, '#f97316'],
-            ['yellow', 'Жёлтый', 4, '#facc15'],
-            ['green', 'Зелёный', 5, '#16a34a'],
-            ['blue', 'Синий', 6, '#2563eb'],
-            ['violet', 'Фиолетовый', 7, '#7c3aed'],
-            ['grey', 'Серый', 8, '#6b7280'],
-            ['white', 'Белый', 9, '#f8fafc']
-        ];
-        var MULT_COLORS = DIGIT_COLORS.map(function (c) { return [c[0], c[1], Math.pow(10, c[2]), c[3]]; })
-            .concat([['gold', 'Золотой', 0.1, '#d4af37'], ['silver', 'Серебряный', 0.01, '#c0c0c0']]);
-        var TOLERANCE = [
-            ['brown', 'Коричневый', 1, '#7c4a1e'],
-            ['red', 'Красный', 2, '#dc2626'],
-            ['green', 'Зелёный', 0.5, '#16a34a'],
-            ['blue', 'Синий', 0.25, '#2563eb'],
-            ['violet', 'Фиолетовый', 0.1, '#7c3aed'],
-            ['grey', 'Серый', 0.05, '#6b7280'],
-            ['gold', 'Золотой', 5, '#d4af37'],
-            ['silver', 'Серебряный', 10, '#c0c0c0']
-        ];
-
         function $(id) { return document.getElementById(id); }
 
-        function fill(select, list) {
-            select.innerHTML = list.map(function (c) {
-                return '<option value="' + c[0] + '">' + c[1] + '</option>';
-            }).join('');
-        }
+        var COLORS = [
+            { code: 'black', name: 'Чёрный', digit: 0, hex: '#111111', mult: 1, tol: null },
+            { code: 'brown', name: 'Коричневый', digit: 1, hex: '#7c4a1e', mult: 10, tol: 1 },
+            { code: 'red', name: 'Красный', digit: 2, hex: '#dc2626', mult: 100, tol: 2 },
+            { code: 'orange', name: 'Оранжевый', digit: 3, hex: '#f97316', mult: 1e3, tol: null },
+            { code: 'yellow', name: 'Жёлтый', digit: 4, hex: '#facc15', mult: 1e4, tol: null },
+            { code: 'green', name: 'Зелёный', digit: 5, hex: '#16a34a', mult: 1e5, tol: 0.5 },
+            { code: 'blue', name: 'Синий', digit: 6, hex: '#2563eb', mult: 1e6, tol: 0.25 },
+            { code: 'violet', name: 'Фиолетовый', digit: 7, hex: '#7c3aed', mult: 1e7, tol: 0.1 },
+            { code: 'grey', name: 'Серый', digit: 8, hex: '#6b7280', mult: 1e8, tol: 0.05 },
+            { code: 'white', name: 'Белый', digit: 9, hex: '#f8fafc', mult: 1e9, tol: null },
+            { code: 'gold', name: 'Золотой', digit: null, hex: '#d4af37', mult: 0.1, tol: 5 },
+            { code: 'silver', name: 'Серебряный', digit: null, hex: '#c0c0c0', mult: 0.01, tol: 10 }
+        ];
 
-        function colorOf(code) {
-            var all = MULT_COLORS.concat(TOLERANCE);
-            for (var i = 0; i < all.length; i++) if (all[i][0] === code) return all[i][3];
-            return '#111';
-        }
+        var E24 = [1.0, 1.1, 1.2, 1.3, 1.5, 1.6, 1.8, 2.0, 2.2, 2.4, 2.7, 3.0, 3.3, 3.6, 3.9, 4.3, 4.7, 5.1, 5.6, 6.2, 6.8, 7.5, 8.2, 9.1];
+        var E96 = [100,102,105,107,110,113,115,118,121,124,127,130,133,137,140,143,147,150,154,158,162,165,169,174,178,182,187,191,196,200,205,210,215,221,226,232,237,243,249,255,261,267,274,280,287,294,301,309,316,324,332,340,348,357,365,374,383,392,402,412,422,432,442,453,464,475,487,499,511,523,536,549,562,576,590,604,619,634,649,665,681,698,715,732,750,768,787,806,825,845,866,887,909,931,953,976];
+        var EIA_LETTERS = { 'Z': 0.001, 'Y': 0.01, 'X': 0.1, 'A': 1, 'B': 10, 'C': 100, 'D': 1000, 'E': 10000, 'F': 100000 };
 
-        function valueOf(list, code, index) {
-            for (var i = 0; i < list.length; i++) if (list[i][0] === code) return list[i][index];
-            return 0;
-        }
+        function colorBy(code) { for (var i = 0; i < COLORS.length; i++) if (COLORS[i].code === code) return COLORS[i]; return COLORS[0]; }
 
         function formatOhms(ohms) {
             if (!isFinite(ohms)) return '—';
+            if (ohms >= 1e9) return tlFormatNumber(ohms / 1e9, 3) + ' ГОм';
             if (ohms >= 1e6) return tlFormatNumber(ohms / 1e6, 3) + ' МОм';
             if (ohms >= 1e3) return tlFormatNumber(ohms / 1e3, 3) + ' кОм';
             return tlFormatNumber(ohms, 3) + ' Ом';
         }
 
-        function updateBands() {
-            var d1 = valueOf(DIGIT_COLORS, $('band1').value, 2);
-            var d2 = valueOf(DIGIT_COLORS, $('band2').value, 2);
-            var mult = valueOf(MULT_COLORS, $('band3').value, 2);
-            var tol = valueOf(TOLERANCE, $('band4').value, 2);
-            var ohms = (d1 * 10 + d2) * mult;
-
-            $('band1Preview').style.background = colorOf($('band1').value);
-            $('band2Preview').style.background = colorOf($('band2').value);
-            $('band3Preview').style.background = colorOf($('band3').value);
-            $('band4Preview').style.background = colorOf($('band4').value);
-
-            $('bandResult').textContent = formatOhms(ohms);
-            $('bandMeta').textContent = 'Допуск ±' + tlFormatNumber(tol, 2) + '% · точное значение ' + tlFormatNumber(ohms, 3) + ' Ом';
+        function nearestE24(ohms) {
+            var exp = Math.floor(Math.log10(ohms));
+            var mant = ohms / Math.pow(10, exp);
+            var best = E24[0], bestDiff = Infinity;
+            E24.forEach(function (v) { var d = Math.abs(v - mant); if (d < bestDiff) { bestDiff = d; best = v; } });
+            return best * Math.pow(10, exp);
         }
 
-        function updateOhms() {
+        function buildBandSelects() {
+            var digitOptions = COLORS.filter(function (c) { return c.digit !== null; }).map(function (c) {
+                return '<option value="' + c.code + '">' + c.name + ' (' + c.digit + ')</option>';
+            }).join('');
+            var multOptions = COLORS.map(function (c) {
+                return '<option value="' + c.code + '">' + c.name + '</option>';
+            }).join('');
+            var tolOptions = COLORS.filter(function (c) { return c.tol !== null; }).map(function (c) {
+                return '<option value="' + c.code + '">' + c.name + ' (±' + c.tol + '%)</option>';
+            }).join('');
+            ['b1', 'b2', 'b3'].forEach(function (id) { $(id).innerHTML = digitOptions; });
+            $('bMult').innerHTML = multOptions;
+            $('bTol').innerHTML = tolOptions;
+            $('ohmTol').innerHTML = tolOptions;
+        }
+
+        function updateBandFields() {
+            var count = parseInt($('bandCount').value, 10);
+            $('b3Field').style.display = count === 5 ? 'block' : 'none';
+            $('bTolField').style.display = count === 3 ? 'none' : 'block';
+        }
+
+        function drawBands(container, codes, withGap) {
+            container.innerHTML = codes.map(function (code, index) {
+                var gap = (withGap && index === codes.length - 1) ? ' gap' : '';
+                return '<span class="band' + gap + '" style="background:' + colorBy(code).hex + '"></span>';
+            }).join('');
+        }
+
+        function updateBands() {
+            var count = parseInt($('bandCount').value, 10);
+            var c1 = colorBy($('b1').value), c2 = colorBy($('b2').value), c3 = colorBy($('b3').value);
+            var mult = colorBy($('bMult').value), tol = colorBy($('bTol').value);
+            var digits = count === 5 ? (c1.digit * 100 + c2.digit * 10 + c3.digit) : (c1.digit * 10 + c2.digit);
+            var ohms = digits * mult.mult;
+
+            var codes = count === 5 ? [$('b1').value, $('b2').value, $('b3').value, $('bMult').value] : [$('b1').value, $('b2').value, $('bMult').value];
+            if (count !== 3) codes.push($('bTol').value);
+            drawBands($('bandPreview'), codes, count !== 3);
+
+            $('bandResult').textContent = formatOhms(ohms);
+            $('bandMeta').textContent = count === 3
+                ? 'Без допуска · точное значение ' + tlFormatNumber(ohms, 3) + ' Ом'
+                : 'Допуск ±' + tol.tol + '% · диапазон ' + formatOhms(ohms * (1 - tol.tol / 100)) + ' … ' + formatOhms(ohms * (1 + tol.tol / 100));
+        }
+
+        function bitsFor(ohms, tolPercent) {
+            var count = tolPercent <= 1 ? 5 : 4;
+            var exp = Math.floor(Math.log10(ohms));
+            var mant = Math.round(ohms / Math.pow(10, exp) * (count === 5 ? 100 : 10));
+            if (count === 5 && mant >= 1000) { mant = Math.round(mant / 10); exp += 1; }
+            if (count === 4 && mant >= 100) { mant = Math.round(mant / 10); exp += 1; }
+            var digits = String(mant).split('').map(Number);
+            while (digits.length < (count === 5 ? 3 : 2)) digits.unshift(0);
+            var multExp = exp - (count === 5 ? 2 : 1);
+            function digitCode(d) { return COLORS[d].code; }
+            function multCode(e) {
+                for (var i = 0; i < COLORS.length; i++) {
+                    if (COLORS[i].digit === null) continue;
+                    if (Math.abs(Math.log10(COLORS[i].mult) - e) < 1e-9) return COLORS[i].code;
+                }
+                if (e === -1) return 'gold';
+                if (e === -2) return 'silver';
+                return 'black';
+            }
+            var codes = digits.map(digitCode).concat([multCode(multExp)]);
+            return { codes: codes, count: count };
+        }
+
+        function updateValue() {
             var ohms = parseFloat($('ohmInput').value);
-            var tolCode = $('ohmTolerance').value;
-            var tol = valueOf(TOLERANCE, tolCode, 2);
+            var tol = colorBy($('ohmTol').value);
             if (!isFinite(ohms) || ohms <= 0) {
-                $('ohmResult').textContent = '—';
-                $('ohmMeta').textContent = 'Введите положительное число';
+                $('valueResult').textContent = '—';
+                $('valueMeta').textContent = 'Введите положительное число';
+                $('valuePreview').innerHTML = '';
                 return;
             }
-            var exponent = Math.floor(Math.log10(ohms));
-            var mantissa = ohms / Math.pow(10, exponent);
-            var twoDigits = Math.round(mantissa * 10);
-            if (twoDigits >= 100) { twoDigits = Math.round(twoDigits / 10); exponent += 1; }
-            var d1 = Math.floor(twoDigits / 10);
-            var d2 = twoDigits % 10;
-            var multExp = exponent - 1;
-
-            function digitCode(d) { return DIGIT_COLORS[Math.max(0, Math.min(9, d))][0]; }
-            function multCode(e) {
-                if (e < 0) return e === -1 ? 'gold' : 'silver';
-                var found = MULT_COLORS.filter(function (c) { return Math.abs(Math.log10(c[2]) - e) < 1e-9; });
-                return found.length ? found[0][0] : 'black';
-            }
-
-            var names = [digitCode(d1), digitCode(d2), multCode(multExp), tolCode];
-            function nameOf(code) {
-                var all = DIGIT_COLORS.concat(MULT_COLORS, TOLERANCE);
-                for (var i = 0; i < all.length; i++) if (all[i][0] === code) return all[i][1];
-                return code;
-            }
-            $('ohmResult').textContent = names.map(nameOf).join(' · ');
-            $('ohmMeta').textContent = formatOhms(ohms) + ' ±' + tlFormatNumber(tol, 2) + '%';
+            var bits = bitsFor(ohms, tol.tol);
+            var codes = bits.codes.concat([tol.code]);
+            drawBands($('valuePreview'), codes, true);
+            var nearest = nearestE24(ohms);
+            var dev = (ohms - nearest) / nearest * 100;
+            var names = codes.map(function (c) { return colorBy(c).name; }).join(' · ');
+            $('valueResult').textContent = names;
+            $('valueMeta').textContent = formatOhms(ohms) + ' ±' + tol.tol + '% · ближайший E24: ' + formatOhms(nearest) +
+                (Math.abs(dev) > 0.5 ? ' (отклонение ' + tlFormatNumber(dev, 1) + '%)' : '');
         }
 
         function updateSmd() {
             var code = ($('smdInput').value || '').trim().toUpperCase();
-            var ohms = null;
-            var note = '';
-            if (!code) {
-                $('smdResult').textContent = '—';
-                $('smdMeta').textContent = 'Введите код';
-                return;
-            }
+            var ohms = null, note = '';
+            if (!code) { $('smdResult').textContent = '—'; $('smdMeta').textContent = 'Введите код'; return; }
+
             if (/^\d+$/.test(code)) {
-                if (code.length === 3) {
-                    ohms = parseInt(code.slice(0, 2), 10) * Math.pow(10, parseInt(code[2], 10));
-                } else if (code.length === 4) {
-                    ohms = parseInt(code.slice(0, 3), 10) * Math.pow(10, parseInt(code[3], 10));
-                } else {
-                    note = 'Поддерживаются коды из 3 или 4 цифр';
-                }
-            } else if (/^\d*R\d*$/.test(code)) {
+                if (code.length === 3) ohms = parseInt(code.slice(0, 2), 10) * Math.pow(10, parseInt(code[2], 10));
+                else if (code.length === 4) ohms = parseInt(code.slice(0, 3), 10) * Math.pow(10, parseInt(code[3], 10));
+                else note = 'Поддерживаются 3 или 4 цифры';
+            } else if (/^\d*R\d+$/.test(code) || /^\d+R$/.test(code)) {
                 ohms = parseFloat(code.replace('R', '.'));
-                note = 'Запись с буквой R: R означает десятичную точку';
+                note = 'R = десятичная точка';
+            } else if (/^\d{2}[A-Z]$/.test(code)) {
+                var num = parseInt(code.slice(0, 2), 10);
+                var letter = code[2];
+                if (num >= 1 && num <= 96 && EIA_LETTERS[letter]) {
+                    ohms = E96[num - 1] * EIA_LETTERS[letter];
+                    note = 'EIA-96: ' + E96[num - 1] + ' × ' + EIA_LETTERS[letter];
+                } else {
+                    note = 'Неизвестный код EIA-96';
+                }
             } else {
                 note = 'Не удалось распознать код';
             }
+
             if (ohms !== null && isFinite(ohms)) {
                 $('smdResult').textContent = formatOhms(ohms);
-                $('smdMeta').textContent = note || ('Точное значение: ' + tlFormatNumber(ohms, 3) + ' Ом');
+                $('smdMeta').textContent = (note ? note + ' · ' : '') + 'точное значение ' + tlFormatNumber(ohms, 3) + ' Ом';
             } else {
                 $('smdResult').textContent = '—';
                 $('smdMeta').textContent = note;
             }
         }
 
-        fill($('band1'), DIGIT_COLORS);
-        fill($('band2'), DIGIT_COLORS);
-        fill($('band3'), MULT_COLORS);
-        fill($('band4'), TOLERANCE);
-        fill($('ohmTolerance'), TOLERANCE);
-        $('band1').value = 'yellow';
-        $('band2').value = 'violet';
-        $('band3').value = 'red';
-        $('band4').value = 'gold';
-        $('ohmTolerance').value = 'gold';
+        function updateLed() {
+            var vs = parseFloat($('ledVs').value);
+            var vf = parseFloat($('ledVf').value);
+            var currentMa = parseFloat($('ledI').value);
+            var count = parseInt($('ledCount').value, 10) || 1;
+            if (!isFinite(vs) || !isFinite(vf) || !isFinite(currentMa) || currentMa <= 0) {
+                $('ledResult').textContent = '—'; $('ledMeta').textContent = 'Заполните поля'; return;
+            }
+            var drop = vs - vf * count;
+            if (drop <= 0) {
+                $('ledResult').textContent = 'Недостаточно напряжения';
+                $('ledMeta').textContent = 'Питание ' + vs + ' В не выше суммарного падения на LED (' + tlFormatNumber(vf * count, 2) + ' В).';
+                return;
+            }
+            var current = currentMa / 1000;
+            var r = drop / current;
+            var power = drop * current;
+            var std = nearestE24(r);
+            var stdPower = (drop * drop) / std;
+            var rating = stdPower < 0.125 ? '1/8 Вт' : stdPower < 0.25 ? '1/4 Вт' : stdPower < 0.5 ? '1/2 Вт' : stdPower < 1 ? '1 Вт' : '2 Вт и больше';
+            $('ledResult').textContent = formatOhms(r);
+            $('ledMeta').textContent = 'Ближайший E24: ' + formatOhms(std) + ' · мощность ' + tlFormatNumber(power, 3) + ' Вт (' + rating + ') · падение на резисторе ' + tlFormatNumber(drop, 2) + ' В';
+        }
 
-        ['band1', 'band2', 'band3', 'band4'].forEach(function (id) {
-            $(id).addEventListener('change', updateBands);
+        function updateDivider() {
+            var vin = parseFloat($('dvVin').value);
+            var r1 = parseFloat($('dvR1').value);
+            var r2 = parseFloat($('dvR2').value);
+            if (!isFinite(vin) || !isFinite(r1) || !isFinite(r2) || r1 <= 0 || r2 <= 0) {
+                $('dvResult').textContent = '—'; $('dvMeta').textContent = 'Заполните поля'; return;
+            }
+            var vout = vin * r2 / (r1 + r2);
+            var current = vin / (r1 + r2);
+            var p1 = current * current * r1;
+            var p2 = current * current * r2;
+            $('dvResult').textContent = 'Выход: ' + tlFormatNumber(vout, 3) + ' В';
+            $('dvMeta').textContent = 'Ток ' + tlFormatNumber(current * 1000, 3) + ' мА · P(R1) ' + tlFormatNumber(p1, 4) + ' Вт · P(R2) ' + tlFormatNumber(p2, 4) + ' Вт';
+        }
+
+        function buildColorTable() {
+            $('colorTable').innerHTML = COLORS.map(function (c) {
+                return '<tr><td><span class="swatch" style="background:' + c.hex + '"></span> ' + c.name + '</td>' +
+                    '<td>' + (c.digit === null ? '—' : c.digit) + '</td>' +
+                    '<td>' + (c.mult >= 1 ? '×' + c.mult.toLocaleString('ru-RU') : '×' + c.mult) + '</td>' +
+                    '<td>' + (c.tol === null ? '—' : '±' + c.tol + '%') + '</td></tr>';
+            }).join('');
+        }
+
+        Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (tab) {
+            tab.addEventListener('click', function () {
+                Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (t) { t.classList.remove('active'); });
+                Array.prototype.forEach.call(document.querySelectorAll('.panel'), function (p) { p.classList.remove('active'); });
+                tab.classList.add('active');
+                $('panel-' + tab.getAttribute('data-tab')).classList.add('active');
+            });
         });
-        $('ohmInput').addEventListener('input', updateOhms);
-        $('ohmTolerance').addEventListener('change', updateOhms);
-        $('smdInput').addEventListener('input', updateSmd);
 
+        buildBandSelects();
+        $('b1').value = 'yellow';
+        $('b2').value = 'violet';
+        $('b3').value = 'black';
+        $('bMult').value = 'red';
+        $('bTol').value = 'gold';
+        $('ohmTol').value = 'gold';
+        buildColorTable();
+
+        $('bandCount').addEventListener('change', function () { updateBandFields(); updateBands(); });
+        ['b1', 'b2', 'b3', 'bMult', 'bTol'].forEach(function (id) { $(id).addEventListener('change', updateBands); });
+        $('ohmInput').addEventListener('input', updateValue);
+        $('ohmTol').addEventListener('change', updateValue);
+        $('smdInput').addEventListener('input', updateSmd);
+        ['ledVs', 'ledVf', 'ledI', 'ledCount'].forEach(function (id) { $(id).addEventListener('input', updateLed); });
+        ['dvVin', 'dvR1', 'dvR2'].forEach(function (id) { $(id).addEventListener('input', updateDivider); });
+
+        updateBandFields();
         updateBands();
-        updateOhms();
+        updateValue();
         updateSmd();
+        updateLed();
+        updateDivider();
     </script>
 </body>
 </html>
