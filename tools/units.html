@@ -4,9 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Конвертер единиц — ThunderLight</title>
-    <meta name="description" content="Бесплатный конвертер единиц: длина, масса, скорость, площадь, объём и температура. Работает в браузере без регистрации.">
+    <meta name="description" content="Конвертер единиц: длина, масса, скорость, площадь, объём, температура, давление, энергия, мощность, данные, время, угол, частота, момент. Все единицы сразу в таблице.">
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/tools/tools.css">
+    <style>
+        .unit-table { width: 100%; border-collapse: collapse; margin-top: 14px; }
+        .unit-table td { padding: 10px 8px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .unit-table tr:last-child td { border-bottom: none; }
+        .unit-table tr.active td { background: rgba(79,70,229,0.12); }
+        .unit-name { color: var(--gray-light); font-size: 0.88rem; }
+        .unit-code { color: var(--gray); font-size: 0.75rem; }
+        .unit-value { font-family: ui-monospace, Consolas, monospace; font-size: 1rem; color: var(--light); text-align: right; white-space: nowrap; }
+        .copy-btn { background: none; border: 1px solid rgba(148,163,184,0.3); color: var(--gray-light); border-radius: 8px; padding: 5px 10px; cursor: pointer; font-size: 0.78rem; }
+        .copy-btn:hover { border-color: var(--accent); color: #67e8f9; }
+        .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+        .chip { padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(148,163,184,0.3); background: rgba(15,23,42,0.5); color: var(--gray-light); cursor: pointer; font-size: 0.82rem; }
+        .chip:hover { border-color: var(--accent); color: #67e8f9; }
+        .chips-label { font-size: 0.8rem; color: var(--gray); margin-top: 16px; }
+    </style>
 </head>
 <body>
     <nav class="navbar" id="navbar">
@@ -28,51 +44,52 @@
         <div class="page-head">
             <div class="breadcrumbs"><a href="/">Главная</a> / <a href="/tools/">Инструменты</a> / Конвертер единиц</div>
             <h1>Конвертер единиц</h1>
-            <p>Перевод величин в реальном времени. Выберите категорию, введите значение — результат появится сразу.</p>
+            <p>Введите значение — увидите его во всех единицах категории сразу. 13 категорий, копирование по строке.</p>
         </div>
 
         <div class="card">
-            <div class="field">
-                <label for="category">Категория</label>
-                <select id="category">
-                    <option value="length">Длина</option>
-                    <option value="mass">Масса</option>
-                    <option value="speed">Скорость</option>
-                    <option value="area">Площадь</option>
-                    <option value="volume">Объём</option>
-                    <option value="temperature">Температура</option>
-                </select>
-            </div>
-
             <div class="grid-2">
                 <div class="field">
-                    <label for="fromUnit">Из</label>
-                    <select id="fromUnit"></select>
+                    <label for="category">Категория</label>
+                    <select id="category"></select>
                 </div>
                 <div class="field">
-                    <label for="toUnit">В</label>
-                    <select id="toUnit"></select>
+                    <label for="fromUnit">Единица ввода</label>
+                    <select id="fromUnit"></select>
                 </div>
             </div>
-
-            <div class="field">
-                <label for="inputValue">Значение</label>
-                <input type="number" id="inputValue" value="1" step="any" inputmode="decimal">
+            <div class="grid-2">
+                <div class="field">
+                    <label for="inputValue">Значение</label>
+                    <input type="number" id="inputValue" value="1" step="any" inputmode="decimal">
+                </div>
+                <div class="field">
+                    <label for="precision">Точность</label>
+                    <select id="precision">
+                        <option value="0">0 знаков</option>
+                        <option value="1">1 знак</option>
+                        <option value="2" selected>2 знака</option>
+                        <option value="3">3 знака</option>
+                        <option value="4">4 знака</option>
+                        <option value="6">6 знаков</option>
+                    </select>
+                </div>
             </div>
-
-            <div class="btn-row">
-                <button class="btn btn-outline" id="swapBtn" type="button">⇄ Поменять местами</button>
-            </div>
-
-            <div class="result">
-                <div class="value" id="resultValue">1</div>
-                <div class="meta" id="resultMeta"></div>
-            </div>
+            <div class="chips-label">Популярные запросы</div>
+            <div class="chips" id="chips"></div>
         </div>
 
         <div class="card">
-            <h2>Как это работает</h2>
-            <p class="hint mt-0">Все вычисления выполняются на вашем устройстве. Данные не отправляются на сервер.</p>
+            <h2 id="tableTitle">Все единицы</h2>
+            <p class="hint" id="tableHint">Нажмите на значение, чтобы скопировать.</p>
+            <table class="unit-table"><tbody id="unitRows"></tbody></table>
+        </div>
+
+        <div class="card">
+            <h2>Частые вопросы</h2>
+            <p class="small"><strong>Данные передаются на сервер?</strong> Нет, пересчёт выполняется в браузере.</p>
+            <p class="small"><strong>Данные (КБ, МБ, ГБ) — это 1024 или 1000?</strong> Используется 1024 (как в операционных системах).</p>
+            <p class="small"><strong>Температура считается по формуле?</strong> Да, для °C, °F и K применяются точные формулы, а не множители.</p>
         </div>
     </div>
 
@@ -86,9 +103,9 @@
                 <h4>Инструменты</h4>
                 <ul>
                     <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/image.html">Изображения</a></li>
+                    <li><a href="/tools/pdf.html">PDF</a></li>
                     <li><a href="/tools/drone-calc.html">Калькулятор БПЛА</a></li>
-                    <li><a href="/tools/resistor.html">Резисторы</a></li>
-                    <li><a href="/tools/json.html">JSON и Base64</a></li>
                     <li><a href="/tools/qr.html">QR-генератор</a></li>
                 </ul>
             </div>
@@ -111,95 +128,183 @@
 
     <script src="/tools/tools.js"></script>
     <script>
+        function $(id) { return document.getElementById(id); }
+
         var UNITS = {
             length: {
-                base: 'm',
-                units: [['mm', 'Миллиметр', 0.001], ['cm', 'Сантиметр', 0.01], ['m', 'Метр', 1], ['km', 'Километр', 1000], ['in', 'Дюйм', 0.0254], ['ft', 'Фут', 0.3048], ['yd', 'Ярд', 0.9144], ['mi', 'Миля', 1609.344]]
+                title: 'Длина',
+                units: [['mm', 'Миллиметр', 0.001], ['cm', 'Сантиметр', 0.01], ['m', 'Метр', 1], ['km', 'Километр', 1000], ['in', 'Дюйм', 0.0254], ['ft', 'Фут', 0.3048], ['yd', 'Ярд', 0.9144], ['mi', 'Миля', 1609.344], ['nmi', 'Морская миля', 1852]]
             },
             mass: {
-                base: 'g',
-                units: [['mg', 'Миллиграмм', 0.001], ['g', 'Грамм', 1], ['kg', 'Килограмм', 1000], ['t', 'Тонна', 1000000], ['oz', 'Унция', 28.349523125], ['lb', 'Фунт', 453.59237]]
+                title: 'Масса',
+                units: [['mg', 'Миллиграмм', 0.001], ['g', 'Грамм', 1], ['kg', 'Килограмм', 1000], ['t', 'Тонна', 1000000], ['oz', 'Унция', 28.349523125], ['lb', 'Фунт', 453.59237], ['st', 'Стоун', 6350.29318]]
             },
             speed: {
-                base: 'm/s',
-                units: [['m/s', 'Метр в секунду', 1], ['km/h', 'Км/ч', 0.2777777778], ['mph', 'Мили/ч', 0.44704], ['kn', 'Узел', 0.5144444444], ['ft/s', 'Фут/с', 0.3048]]
+                title: 'Скорость',
+                units: [['m/s', 'Метр в секунду', 1], ['km/h', 'Километр в час', 0.2777777778], ['mph', 'Миля в час', 0.44704], ['kn', 'Узел', 0.5144444444], ['ft/s', 'Фут в секунду', 0.3048]]
             },
             area: {
-                base: 'm2',
+                title: 'Площадь',
                 units: [['mm2', 'мм²', 0.000001], ['cm2', 'см²', 0.0001], ['m2', 'м²', 1], ['km2', 'км²', 1000000], ['ha', 'Гектар', 10000], ['acre', 'Акр', 4046.8564224], ['ft2', 'фут²', 0.09290304]]
             },
             volume: {
-                base: 'l',
-                units: [['ml', 'Миллилитр', 0.001], ['cm3', 'см³', 0.001], ['l', 'Литр', 1], ['m3', 'м³', 1000], ['gal', 'Галлон (US)', 3.785411784], ['pt', 'Пинта (US)', 0.473176473], ['floz', 'Жидк. унция (US)', 0.0295735296]]
+                title: 'Объём',
+                units: [['ml', 'Миллилитр', 0.001], ['cm3', 'см³', 0.001], ['l', 'Литр', 1], ['m3', 'м³', 1000], ['gal', 'Галлон (US)', 3.785411784], ['galuk', 'Галлон (UK)', 4.54609], ['pt', 'Пинта (US)', 0.473176473], ['floz', 'Жидк. унция (US)', 0.0295735296]]
             },
             temperature: {
-                base: 'C',
+                title: 'Температура',
                 units: [['C', 'Цельсий', 1], ['F', 'Фаренгейт', 1], ['K', 'Кельвин', 1]]
+            },
+            pressure: {
+                title: 'Давление',
+                units: [['pa', 'Паскаль', 1], ['kpa', 'Килопаскаль', 1000], ['bar', 'Бар', 100000], ['atm', 'Атмосфера', 101325], ['psi', 'PSI', 6894.757293], ['mmhg', 'мм рт. ст.', 133.322387415]]
+            },
+            energy: {
+                title: 'Энергия',
+                units: [['j', 'Джоуль', 1], ['kj', 'Килоджоуль', 1000], ['cal', 'Калория', 4.184], ['kcal', 'Килокалория', 4184], ['wh', 'Ватт-час', 3600], ['kwh', 'Киловатт-час', 3600000]]
+            },
+            power: {
+                title: 'Мощность',
+                units: [['w', 'Ватт', 1], ['kw', 'Киловатт', 1000], ['hp', 'Лошадиная сила (мех.)', 745.6998715823], ['ps', 'Л.с. (метрич.)', 735.49875]]
+            },
+            data: {
+                title: 'Данные',
+                units: [['b', 'Байт', 1], ['kb', 'Килобайт (1024)', 1024], ['mb', 'Мегабайт (1024)', 1048576], ['gb', 'Гигабайт (1024)', 1073741824], ['tb', 'Терабайт (1024)', 1099511627776]]
+            },
+            time: {
+                title: 'Время',
+                units: [['ms', 'Миллисекунда', 0.001], ['s', 'Секунда', 1], ['min', 'Минута', 60], ['h', 'Час', 3600], ['day', 'Сутки', 86400], ['week', 'Неделя', 604800]]
+            },
+            angle: {
+                title: 'Угол',
+                units: [['deg', 'Градус', 1], ['rad', 'Радиан', 57.2957795131], ['grad', 'Град', 0.9]]
+            },
+            frequency: {
+                title: 'Частота',
+                units: [['hz', 'Герц', 1], ['khz', 'Килогерц', 1000], ['mhz', 'Мегагерц', 1000000], ['ghz', 'Гигагерц', 1000000000]]
+            },
+            torque: {
+                title: 'Момент силы',
+                units: [['nm', 'Ньютон-метр', 1], ['kgfm', 'Кгс·м', 9.80665], ['lbfft', 'Фунт-сила·фут', 1.3558179483]]
             }
         };
 
-        var categoryEl = document.getElementById('category');
-        var fromEl = document.getElementById('fromUnit');
-        var toEl = document.getElementById('toUnit');
-        var inputEl = document.getElementById('inputValue');
-        var resultEl = document.getElementById('resultValue');
-        var metaEl = document.getElementById('resultMeta');
+        var POPULAR = [
+            ['length', 'cm', 1, 'см → дюймы'],
+            ['length', 'm', 1, 'метры → футы'],
+            ['mass', 'kg', 1, 'кг → фунты'],
+            ['temperature', 'C', 100, '°C → °F'],
+            ['speed', 'km/h', 100, 'км/ч → мили/ч'],
+            ['pressure', 'bar', 1, 'бар → PSI'],
+            ['data', 'mb', 100, 'МБ → ГБ'],
+            ['power', 'kw', 1, 'кВт → л.с.']
+        ];
+
+        var categoryEl = $('category');
+        var fromEl = $('fromUnit');
+        var inputEl = $('inputValue');
+        var precisionEl = $('precision');
+        var rowsEl = $('unitRows');
+
+        Object.keys(UNITS).forEach(function (key) {
+            var option = document.createElement('option');
+            option.value = key;
+            option.textContent = UNITS[key].title;
+            categoryEl.appendChild(option);
+        });
+
+        function factorFor(cat, code) {
+            var list = UNITS[cat].units;
+            for (var i = 0; i < list.length; i++) if (list[i][0] === code) return list[i][2];
+            return 1;
+        }
+
+        function convertTemperature(value, from, to) {
+            var celsius;
+            if (from === 'C') celsius = value;
+            else if (from === 'F') celsius = (value - 32) * 5 / 9;
+            else celsius = value - 273.15;
+            if (to === 'C') return celsius;
+            if (to === 'F') return celsius * 9 / 5 + 32;
+            return celsius + 273.15;
+        }
+
+        function formatValue(value) {
+            if (!isFinite(value)) return '—';
+            var digits = parseInt(precisionEl.value, 10);
+            var abs = Math.abs(value);
+            if (abs !== 0 && (abs < 0.0001 || abs >= 1e12)) {
+                return value.toExponential(Math.min(6, digits + 1)).replace('.', ',');
+            }
+            return Number(value.toFixed(digits)).toLocaleString('ru-RU', {
+                maximumFractionDigits: digits
+            });
+        }
 
         function fillUnits() {
-            var def = UNITS[categoryEl.value];
-            var options = def.units.map(function (u) {
+            var cat = categoryEl.value;
+            fromEl.innerHTML = UNITS[cat].units.map(function (u) {
                 return '<option value="' + u[0] + '">' + u[1] + '</option>';
             }).join('');
-            fromEl.innerHTML = options;
-            toEl.innerHTML = options;
-            fromEl.value = def.units[0][0];
-            toEl.value = def.units[1] ? def.units[1][0] : def.units[0][0];
+            $('tableTitle').textContent = 'Все единицы: ' + UNITS[cat].title.toLowerCase();
+            renderChips();
             convert();
         }
 
-        function factor(cat, code) {
-            var list = UNITS[cat].units;
-            for (var i = 0; i < list.length; i++) {
-                if (list[i][0] === code) return list[i][2];
-            }
-            return 1;
+        function renderChips() {
+            $('chips').innerHTML = POPULAR.map(function (p, i) {
+                return '<button class="chip" data-i="' + i + '">' + p[3] + '</button>';
+            }).join('');
+            Array.prototype.forEach.call($('chips').querySelectorAll('.chip'), function (btn) {
+                btn.addEventListener('click', function () {
+                    var p = POPULAR[parseInt(btn.getAttribute('data-i'), 10)];
+                    categoryEl.value = p[0];
+                    var cat = p[0];
+                    fromEl.innerHTML = UNITS[cat].units.map(function (u) {
+                        return '<option value="' + u[0] + '">' + u[1] + '</option>';
+                    }).join('');
+                    fromEl.value = p[1];
+                    inputEl.value = p[2];
+                    $('tableTitle').textContent = 'Все единицы: ' + UNITS[cat].title.toLowerCase();
+                    convert();
+                });
+            });
         }
 
         function convert() {
             var cat = categoryEl.value;
+            var from = fromEl.value;
             var value = parseFloat(inputEl.value);
+            var units = UNITS[cat].units;
+
             if (!isFinite(value)) {
-                resultEl.textContent = '—';
-                metaEl.textContent = 'Введите число';
+                rowsEl.innerHTML = '<tr><td class="unit-name">Введите число</td><td></td><td></td></tr>';
                 return;
             }
-            var result;
-            if (cat === 'temperature') {
-                var toC;
-                if (fromEl.value === 'C') toC = value;
-                else if (fromEl.value === 'F') toC = (value - 32) * 5 / 9;
-                else toC = value - 273.15;
-                if (toEl.value === 'C') result = toC;
-                else if (toEl.value === 'F') result = toC * 9 / 5 + 32;
-                else result = toC + 273.15;
-            } else {
-                var baseValue = value * factor(cat, fromEl.value);
-                result = baseValue / factor(cat, toEl.value);
-            }
-            resultEl.textContent = tlFormatNumber(result, 6) + ' ' + (toEl.value === 'C' || toEl.value === 'F' || toEl.value === 'K' ? '°' + (toEl.value === 'K' ? '' : toEl.value) : toEl.value);
-            metaEl.textContent = tlFormatNumber(value, 6) + ' ' + fromEl.value + ' = ' + tlFormatNumber(result, 6) + ' ' + toEl.value;
+
+            rowsEl.innerHTML = units.map(function (u) {
+                var result;
+                if (cat === 'temperature') result = convertTemperature(value, from, u[0]);
+                else result = (value * factorFor(cat, from)) / u[2];
+                var active = u[0] === from ? ' class="active"' : '';
+                return '<tr' + active + '>' +
+                    '<td class="unit-name">' + u[1] + ' <span class="unit-code">' + u[0] + '</span></td>' +
+                    '<td class="unit-value">' + formatValue(result) + '</td>' +
+                    '<td style="text-align:right;"><button class="copy-btn" data-copy="' + encodeURIComponent(formatValue(result)) + '">Копировать</button></td>' +
+                    '</tr>';
+            }).join('');
+
+            Array.prototype.forEach.call(rowsEl.querySelectorAll('.copy-btn'), function (btn) {
+                btn.addEventListener('click', function () {
+                    tlCopy(decodeURIComponent(btn.getAttribute('data-copy')), 'Значение скопировано');
+                });
+            });
         }
 
         categoryEl.addEventListener('change', fillUnits);
         fromEl.addEventListener('change', convert);
-        toEl.addEventListener('change', convert);
         inputEl.addEventListener('input', convert);
-        document.getElementById('swapBtn').addEventListener('click', function () {
-            var tmp = fromEl.value;
-            fromEl.value = toEl.value;
-            toEl.value = tmp;
-            convert();
-        });
+        precisionEl.addEventListener('change', convert);
 
         fillUnits();
     </script>
