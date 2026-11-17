@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Калькулятор БПЛА — время полёта и тяговооружённость — ThunderLight</title>
-    <meta name="description" content="Калькулятор дрона: расчёт времени полёта по аккумулятору и току, энергии в Вт·ч и тяговооружённости по массе и тяге моторов.">
+    <meta name="description" content="Калькулятор дрона: тяговооружённость, газ висения, время полёта, ток и предупреждения по ESC. Пресеты под классы аппаратов.">
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/tools/tools.css">
+    <style>
+        .verdict { padding: 14px 16px; border-radius: 12px; margin-top: 14px; font-size: 0.9rem; }
+        .verdict.good { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35); color: #6ee7b7; }
+        .verdict.warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.35); color: #fcd34d; }
+        .verdict.bad { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.35); color: #fca5a5; }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-top: 16px; }
+        .stat { padding: 14px; border-radius: 12px; background: rgba(2,6,23,0.5); border: 1px solid var(--border); }
+        .stat span { display: block; font-size: 0.78rem; color: var(--gray); }
+        .stat strong { font-size: 1.15rem; color: var(--light); }
+    </style>
 </head>
 <body>
     <nav class="navbar" id="navbar">
@@ -28,67 +39,55 @@
         <div class="page-head">
             <div class="breadcrumbs"><a href="/">Главная</a> / <a href="/tools/">Инструменты</a> / Калькулятор БПЛА</div>
             <h1>Калькулятор БПЛА</h1>
-            <p>Оцените время полёта и тяговооружённость аппарата до сборки. Всё считается локально в браузере.</p>
+            <p>Оцените тяговооружённость, газ висения, время полёта и ток до сборки. Выберите пресет или введите свои параметры.</p>
         </div>
 
         <div class="card">
-            <h2>Время полёта</h2>
-            <p class="hint">По ёмкости и напряжению аккумулятора, а также среднему току нагрузки.</p>
+            <h2>Конфигурация</h2>
+            <div class="field">
+                <label for="preset">Пресет</label>
+                <select id="preset">
+                    <option value="edu">Учебный 5" — спокойный</option>
+                    <option value="freestyle">Фристайл 5" — мощный</option>
+                    <option value="longrange">Лонг-рейндж 7" — дальний</option>
+                    <option value="cinewhoop">Cinewhoop 3" — компактный</option>
+                    <option value="cinema">Кино 10" — тяжёлый</option>
+                    <option value="custom">Свои параметры</option>
+                </select>
+            </div>
             <div class="grid-2">
-                <div class="field">
-                    <label for="capacity">Ёмкость АКБ, мА·ч</label>
-                    <input type="number" id="capacity" value="1500" min="0" step="any">
-                </div>
-                <div class="field">
-                    <label for="voltage">Напряжение, В</label>
-                    <input type="number" id="voltage" value="11.1" min="0" step="any">
-                </div>
-                <div class="field">
-                    <label for="usable">Используемая ёмкость, %</label>
-                    <input type="number" id="usable" value="80" min="1" max="100" step="1">
-                </div>
-                <div class="field">
-                    <label for="current">Средний ток, А</label>
-                    <input type="number" id="current" value="15" min="0" step="any">
-                </div>
+                <div class="field"><label for="weight">Масса аппарата, г</label><input type="number" id="weight" value="500" min="1" step="any"></div>
+                <div class="field"><label for="motors">Моторов</label><input type="number" id="motors" value="4" min="1" step="1"></div>
+                <div class="field"><label for="thrust">Тяга одного мотора, г</label><input type="number" id="thrust" value="400" min="1" step="any"></div>
+                <div class="field"><label for="cells">Аккумулятор, S</label><input type="number" id="cells" value="3" min="1" step="1"></div>
+                <div class="field"><label for="capacity">Ёмкость, мА·ч</label><input type="number" id="capacity" value="1500" min="1" step="any"></div>
+                <div class="field"><label for="maxCurrent">Макс. ток мотора, А</label><input type="number" id="maxCurrent" value="20" min="0.1" step="any"></div>
+                <div class="field"><label for="esc">ESC, А</label><input type="number" id="esc" value="30" min="1" step="any"></div>
+                <div class="field"><label for="usable">Используем АКБ, %</label><input type="number" id="usable" value="80" min="1" max="100" step="1"></div>
             </div>
-            <div class="result">
-                <div class="value" id="flightTime">— мин</div>
-                <div class="meta" id="energyMeta">—</div>
+            <div class="btn-row">
+                <button class="btn btn-outline" id="shareBtn" type="button">Скопировать ссылку на конфиг</button>
             </div>
         </div>
 
         <div class="card">
-            <h2>Тяговооружённость</h2>
-            <p class="hint">Отношение суммарной тяги моторов к весу аппарата. Для уверенного полёта обычно нужно больше 1,5.</p>
-            <div class="grid-2">
-                <div class="field">
-                    <label for="weight">Масса аппарата, г</label>
-                    <input type="number" id="weight" value="500" min="0" step="any">
-                </div>
-                <div class="field">
-                    <label for="motors">Количество моторов</label>
-                    <input type="number" id="motors" value="4" min="1" step="1">
-                </div>
-                <div class="field">
-                    <label for="thrust">Тяга одного мотора, г</label>
-                    <input type="number" id="thrust" value="400" min="0" step="any">
-                </div>
+            <h2>Расчёт</h2>
+            <div class="stat-grid">
+                <div class="stat"><span>Тяговооружённость</span><strong id="sTwr">—</strong></div>
+                <div class="stat"><span>Газ висения</span><strong id="sHover">—</strong></div>
+                <div class="stat"><span>Суммарная тяга</span><strong id="sThrust">—</strong></div>
+                <div class="stat"><span>Напряжение</span><strong id="sVoltage">—</strong></div>
+                <div class="stat"><span>Ток висения</span><strong id="sCurrent">—</strong></div>
+                <div class="stat"><span>Время полёта</span><strong id="sTime">—</strong></div>
             </div>
-            <div class="result">
-                <div class="value" id="ratioValue">—</div>
-                <div class="meta" id="ratioMeta">—</div>
-            </div>
+            <div id="verdict" class="verdict good">Заполните параметры</div>
         </div>
 
         <div class="card">
-            <h2>Формулы</h2>
-            <p class="hint mt-0">
-                Время полёта = (ёмкость мА·ч × доля использования / 1000) / ток × 60.<br>
-                Энергия, Вт·ч = ёмкость мА·ч × напряжение / 1000.<br>
-                Тяговооружённость = (тяга одного мотора × число моторов) / масса аппарата.
-            </p>
-            <p class="small">Расчёт оценочный: реальное время зависит от стиля полёта, ветра, КПД винтов и температуры.</p>
+            <h2>Формулы и допущения</h2>
+            <p class="small">Тяговооружённость = суммарная тяга / масса. Газ висения ≈ 1 / тяговооружённость.</p>
+            <p class="small">Ток висения ≈ суммарный максимальный ток × газ висения. Время полёта = полезная ёмкость / ток висения.</p>
+            <p class="small">Расчёт оценочный: реальные значения зависят от винтов, температуры, ветра и стиля пилотирования.</p>
         </div>
     </div>
 
@@ -102,10 +101,10 @@
                 <h4>Инструменты</h4>
                 <ul>
                     <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/image.html">Изображения</a></li>
+                    <li><a href="/tools/pdf.html">PDF</a></li>
                     <li><a href="/tools/units.html">Конвертер единиц</a></li>
                     <li><a href="/tools/resistor.html">Резисторы</a></li>
-                    <li><a href="/tools/json.html">JSON и Base64</a></li>
-                    <li><a href="/tools/qr.html">QR-генератор</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -129,56 +128,128 @@
     <script>
         function $(id) { return document.getElementById(id); }
 
-        function calcFlight() {
-            var capacity = parseFloat($('capacity').value);
-            var voltage = parseFloat($('voltage').value);
-            var usable = parseFloat($('usable').value);
-            var current = parseFloat($('current').value);
+        var PRESETS = {
+            edu: { weight: 500, motors: 4, thrust: 400, cells: 3, capacity: 1500, maxCurrent: 20, esc: 30 },
+            freestyle: { weight: 650, motors: 4, thrust: 1200, cells: 6, capacity: 1300, maxCurrent: 35, esc: 45 },
+            longrange: { weight: 900, motors: 4, thrust: 1100, cells: 6, capacity: 3000, maxCurrent: 25, esc: 40 },
+            cinewhoop: { weight: 250, motors: 4, thrust: 450, cells: 4, capacity: 850, maxCurrent: 15, esc: 25 },
+            cinema: { weight: 2500, motors: 4, thrust: 2500, cells: 6, capacity: 6000, maxCurrent: 40, esc: 60 }
+        };
 
-            if (!isFinite(capacity) || !isFinite(usable) || !isFinite(current) || current <= 0) {
-                $('flightTime').textContent = '— мин';
-                $('energyMeta').textContent = 'Заполните поля корректно';
-                return;
-            }
-            var usableAh = (capacity * usable / 100) / 1000;
-            var minutes = usableAh / current * 60;
-            $('flightTime').textContent = tlFormatNumber(minutes, 1) + ' мин';
-            var energy = isFinite(voltage) ? (capacity * voltage / 1000) : null;
-            $('energyMeta').textContent = 'Полезная ёмкость: ' + tlFormatNumber(usableAh, 3) + ' А·ч' +
-                (energy !== null ? ' · энергия: ' + tlFormatNumber(energy, 1) + ' Вт·ч' : '');
+        var FIELDS = ['weight', 'motors', 'thrust', 'cells', 'capacity', 'maxCurrent', 'esc'];
+
+        function applyPreset(name) {
+            var p = PRESETS[name];
+            if (!p) return;
+            FIELDS.forEach(function (id) { $(id).value = p[id]; });
+            $('preset').value = name;
+            calculate();
         }
 
-        function calcRatio() {
-            var weight = parseFloat($('weight').value);
-            var motors = parseFloat($('motors').value);
-            var thrust = parseFloat($('thrust').value);
-
-            if (!isFinite(weight) || weight <= 0 || !isFinite(motors) || motors <= 0 || !isFinite(thrust) || thrust <= 0) {
-                $('ratioValue').textContent = '—';
-                $('ratioMeta').textContent = 'Заполните поля корректно';
-                return;
-            }
-            var total = motors * thrust;
-            var ratio = total / weight;
-            $('ratioValue').textContent = tlFormatNumber(ratio, 2) + ' : 1';
-            var verdict;
-            if (ratio < 1) verdict = 'Не взлетит: тяги меньше веса';
-            else if (ratio < 1.5) verdict = 'Слабо: тяжёлый взлёт, мало запаса';
-            else if (ratio < 2) verdict = 'Нормально для спокойного полёта';
-            else if (ratio < 3) verdict = 'Хорошо: уверенный манёвр';
-            else verdict = 'Очень высокая: для спорта и акробатики';
-            $('ratioMeta').textContent = 'Суммарная тяга: ' + tlFormatNumber(total, 0) + ' г · ' + verdict;
+        function readParams() {
+            var params = new URLSearchParams(location.search);
+            var found = false;
+            FIELDS.forEach(function (id) {
+                if (params.has(id)) { $(id).value = params.get(id); found = true; }
+            });
+            if (params.has('usable')) $('usable').value = params.get('usable');
+            return found;
         }
 
-        ['capacity', 'voltage', 'usable', 'current'].forEach(function (id) {
-            $(id).addEventListener('input', calcFlight);
+        function num(id) { return parseFloat($(id).value); }
+
+        function calculate() {
+            var weight = num('weight');
+            var motors = num('motors');
+            var thrust = num('thrust');
+            var cells = num('cells');
+            var capacity = num('capacity');
+            var maxCurrent = num('maxCurrent');
+            var esc = num('esc');
+            var usable = num('usable');
+
+            if (![weight, motors, thrust, cells, capacity, maxCurrent, esc, usable].every(function (v) { return isFinite(v) && v > 0; })) {
+                $('verdict').className = 'verdict warn';
+                $('verdict').textContent = 'Заполните все поля положительными числами.';
+                return;
+            }
+
+            var totalThrust = motors * thrust;
+            var twr = totalThrust / weight;
+            var hoverThrottle = 1 / twr;
+            var voltage = cells * 3.7;
+            var voltageFull = cells * 4.2;
+            var hoverCurrent = motors * maxCurrent * Math.min(1, hoverThrottle);
+            var flightMinutes = ((capacity * usable / 100) / 1000) / hoverCurrent * 60;
+            var totalMaxCurrent = motors * maxCurrent;
+
+            $('sTwr').textContent = tlFormatNumber(twr, 2) + ' : 1';
+            $('sHover').textContent = tlFormatNumber(hoverThrottle * 100, 0) + '%';
+            $('sThrust').textContent = tlFormatNumber(totalThrust, 0) + ' г';
+            $('sVoltage').textContent = tlFormatNumber(voltage, 1) + ' В (' + tlFormatNumber(voltageFull, 1) + ' В заряд)';
+            $('sCurrent').textContent = tlFormatNumber(hoverCurrent, 1) + ' А';
+            $('sTime').textContent = tlFormatNumber(flightMinutes, 1) + ' мин';
+
+            var messages = [];
+            var level = 'good';
+
+            if (twr < 1) {
+                level = 'bad';
+                messages.push('Тяга меньше веса — аппарат не взлетит.');
+            } else if (twr < 1.5) {
+                level = 'bad';
+                messages.push('Тяговооружённость ниже 1,5: тяжёлый взлёт и мало запаса.');
+            } else if (twr < 2) {
+                if (level === 'good') level = 'warn';
+                messages.push('Нормально для спокойного полёта, но без запаса на манёвр.');
+            } else if (twr > 6) {
+                if (level === 'good') level = 'warn';
+                messages.push('Очень высокая тяговооружённость: проверьте, выдержат ли рама и ESC.');
+            }
+
+            if (hoverThrottle > 0.6) {
+                if (level !== 'bad') level = 'warn';
+                messages.push('Газ висения выше 60%: аппарат тяжёлый для этой силовой установки, КПД низкий.');
+            }
+            if (flightMinutes < 3) {
+                if (level !== 'bad') level = 'warn';
+                messages.push('Расчётное время полёта меньше 3 минут — увеличьте ёмкость или снизьте массу.');
+            }
+            if (totalMaxCurrent > esc * motors) {
+                if (level !== 'bad') level = 'warn';
+                messages.push('Суммарный ток ' + tlFormatNumber(totalMaxCurrent, 0) + ' А превышает запас ESC (' + tlFormatNumber(esc * motors, 0) + ' А суммарно).');
+            }
+            if (!messages.length) {
+                messages.push('Параметры выглядят сбалансированно.');
+            }
+
+            $('verdict').className = 'verdict ' + level;
+            $('verdict').textContent = messages.join(' ');
+        }
+
+        $('preset').addEventListener('change', function () {
+            if ($('preset').value !== 'custom') applyPreset($('preset').value);
         });
-        ['weight', 'motors', 'thrust'].forEach(function (id) {
-            $(id).addEventListener('input', calcRatio);
+        FIELDS.concat(['usable']).forEach(function (id) {
+            $(id).addEventListener('input', function () {
+                $('preset').value = 'custom';
+                calculate();
+            });
         });
 
-        calcFlight();
-        calcRatio();
+        $('shareBtn').addEventListener('click', function () {
+            var params = new URLSearchParams();
+            FIELDS.forEach(function (id) { params.set(id, $(id).value); });
+            params.set('usable', $('usable').value);
+            var url = location.origin + location.pathname + '?' + params.toString();
+            tlCopy(url, 'Ссылка на конфиг скопирована');
+        });
+
+        if (!readParams()) {
+            applyPreset('edu');
+        } else {
+            calculate();
+        }
     </script>
 </body>
 </html>

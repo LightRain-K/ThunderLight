@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR-генератор — ThunderLight</title>
-    <meta name="description" content="Бесплатный генератор QR-кодов: ссылки, текст, контакты и Wi-Fi. Скачивание в PNG. Код создаётся в браузере.">
+    <meta name="description" content="Генератор QR-кодов: ссылка, текст, Wi-Fi, контакт, email, телефон, SMS, геометка. Цвета, поля, коррекция, логотип, скачивание PNG и SVG.">
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="manifest" href="/manifest.webmanifest">
     <link rel="stylesheet" href="/tools/tools.css">
     <style>
-        .qr-stage { display: flex; align-items: center; justify-content: center; padding: 24px; background: #fff; border-radius: 14px; min-height: 280px; }
-        #qrBox canvas, #qrBox img { display: block; max-width: 100%; height: auto; }
-        .qr-empty { color: #64748b; font-size: 0.9rem; }
+        .qr-stage { display: flex; align-items: center; justify-content: center; padding: 22px; background: #fff; border-radius: 14px; min-height: 300px; }
+        #qrCanvas { display: block; max-width: 100%; height: auto; }
+        .color-row { display: flex; align-items: center; gap: 10px; }
+        .color-row input[type="color"] { width: 46px; height: 38px; padding: 2px; border-radius: 8px; background: rgba(2,6,23,0.7); border: 1px solid rgba(148,163,184,0.28); }
     </style>
 </head>
 <body>
@@ -33,44 +35,129 @@
         <div class="page-head">
             <div class="breadcrumbs"><a href="/">Главная</a> / <a href="/tools/">Инструменты</a> / QR-генератор</div>
             <h1>QR-генератор</h1>
-            <p>Введите ссылку или текст — получите QR-код и скачайте его в PNG. Код создаётся прямо в браузере.</p>
+            <p>Ссылки, текст, Wi-Fi, контакты, email, телефон, SMS и геометки. Настройте цвета, поля и логотип, скачайте PNG или SVG.</p>
         </div>
 
         <div class="card">
+            <h2>Содержимое</h2>
             <div class="field">
-                <label for="qrText">Текст или ссылка</label>
-                <textarea id="qrText" placeholder="https://thuderlight.online">https://thuderlight.online</textarea>
+                <label for="qrType">Тип</label>
+                <select id="qrType">
+                    <option value="text">Ссылка или текст</option>
+                    <option value="wifi">Wi-Fi</option>
+                    <option value="vcard">Контакт (vCard)</option>
+                    <option value="email">Email</option>
+                    <option value="phone">Телефон</option>
+                    <option value="sms">SMS</option>
+                    <option value="geo">Геометка</option>
+                </select>
             </div>
+
+            <div id="fields-text" class="type-fields">
+                <div class="field"><label for="textValue">Текст или ссылка</label><textarea id="textValue">https://thuderlight.online</textarea></div>
+            </div>
+
+            <div id="fields-wifi" class="type-fields" style="display:none;">
+                <div class="grid-2">
+                    <div class="field"><label for="wifiSsid">Имя сети (SSID)</label><input type="text" id="wifiSsid" value=""></div>
+                    <div class="field"><label for="wifiPass">Пароль</label><input type="text" id="wifiPass" value=""></div>
+                </div>
+                <div class="grid-2">
+                    <div class="field"><label for="wifiType">Шифрование</label>
+                        <select id="wifiType"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">Без пароля</option></select>
+                    </div>
+                    <div class="field"><label for="wifiHidden">Скрытая сеть</label>
+                        <select id="wifiHidden"><option value="false">Нет</option><option value="true">Да</option></select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="fields-vcard" class="type-fields" style="display:none;">
+                <div class="grid-2">
+                    <div class="field"><label for="vcName">Имя</label><input type="text" id="vcName" value=""></div>
+                    <div class="field"><label for="vcOrg">Организация</label><input type="text" id="vcOrg" value=""></div>
+                    <div class="field"><label for="vcPhone">Телефон</label><input type="text" id="vcPhone" value=""></div>
+                    <div class="field"><label for="vcEmail">Email</label><input type="text" id="vcEmail" value=""></div>
+                </div>
+                <div class="field"><label for="vcUrl">Сайт</label><input type="text" id="vcUrl" value=""></div>
+            </div>
+
+            <div id="fields-email" class="type-fields" style="display:none;">
+                <div class="grid-2">
+                    <div class="field"><label for="emTo">Кому</label><input type="text" id="emTo" value=""></div>
+                    <div class="field"><label for="emSubject">Тема</label><input type="text" id="emSubject" value=""></div>
+                </div>
+                <div class="field"><label for="emBody">Текст</label><textarea id="emBody"></textarea></div>
+            </div>
+
+            <div id="fields-phone" class="type-fields" style="display:none;">
+                <div class="field"><label for="phoneNumber">Номер телефона</label><input type="text" id="phoneNumber" value="+7"></div>
+            </div>
+
+            <div id="fields-sms" class="type-fields" style="display:none;">
+                <div class="grid-2">
+                    <div class="field"><label for="smsNumber">Номер</label><input type="text" id="smsNumber" value="+7"></div>
+                    <div class="field"><label for="smsText">Сообщение</label><input type="text" id="smsText" value=""></div>
+                </div>
+            </div>
+
+            <div id="fields-geo" class="type-fields" style="display:none;">
+                <div class="grid-2">
+                    <div class="field"><label for="geoLat">Широта</label><input type="text" id="geoLat" value="55.7558"></div>
+                    <div class="field"><label for="geoLng">Долгота</label><input type="text" id="geoLng" value="37.6173"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Оформление</h2>
             <div class="grid-2">
-                <div class="field">
-                    <label for="qrSize">Размер, px</label>
+                <div class="field"><label for="qrSize">Размер, px</label>
                     <select id="qrSize">
-                        <option value="256">256 × 256</option>
-                        <option value="384">384 × 384</option>
-                        <option value="512" selected>512 × 512</option>
-                        <option value="768">768 × 768</option>
+                        <option value="256">256</option>
+                        <option value="384">384</option>
+                        <option value="512" selected>512</option>
+                        <option value="768">768</option>
+                        <option value="1024">1024</option>
                     </select>
                 </div>
-                <div class="field">
-                    <label for="qrLevel">Коррекция ошибок</label>
-                    <select id="qrLevel">
+                <div class="field"><label for="qrEcc">Коррекция ошибок</label>
+                    <select id="qrEcc">
                         <option value="L">L — 7%</option>
                         <option value="M" selected>M — 15%</option>
                         <option value="Q">Q — 25%</option>
-                        <option value="H">H — 30%</option>
+                        <option value="H">H — 30% (лучше для логотипа)</option>
                     </select>
+                </div>
+                <div class="field"><label for="qrMargin">Поля (модули)</label><input type="number" id="qrMargin" value="4" min="0" max="10" step="1"></div>
+                <div class="field"><label for="qrLogo">Логотип в центре</label><input type="file" id="qrLogo" accept="image/*"></div>
+            </div>
+            <div class="grid-2">
+                <div class="field"><label for="qrDark">Цвет кода</label>
+                    <div class="color-row"><input type="color" id="qrDark" value="#000000"><input type="text" id="qrDarkHex" value="#000000"></div>
+                </div>
+                <div class="field"><label for="qrLight">Цвет фона</label>
+                    <div class="color-row"><input type="color" id="qrLight" value="#ffffff"><input type="text" id="qrLightHex" value="#ffffff"></div>
                 </div>
             </div>
             <div class="btn-row">
-                <button class="btn btn-primary" id="qrDownloadBtn" type="button">Скачать PNG</button>
+                <button class="btn btn-primary" id="dlPng" type="button">Скачать PNG</button>
+                <button class="btn btn-outline" id="dlSvg" type="button">Скачать SVG</button>
+                <button class="btn btn-outline" id="resetLogo" type="button">Убрать логотип</button>
             </div>
         </div>
 
         <div class="card">
-            <h2>Код</h2>
-            <div class="qr-stage">
-                <div id="qrBox"><span class="qr-empty">Введите текст</span></div>
-            </div>
+            <h2>Предпросмотр</h2>
+            <div class="qr-stage"><canvas id="qrCanvas" width="512" height="512"></canvas></div>
+            <p class="small" id="qrStatus"></p>
+        </div>
+
+        <div class="card">
+            <h2>Частые вопросы</h2>
+            <p class="small"><strong>Код перестанет работать?</strong> Нет, это статический QR: данные зашиты в сам рисунок, без редиректов и срока действия.</p>
+            <p class="small"><strong>Что выбрать для логотипа?</strong> Уровень коррекции H — он допускает до 30% повреждения и перекрытия.</p>
+            <p class="small"><strong>SVG или PNG?</strong> SVG — для печати и масштабирования без потерь, PNG — для чатов и документов.</p>
         </div>
     </div>
 
@@ -84,10 +171,10 @@
                 <h4>Инструменты</h4>
                 <ul>
                     <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/image.html">Изображения</a></li>
+                    <li><a href="/tools/pdf.html">PDF</a></li>
                     <li><a href="/tools/units.html">Конвертер единиц</a></li>
-                    <li><a href="/tools/drone-calc.html">Калькулятор БПЛА</a></li>
-                    <li><a href="/tools/resistor.html">Резисторы</a></li>
-                    <li><a href="/tools/json.html">JSON и Base64</a></li>
+                    <li><a href="/tools/password.html">Пароли</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -107,69 +194,180 @@
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="/tools/tools.js"></script>
     <script>
         function $(id) { return document.getElementById(id); }
-        var qrInstance = null;
+        var logoImage = null;
+        var debounceTimer = null;
 
-        function levels() {
-            return {
-                L: QRCode.CorrectLevel.L,
-                M: QRCode.CorrectLevel.M,
-                Q: QRCode.CorrectLevel.Q,
-                H: QRCode.CorrectLevel.H
-            };
+        function esc(value) {
+            return String(value || '').replace(/([\\;,":])/g, '\\$1');
+        }
+
+        function buildPayload() {
+            var type = $('qrType').value;
+            if (type === 'wifi') {
+                var t = $('wifiType').value;
+                var s = 'WIFI:T:' + t + ';S:' + esc($('wifiSsid').value) + ';';
+                if (t !== 'nopass') s += 'P:' + esc($('wifiPass').value) + ';';
+                if ($('wifiHidden').value === 'true') s += 'H:true;';
+                return s + ';';
+            }
+            if (type === 'vcard') {
+                var lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:' + $('vcName').value];
+                if ($('vcOrg').value) lines.push('ORG:' + $('vcOrg').value);
+                if ($('vcPhone').value) lines.push('TEL:' + $('vcPhone').value);
+                if ($('vcEmail').value) lines.push('EMAIL:' + $('vcEmail').value);
+                if ($('vcUrl').value) lines.push('URL:' + $('vcUrl').value);
+                lines.push('END:VCARD');
+                return lines.join('\n');
+            }
+            if (type === 'email') {
+                var email = 'mailto:' + encodeURIComponent($('emTo').value);
+                var params = [];
+                if ($('emSubject').value) params.push('subject=' + encodeURIComponent($('emSubject').value));
+                if ($('emBody').value) params.push('body=' + encodeURIComponent($('emBody').value));
+                return params.length ? email + '?' + params.join('&') : email;
+            }
+            if (type === 'phone') return 'tel:' + $('phoneNumber').value.replace(/\s+/g, '');
+            if (type === 'sms') return 'SMSTO:' + $('smsNumber').value.replace(/\s+/g, '') + ':' + $('smsText').value;
+            if (type === 'geo') return 'geo:' + $('geoLat').value + ',' + $('geoLng').value;
+            return $('textValue').value;
         }
 
         function renderQr() {
-            var box = $('qrBox');
-            var text = $('qrText').value;
-            if (typeof QRCode === 'undefined') {
-                box.innerHTML = '<span class="qr-empty">Не удалось загрузить библиотеку QR. Проверьте интернет.</span>';
+            var canvas = $('qrCanvas');
+            var payload = buildPayload();
+            if (!payload) {
+                var ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                $('qrStatus').textContent = 'Введите данные';
                 return;
             }
-            if (!text) {
-                box.innerHTML = '<span class="qr-empty">Введите текст</span>';
-                qrInstance = null;
+            if (typeof QRCode === 'undefined') {
+                $('qrStatus').textContent = 'Не удалось загрузить библиотеку QR. Проверьте интернет.';
                 return;
             }
             var size = parseInt($('qrSize').value, 10);
-            var level = levels()[$('qrLevel').value];
-            box.innerHTML = '';
-            qrInstance = new QRCode(box, {
-                text: text,
+            var options = {
                 width: size,
-                height: size,
-                colorDark: '#000000',
-                colorLight: '#ffffff',
-                correctLevel: level
+                margin: parseInt($('qrMargin').value, 10),
+                errorCorrectionLevel: $('qrEcc').value,
+                color: { dark: $('qrDark').value, light: $('qrLight').value }
+            };
+            QRCode.toCanvas(canvas, payload, options, function (error) {
+                if (error) {
+                    $('qrStatus').textContent = 'Ошибка: ' + error.message;
+                    return;
+                }
+                if (logoImage) drawLogo(canvas, size);
+                $('qrStatus').textContent = 'Символов: ' + payload.length + ' · ' + size + '×' + size;
             });
         }
 
-        function downloadQr() {
-            var canvas = $('qrBox').querySelector('canvas');
-            if (!canvas) {
-                tlToast('Сначала создайте QR-код');
-                return;
-            }
-            var link = document.createElement('a');
-            link.download = 'thunderlight-qr.png';
-            link.href = canvas.toDataURL('image/png');
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            tlToast('PNG скачан');
+        function drawLogo(canvas, size) {
+            var ctx = canvas.getContext('2d');
+            var logoSize = Math.round(size * 0.22);
+            var pad = Math.round(logoSize * 0.12);
+            var x = (size - logoSize) / 2;
+            var y = (size - logoSize) / 2;
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x - pad, y - pad, logoSize + pad * 2, logoSize + pad * 2);
+            ctx.drawImage(logoImage, x, y, logoSize, logoSize);
         }
 
-        var timer = null;
-        $('qrText').addEventListener('input', function () {
-            clearTimeout(timer);
-            timer = setTimeout(renderQr, 250);
+        function scheduleRender() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(renderQr, 220);
+        }
+
+        function syncColor(colorId, hexId) {
+            $(colorId).addEventListener('input', function () {
+                $(hexId).value = $(colorId).value;
+                scheduleRender();
+            });
+            $(hexId).addEventListener('input', function () {
+                if (/^#[0-9a-f]{6}$/i.test($(hexId).value)) {
+                    $(colorId).value = $(hexId).value;
+                    scheduleRender();
+                }
+            });
+        }
+        syncColor('qrDark', 'qrDarkHex');
+        syncColor('qrLight', 'qrLightHex');
+
+        $('qrType').addEventListener('change', function () {
+            var type = $('qrType').value;
+            Array.prototype.forEach.call(document.querySelectorAll('.type-fields'), function (el) { el.style.display = 'none'; });
+            $('fields-' + type).style.display = 'block';
+            scheduleRender();
         });
-        $('qrSize').addEventListener('change', renderQr);
-        $('qrLevel').addEventListener('change', renderQr);
-        $('qrDownloadBtn').addEventListener('click', downloadQr);
+        Array.prototype.forEach.call(document.querySelectorAll('input, textarea, select'), function (el) {
+            if (el.id === 'qrLogo') return;
+            el.addEventListener('input', scheduleRender);
+            el.addEventListener('change', scheduleRender);
+        });
+
+        $('qrLogo').addEventListener('change', function (e) {
+            var file = e.target.files && e.target.files[0];
+            if (!file) { logoImage = null; scheduleRender(); return; }
+            var img = new Image();
+            var url = URL.createObjectURL(file);
+            img.onload = function () { logoImage = img; URL.revokeObjectURL(url); scheduleRender(); };
+            img.onerror = function () { URL.revokeObjectURL(url); tlToast('Не удалось открыть логотип'); };
+            img.src = url;
+        });
+        $('resetLogo').addEventListener('click', function () {
+            logoImage = null;
+            $('qrLogo').value = '';
+            scheduleRender();
+        });
+
+        $('dlPng').addEventListener('click', function () {
+            var size = parseInt($('qrSize').value, 10);
+            var canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            QRCode.toCanvas(canvas, buildPayload(), {
+                width: size,
+                margin: parseInt($('qrMargin').value, 10),
+                errorCorrectionLevel: $('qrEcc').value,
+                color: { dark: $('qrDark').value, light: $('qrLight').value }
+            }, function (error) {
+                if (error) { tlToast('Ошибка генерации'); return; }
+                if (logoImage) drawLogo(canvas, size);
+                var link = document.createElement('a');
+                link.download = 'thunderlight-qr.png';
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                tlToast('PNG скачан');
+            });
+        });
+
+        $('dlSvg').addEventListener('click', function () {
+            QRCode.toString(buildPayload(), {
+                type: 'svg',
+                margin: parseInt($('qrMargin').value, 10),
+                errorCorrectionLevel: $('qrEcc').value,
+                color: { dark: $('qrDark').value, light: $('qrLight').value }
+            }, function (error, svg) {
+                if (error) { tlToast('Ошибка генерации SVG'); return; }
+                var blob = new Blob([svg], { type: 'image/svg+xml' });
+                var url = URL.createObjectURL(blob);
+                var link = document.createElement('a');
+                link.download = 'thunderlight-qr.svg';
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+                tlToast('SVG скачан');
+            });
+        });
 
         renderQr();
     </script>
