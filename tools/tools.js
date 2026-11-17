@@ -47,3 +47,24 @@ function tlFormatNumber(value, digits) {
   var d = typeof digits === 'number' ? digits : 2;
   return Number(value.toFixed(d)).toLocaleString('ru-RU');
 }
+
+(function () {
+  try {
+    var match = location.pathname.match(/^\/tools\/([a-z0-9-]+)\.html$/i);
+    if (match && match[1] !== 'index') {
+      var slug = match[1];
+      var title = (document.title || '').split(' — ')[0];
+      var list = JSON.parse(localStorage.getItem('tl_recent') || '[]');
+      list = list.filter(function (item) { return item.slug !== slug; });
+      list.unshift({ slug: slug, title: title, time: Date.now() });
+      localStorage.setItem('tl_recent', JSON.stringify(list.slice(0, 6)));
+    }
+  } catch (e) { /* storage may be unavailable */ }
+})();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/sw.js').catch(function () { /* offline mode unavailable */ });
+  });
+}
+

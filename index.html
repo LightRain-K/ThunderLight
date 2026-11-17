@@ -13,6 +13,7 @@
     <meta property="og:url" content="https://thuderlight.online/">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="manifest" href="/manifest.webmanifest">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/tools/tools.css">
     <style>
@@ -121,8 +122,21 @@
             <span class="section-label"><i class="fa-solid fa-toolbox"></i> Инструменты</span>
             <h2 class="section-title">Полезное на каждый день</h2>
             <p class="section-sub">Быстрые инструменты, которые работают прямо в браузере. Ничего не отправляется на сервер.</p>
+            <div style="margin-top:18px;max-width:540px;margin-left:auto;margin-right:auto;">
+                <input type="text" id="homeToolSearch" placeholder="Поиск: изображения, QR, единицы, пароль, JSON...">
+            </div>
+            <div id="recentTools" style="display:none;margin-top:16px;">
+                <p class="small" style="margin-bottom:8px;">Недавние:</p>
+                <div id="recentToolsList" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;"></div>
+            </div>
         </div>
-        <div class="grid">
+        <div class="grid" id="toolsGrid">
+            <a href="/tools/image.html" class="tile" data-keywords="изображение изображения фото сжатие сжать конвертация конвертер jpg png webp heic heif размер ресайз">
+                <span class="tile-icon">🖼️</span>
+                <span class="tile-name">Сжатие и конвертация изображений</span>
+                <span class="tile-desc">JPG, PNG, WebP и HEIC: сжатие до нужного размера, конвертация и изменение размера. Файлы не покидают устройство.</span>
+                <span class="tile-tag">Хит</span>
+            </a>
             <a href="/tools/units.html" class="tile">
                 <span class="tile-icon">📐</span>
                 <span class="tile-name">Конвертер единиц</span>
@@ -280,5 +294,33 @@
     </footer>
 
     <script src="/tools/tools.js"></script>
+    <script>
+        (function () {
+            var input = document.getElementById('homeToolSearch');
+            var grid = document.getElementById('toolsGrid');
+            if (input && grid) {
+                var tiles = Array.prototype.slice.call(grid.querySelectorAll('.tile'));
+                input.addEventListener('input', function () {
+                    var q = input.value.trim().toLowerCase();
+                    tiles.forEach(function (tile) {
+                        var hay = (tile.getAttribute('data-keywords') || '') + ' ' + tile.textContent.toLowerCase();
+                        tile.style.display = (!q || hay.indexOf(q) !== -1) ? '' : 'none';
+                    });
+                });
+            }
+
+            try {
+                var recent = JSON.parse(localStorage.getItem('tl_recent') || '[]');
+                var box = document.getElementById('recentTools');
+                var list = document.getElementById('recentToolsList');
+                if (box && list && recent.length) {
+                    list.innerHTML = recent.map(function (item) {
+                        return '<a class="btn btn-outline" style="padding:7px 14px;font-size:0.85rem;" href="/tools/' + item.slug + '.html">' + item.title + '</a>';
+                    }).join('');
+                    box.style.display = 'block';
+                }
+            } catch (e) { /* storage unavailable */ }
+        })();
+    </script>
 </body>
 </html>

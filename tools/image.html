@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сжатие и конвертация изображений — ThunderLight</title>
+    <meta name="description" content="Сожмите и конвертируйте изображения JPG, PNG, WebP и HEIC прямо в браузере. Сжатие до нужного размера, изменение размера, пакетная обработка. Файлы не загружаются на сервер.">
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="stylesheet" href="/tools/tools.css">
+    <style>
+        .dropzone {
+            border: 2px dashed rgba(148,163,184,0.4); border-radius: 14px; padding: 34px 20px;
+            text-align: center; color: var(--gray-light); cursor: pointer; transition: var(--transition);
+            background: rgba(2,6,23,0.4);
+        }
+        .dropzone:hover, .dropzone.drag { border-color: var(--accent); color: #67e8f9; background: rgba(6,182,212,0.06); }
+        .dropzone strong { color: var(--light); }
+        .file-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .file-row:last-child { border-bottom: none; }
+        .file-thumb { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; background: #0f172a; border: 1px solid var(--border); flex-shrink: 0; }
+        .file-info { flex: 1; min-width: 0; }
+        .file-name { font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-meta { font-size: 0.78rem; color: var(--gray); }
+        .file-remove { background: none; border: none; color: var(--gray-light); cursor: pointer; font-size: 1.1rem; padding: 4px 8px; }
+        .file-remove:hover { color: #f87171; }
+        .result-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .result-row:last-child { border-bottom: none; }
+        .result-badge { font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+        .result-badge.bigger { background: rgba(245,158,11,0.15); color: #fcd34d; border-color: rgba(245,158,11,0.3); }
+        .range-row { display: flex; align-items: center; gap: 12px; }
+        .range-row input[type="range"] { padding: 0; height: 30px; background: transparent; border: none; box-shadow: none; }
+        .range-row output { min-width: 48px; text-align: right; color: var(--light); font-weight: 700; }
+        .progress { height: 6px; background: rgba(148,163,184,0.2); border-radius: 999px; overflow: hidden; margin-top: 14px; display: none; }
+        .progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #4f46e5, #06b6d4); transition: width 0.2s; }
+        .disabled { opacity: 0.55; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/tools/" class="active">Инструменты</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles/">Academy</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <div class="page-head">
+            <div class="breadcrumbs"><a href="/">Главная</a> / <a href="/tools/">Инструменты</a> / Изображения</div>
+            <h1>Сжатие и конвертация изображений</h1>
+            <p>Выберите формат, качество или укажите целевой размер в КБ. Обработка идёт в браузере: ни один файл не отправляется на сервер.</p>
+        </div>
+
+        <div class="card">
+            <h2>Изображения</h2>
+            <p class="hint">Перетащите файлы сюда или нажмите, чтобы выбрать. JPG, PNG, WebP, GIF, BMP. HEIC/HEIF — конвертация при доступном интернете.</p>
+            <div class="dropzone" id="dropzone">
+                <div style="font-size:1.8rem;margin-bottom:8px;">🖼️</div>
+                <div><strong>Перетащите изображения</strong> или нажмите для выбора</div>
+                <div class="small">Пакетная обработка · файлы остаются на устройстве</div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*,.heic,.heif" multiple style="display:none;">
+            <div id="fileList" class="mt-16"></div>
+        </div>
+
+        <div class="card">
+            <h2>Настройки</h2>
+            <div class="grid-2">
+                <div class="field">
+                    <label for="format">Формат результата</label>
+                    <select id="format">
+                        <option value="image/jpeg">JPG — фото, небольшой размер</option>
+                        <option value="image/webp">WebP — меньше при том же качестве</option>
+                        <option value="image/png">PNG — без потерь, без прозрачности фон</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="resizeMode">Размер</label>
+                    <select id="resizeMode">
+                        <option value="none">Не менять</option>
+                        <option value="max">Ограничить по длинной стороне</option>
+                        <option value="percent">Уменьшить в процентах</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-2" id="resizeBlock" style="display:none;">
+                <div class="field">
+                    <label for="resizeValue" id="resizeLabel">Значение</label>
+                    <input type="number" id="resizeValue" value="1920" min="16" step="1">
+                </div>
+            </div>
+
+            <div class="field" id="qualityBlock">
+                <label for="quality">Качество</label>
+                <div class="range-row">
+                    <input type="range" id="quality" min="20" max="100" value="80" step="1">
+                    <output id="qualityValue">80%</output>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="targetKb">Целевой размер, КБ (необязательно)</label>
+                <input type="number" id="targetKb" placeholder="например, 300" min="10" step="1">
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" id="processBtn" type="button">Обработать</button>
+                <button class="btn btn-outline" id="clearBtn" type="button">Очистить</button>
+            </div>
+            <div class="progress" id="progress"><span id="progressBar"></span></div>
+            <p class="small" id="statusText"></p>
+        </div>
+
+        <div class="card">
+            <h2>Результат</h2>
+            <div id="results"><p class="small">Обработанные файлы появятся здесь.</p></div>
+            <div class="btn-row" id="downloadAllRow" style="display:none;">
+                <button class="btn btn-outline" id="downloadAllBtn" type="button">Скачать все</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Частые вопросы</h2>
+            <p class="small"><strong>Файлы куда-то загружаются?</strong> Нет. Всё выполняется в вашем браузере через canvas, файлы не покидают устройство.</p>
+            <p class="small"><strong>Почему HEIC иногда не работает?</strong> Для HEIC/HEIF нужна внешняя библиотека, которая подгружается из сети. Без интернета конвертируйте такие фото на телефоне.</p>
+            <p class="small"><strong>Как работает «целевой размер»?</strong> Для JPG и WebP качество подбирается автоматически, пока файл не станет меньше указанного. Для PNG уменьшается разрешение.</p>
+            <p class="small"><strong>Что с прозрачностью?</strong> JPG не поддерживает прозрачность: она заменяется белым фоном. Используйте PNG или WebP.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+                <p>Открытая экосистема инженерных проектов и инструментов.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Инструменты</h4>
+                <ul>
+                    <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/image.html">Изображения</a></li>
+                    <li><a href="/tools/units.html">Конвертер единиц</a></li>
+                    <li><a href="/tools/drone-calc.html">Калькулятор БПЛА</a></li>
+                    <li><a href="/tools/qr.html">QR-генератор</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Проекты и обучение</h4>
+                <ul>
+                    <li><a href="/uav-project.html">БПЛА «Стрижик»</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderCam" target="_blank" rel="noopener">ThunderCam</a></li>
+                    <li><a href="/projects.html">Все проекты</a></li>
+                    <li><a href="/articles/">Academy</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 ThunderLight. Открытый исходный код.</span>
+            <span><a href="https://t.me/thunderlight_online" target="_blank" rel="noopener">Telegram</a> · <a href="https://github.com/LightRain-K" target="_blank" rel="noopener">GitHub</a></span>
+        </div>
+    </footer>
+
+    <script src="/tools/tools.js"></script>
+    <script>
+        function $(id) { return document.getElementById(id); }
+
+        var files = [];
+        var results = [];
+        var heicLoading = null;
+
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' Б';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' КБ';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' МБ';
+        }
+
+        function isHeic(file) {
+            var name = file.name.toLowerCase();
+            return /\.(heic|heif)$/.test(name) || file.type === 'image/heic' || file.type === 'image/heif';
+        }
+
+        function loadHeicLib() {
+            if (window.heic2any) return Promise.resolve(window.heic2any);
+            if (heicLoading) return heicLoading;
+            heicLoading = new Promise(function (resolve, reject) {
+                var script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js';
+                script.onload = function () {
+                    if (window.heic2any) resolve(window.heic2any);
+                    else reject(new Error('HEIC-библиотека не загрузилась'));
+                };
+                script.onerror = function () { reject(new Error('HEIC-библиотека не загрузилась')); };
+                document.head.appendChild(script);
+            });
+            return heicLoading;
+        }
+
+        function addFiles(list) {
+            Array.prototype.forEach.call(list, function (file) {
+                if (!file.type.startsWith('image/') && !isHeic(file)) return;
+                files.push({ file: file, id: Math.random().toString(36).slice(2) });
+            });
+            renderFiles();
+        }
+
+        function renderFiles() {
+            var box = $('fileList');
+            if (!files.length) {
+                box.innerHTML = '';
+                return;
+            }
+            box.innerHTML = files.map(function (item, index) {
+                var url = URL.createObjectURL(item.file);
+                return '<div class="file-row">' +
+                    '<img class="file-thumb" src="' + url + '" alt="">' +
+                    '<div class="file-info"><div class="file-name">' + item.file.name + '</div>' +
+                    '<div class="file-meta">' + formatBytes(item.file.size) + '</div></div>' +
+                    '<button class="file-remove" data-index="' + index + '" title="Убрать">✕</button>' +
+                    '</div>';
+            }).join('');
+            Array.prototype.forEach.call(box.querySelectorAll('.file-remove'), function (btn) {
+                btn.addEventListener('click', function () {
+                    files.splice(parseInt(btn.getAttribute('data-index'), 10), 1);
+                    renderFiles();
+                });
+            });
+        }
+
+        async function fileToBitmap(file) {
+            if (isHeic(file)) {
+                var heic2any = await loadHeicLib();
+                var blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+                return createImageBitmap(blob instanceof Array ? blob[0] : blob);
+            }
+            if (window.createImageBitmap) {
+                try { return await createImageBitmap(file); } catch (e) { /* fallback */ }
+            }
+            return new Promise(function (resolve, reject) {
+                var img = new Image();
+                var url = URL.createObjectURL(file);
+                img.onload = function () { URL.revokeObjectURL(url); resolve(img); };
+                img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Не удалось открыть изображение')); };
+                img.src = url;
+            });
+        }
+
+        function bitmapSize(bitmap) {
+            return { width: bitmap.width || bitmap.naturalWidth, height: bitmap.height || bitmap.naturalHeight };
+        }
+
+        function targetDimensions(width, height, settings) {
+            var mode = $('resizeMode').value;
+            var value = parseFloat($('resizeValue').value);
+            if (mode === 'none' || !isFinite(value) || value <= 0) {
+                return { width: width, height: height };
+            }
+            if (mode === 'percent') {
+                var k = Math.max(1, Math.min(100, value)) / 100;
+                return { width: Math.max(1, Math.round(width * k)), height: Math.max(1, Math.round(height * k)) };
+            }
+            var limit = value;
+            var scale = Math.min(1, limit / Math.max(width, height));
+            return { width: Math.max(1, Math.round(width * scale)), height: Math.max(1, Math.round(height * scale)) };
+        }
+
+        function makeCanvas(src, width, height) {
+            var canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            var ctx = canvas.getContext('2d');
+            ctx.imageSmoothingQuality = 'high';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(src, 0, 0, width, height);
+            return canvas;
+        }
+
+        function canvasToBlob(canvas, mime, quality) {
+            return new Promise(function (resolve, reject) {
+                canvas.toBlob(function (blob) {
+                    if (blob) resolve(blob);
+                    else reject(new Error('Браузер не смог сжать изображение'));
+                }, mime, quality);
+            });
+        }
+
+        async function encodeToTarget(src, width, height, mime, targetBytes) {
+            var quality = parseInt($('quality').value, 10) / 100;
+            var canvas = makeCanvas(src, width, height);
+            if (mime === 'image/png' || !targetBytes) {
+                var blob = await canvasToBlob(canvas, mime, quality);
+                if (!targetBytes) return { blob: blob, width: width, height: height };
+                if (mime !== 'image/png') {
+                    var low = 0.05, high = quality, best = blob;
+                    for (var i = 0; i < 7; i++) {
+                        var mid = (low + high) / 2;
+                        var trial = await canvasToBlob(canvas, mime, mid);
+                        if (trial.size <= targetBytes) { best = trial; low = mid; }
+                        else { high = mid; }
+                    }
+                    if (best.size <= targetBytes) return { blob: best, width: width, height: height };
+                }
+                var w = width, h = height;
+                var scaled = blob;
+                while (scaled.size > targetBytes && w > 32 && h > 32) {
+                    w = Math.round(w * 0.85);
+                    h = Math.round(h * 0.85);
+                    var c = makeCanvas(src, w, h);
+                    scaled = await canvasToBlob(c, mime, quality);
+                }
+                return { blob: scaled, width: w, height: h };
+            }
+            var bestBlob = null;
+            var lowQ = 0.05, highQ = Math.min(1, quality);
+            for (var j = 0; j < 8; j++) {
+                var q = (lowQ + highQ) / 2;
+                var candidate = await canvasToBlob(canvas, mime, q);
+                if (candidate.size <= targetBytes) { bestBlob = candidate; lowQ = q; }
+                else { highQ = q; }
+            }
+            if (bestBlob) return { blob: bestBlob, width: width, height: height };
+            var cw = width, ch = height, out = null;
+            while (cw > 32 && ch > 32) {
+                cw = Math.round(cw * 0.85);
+                ch = Math.round(ch * 0.85);
+                var small = makeCanvas(src, cw, ch);
+                out = await canvasToBlob(small, mime, quality);
+                if (out.size <= targetBytes) break;
+            }
+            return { blob: out || await canvasToBlob(canvas, mime, quality), width: cw, height: ch };
+        }
+
+        async function processAll() {
+            if (!files.length) {
+                tlToast('Сначала добавьте изображения');
+                return;
+            }
+            var mime = $('format').value;
+            var targetKb = parseInt($('targetKb').value, 10);
+            var targetBytes = isFinite(targetKb) && targetKb > 0 ? targetKb * 1024 : 0;
+
+            $('processBtn').classList.add('disabled');
+            $('progress').style.display = 'block';
+            $('statusText').textContent = 'Обработка...';
+            results = [];
+            $('results').innerHTML = '';
+
+            for (var i = 0; i < files.length; i++) {
+                try {
+                    var bitmap = await fileToBitmap(files[i].file);
+                    var size = bitmapSize(bitmap);
+                    var dims = targetDimensions(size.width, size.height, {});
+                    var encoded = await encodeToTarget(bitmap, dims.width, dims.height, mime, targetBytes);
+                    results.push({
+                        name: files[i].file.name,
+                        originalSize: files[i].file.size,
+                        blob: encoded.blob,
+                        width: encoded.width,
+                        height: encoded.height,
+                        mime: mime
+                    });
+                    if (bitmap.close && !isHeic(files[i].file)) bitmap.close();
+                } catch (e) {
+                    results.push({ name: files[i].file.name, error: e.message });
+                }
+                $('progressBar').style.width = Math.round((i + 1) / files.length * 100) + '%';
+            }
+
+            $('processBtn').classList.remove('disabled');
+            $('progress').style.display = 'none';
+            $('statusText').textContent = 'Готово: ' + results.filter(function (r) { return !r.error; }).length + ' из ' + results.length;
+            renderResults();
+        }
+
+        function extFor(mime) {
+            if (mime === 'image/png') return 'png';
+            if (mime === 'image/webp') return 'webp';
+            return 'jpg';
+        }
+
+        function renderResults() {
+            var box = $('results');
+            var ok = results.filter(function (r) { return !r.error; });
+            if (!ok.length && !results.length) {
+                box.innerHTML = '<p class="small">Обработанные файлы появятся здесь.</p>';
+                $('downloadAllRow').style.display = 'none';
+                return;
+            }
+            box.innerHTML = results.map(function (r, index) {
+                if (r.error) {
+                    return '<div class="result-row"><div class="file-info"><div class="file-name">' + r.name + '</div><div class="file-meta" style="color:#f87171;">Ошибка: ' + r.error + '</div></div></div>';
+                }
+                var saved = r.originalSize - r.blob.size;
+                var pct = r.originalSize > 0 ? Math.round(saved / r.originalSize * 100) : 0;
+                var bigger = r.blob.size >= r.originalSize;
+                var url = URL.createObjectURL(r.blob);
+                var baseName = r.name.replace(/\.[^.]+$/, '');
+                return '<div class="result-row">' +
+                    '<img class="file-thumb" src="' + url + '" alt="">' +
+                    '<div class="file-info"><div class="file-name">' + baseName + '.' + extFor(r.mime) + '</div>' +
+                    '<div class="file-meta">' + r.width + '×' + r.height + ' · ' + formatBytes(r.originalSize) + ' → ' + formatBytes(r.blob.size) + '</div></div>' +
+                    '<span class="result-badge' + (bigger ? ' bigger' : '') + '">' + (bigger ? '+' : '−') + Math.abs(pct) + '%</span>' +
+                    '<a class="btn btn-outline" style="padding:8px 14px;" href="' + url + '" download="' + baseName + '.' + extFor(r.mime) + '">Скачать</a>' +
+                    '</div>';
+            }).join('');
+            $('downloadAllRow').style.display = ok.length ? 'flex' : 'none';
+        }
+
+        $('dropzone').addEventListener('click', function () { $('fileInput').click(); });
+        $('fileInput').addEventListener('change', function (e) { addFiles(e.target.files); });
+        ['dragenter', 'dragover'].forEach(function (ev) {
+            $('dropzone').addEventListener(ev, function (e) { e.preventDefault(); $('dropzone').classList.add('drag'); });
+        });
+        ['dragleave', 'drop'].forEach(function (ev) {
+            $('dropzone').addEventListener(ev, function (e) { e.preventDefault(); $('dropzone').classList.remove('drag'); });
+        });
+        $('dropzone').addEventListener('drop', function (e) {
+            if (e.dataTransfer && e.dataTransfer.files) addFiles(e.dataTransfer.files);
+        });
+
+        $('resizeMode').addEventListener('change', function () {
+            var mode = $('resizeMode').value;
+            $('resizeBlock').style.display = mode === 'none' ? 'none' : 'grid';
+            $('resizeLabel').textContent = mode === 'percent' ? 'Процент, %' : 'Длинная сторона, px';
+            $('resizeValue').value = mode === 'percent' ? 80 : 1920;
+        });
+        $('quality').addEventListener('input', function () {
+            $('qualityValue').textContent = $('quality').value + '%';
+        });
+        $('format').addEventListener('change', function () {
+            var lossless = $('format').value === 'image/png';
+            $('qualityBlock').style.display = lossless ? 'none' : 'block';
+        });
+        $('processBtn').addEventListener('click', processAll);
+        $('clearBtn').addEventListener('click', function () {
+            files = [];
+            results = [];
+            $('fileInput').value = '';
+            $('fileList').innerHTML = '';
+            $('results').innerHTML = '<p class="small">Обработанные файлы появятся здесь.</p>';
+            $('downloadAllRow').style.display = 'none';
+            $('statusText').textContent = '';
+        });
+        $('downloadAllBtn').addEventListener('click', function () {
+            results.filter(function (r) { return !r.error; }).forEach(function (r, i) {
+                setTimeout(function () {
+                    var baseName = r.name.replace(/\.[^.]+$/, '');
+                    var link = document.createElement('a');
+                    link.href = URL.createObjectURL(r.blob);
+                    link.download = baseName + '.' + extFor(r.mime);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }, i * 300);
+            });
+        });
+    </script>
+</body>
+</html>
