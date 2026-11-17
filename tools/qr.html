@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR-генератор — ThunderLight</title>
+    <meta name="description" content="Бесплатный генератор QR-кодов: ссылки, текст, контакты и Wi-Fi. Скачивание в PNG. Код создаётся в браузере.">
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="stylesheet" href="/tools/tools.css">
+    <style>
+        .qr-stage { display: flex; align-items: center; justify-content: center; padding: 24px; background: #fff; border-radius: 14px; min-height: 280px; }
+        #qrBox canvas, #qrBox img { display: block; max-width: 100%; height: auto; }
+        .qr-empty { color: #64748b; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/tools/" class="active">Инструменты</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles/">Academy</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <div class="page-head">
+            <div class="breadcrumbs"><a href="/">Главная</a> / <a href="/tools/">Инструменты</a> / QR-генератор</div>
+            <h1>QR-генератор</h1>
+            <p>Введите ссылку или текст — получите QR-код и скачайте его в PNG. Код создаётся прямо в браузере.</p>
+        </div>
+
+        <div class="card">
+            <div class="field">
+                <label for="qrText">Текст или ссылка</label>
+                <textarea id="qrText" placeholder="https://thuderlight.online">https://thuderlight.online</textarea>
+            </div>
+            <div class="grid-2">
+                <div class="field">
+                    <label for="qrSize">Размер, px</label>
+                    <select id="qrSize">
+                        <option value="256">256 × 256</option>
+                        <option value="384">384 × 384</option>
+                        <option value="512" selected>512 × 512</option>
+                        <option value="768">768 × 768</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="qrLevel">Коррекция ошибок</label>
+                    <select id="qrLevel">
+                        <option value="L">L — 7%</option>
+                        <option value="M" selected>M — 15%</option>
+                        <option value="Q">Q — 25%</option>
+                        <option value="H">H — 30%</option>
+                    </select>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" id="qrDownloadBtn" type="button">Скачать PNG</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Код</h2>
+            <div class="qr-stage">
+                <div id="qrBox"><span class="qr-empty">Введите текст</span></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+                <p>Открытая экосистема инженерных проектов и инструментов.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Инструменты</h4>
+                <ul>
+                    <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/units.html">Конвертер единиц</a></li>
+                    <li><a href="/tools/drone-calc.html">Калькулятор БПЛА</a></li>
+                    <li><a href="/tools/resistor.html">Резисторы</a></li>
+                    <li><a href="/tools/json.html">JSON и Base64</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Проекты и обучение</h4>
+                <ul>
+                    <li><a href="/uav-project.html">БПЛА «Стрижик»</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderCam" target="_blank" rel="noopener">ThunderCam</a></li>
+                    <li><a href="/projects.html">Все проекты</a></li>
+                    <li><a href="/articles/">Academy</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 ThunderLight. Открытый исходный код.</span>
+            <span><a href="https://t.me/thunderlight_online" target="_blank" rel="noopener">Telegram</a> · <a href="https://github.com/LightRain-K" target="_blank" rel="noopener">GitHub</a></span>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="/tools/tools.js"></script>
+    <script>
+        function $(id) { return document.getElementById(id); }
+        var qrInstance = null;
+
+        function levels() {
+            return {
+                L: QRCode.CorrectLevel.L,
+                M: QRCode.CorrectLevel.M,
+                Q: QRCode.CorrectLevel.Q,
+                H: QRCode.CorrectLevel.H
+            };
+        }
+
+        function renderQr() {
+            var box = $('qrBox');
+            var text = $('qrText').value;
+            if (typeof QRCode === 'undefined') {
+                box.innerHTML = '<span class="qr-empty">Не удалось загрузить библиотеку QR. Проверьте интернет.</span>';
+                return;
+            }
+            if (!text) {
+                box.innerHTML = '<span class="qr-empty">Введите текст</span>';
+                qrInstance = null;
+                return;
+            }
+            var size = parseInt($('qrSize').value, 10);
+            var level = levels()[$('qrLevel').value];
+            box.innerHTML = '';
+            qrInstance = new QRCode(box, {
+                text: text,
+                width: size,
+                height: size,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: level
+            });
+        }
+
+        function downloadQr() {
+            var canvas = $('qrBox').querySelector('canvas');
+            if (!canvas) {
+                tlToast('Сначала создайте QR-код');
+                return;
+            }
+            var link = document.createElement('a');
+            link.download = 'thunderlight-qr.png';
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            tlToast('PNG скачан');
+        }
+
+        var timer = null;
+        $('qrText').addEventListener('input', function () {
+            clearTimeout(timer);
+            timer = setTimeout(renderQr, 250);
+        });
+        $('qrSize').addEventListener('change', renderQr);
+        $('qrLevel').addEventListener('change', renderQr);
+        $('qrDownloadBtn').addEventListener('click', downloadQr);
+
+        renderQr();
+    </script>
+</body>
+</html>

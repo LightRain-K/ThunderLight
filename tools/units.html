@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конвертер единиц — ThunderLight</title>
+    <meta name="description" content="Бесплатный конвертер единиц: длина, масса, скорость, площадь, объём и температура. Работает в браузере без регистрации.">
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="stylesheet" href="/tools/tools.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/tools/" class="active">Инструменты</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles/">Academy</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <div class="page-head">
+            <div class="breadcrumbs"><a href="/">Главная</a> / <a href="/tools/">Инструменты</a> / Конвертер единиц</div>
+            <h1>Конвертер единиц</h1>
+            <p>Перевод величин в реальном времени. Выберите категорию, введите значение — результат появится сразу.</p>
+        </div>
+
+        <div class="card">
+            <div class="field">
+                <label for="category">Категория</label>
+                <select id="category">
+                    <option value="length">Длина</option>
+                    <option value="mass">Масса</option>
+                    <option value="speed">Скорость</option>
+                    <option value="area">Площадь</option>
+                    <option value="volume">Объём</option>
+                    <option value="temperature">Температура</option>
+                </select>
+            </div>
+
+            <div class="grid-2">
+                <div class="field">
+                    <label for="fromUnit">Из</label>
+                    <select id="fromUnit"></select>
+                </div>
+                <div class="field">
+                    <label for="toUnit">В</label>
+                    <select id="toUnit"></select>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="inputValue">Значение</label>
+                <input type="number" id="inputValue" value="1" step="any" inputmode="decimal">
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-outline" id="swapBtn" type="button">⇄ Поменять местами</button>
+            </div>
+
+            <div class="result">
+                <div class="value" id="resultValue">1</div>
+                <div class="meta" id="resultMeta"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Как это работает</h2>
+            <p class="hint mt-0">Все вычисления выполняются на вашем устройстве. Данные не отправляются на сервер.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+                <p>Открытая экосистема инженерных проектов и инструментов.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Инструменты</h4>
+                <ul>
+                    <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/drone-calc.html">Калькулятор БПЛА</a></li>
+                    <li><a href="/tools/resistor.html">Резисторы</a></li>
+                    <li><a href="/tools/json.html">JSON и Base64</a></li>
+                    <li><a href="/tools/qr.html">QR-генератор</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Проекты и обучение</h4>
+                <ul>
+                    <li><a href="/uav-project.html">БПЛА «Стрижик»</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderCam" target="_blank" rel="noopener">ThunderCam</a></li>
+                    <li><a href="/projects.html">Все проекты</a></li>
+                    <li><a href="/articles/">Academy</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 ThunderLight. Открытый исходный код.</span>
+            <span><a href="https://t.me/thunderlight_online" target="_blank" rel="noopener">Telegram</a> · <a href="https://github.com/LightRain-K" target="_blank" rel="noopener">GitHub</a></span>
+        </div>
+    </footer>
+
+    <script src="/tools/tools.js"></script>
+    <script>
+        var UNITS = {
+            length: {
+                base: 'm',
+                units: [['mm', 'Миллиметр', 0.001], ['cm', 'Сантиметр', 0.01], ['m', 'Метр', 1], ['km', 'Километр', 1000], ['in', 'Дюйм', 0.0254], ['ft', 'Фут', 0.3048], ['yd', 'Ярд', 0.9144], ['mi', 'Миля', 1609.344]]
+            },
+            mass: {
+                base: 'g',
+                units: [['mg', 'Миллиграмм', 0.001], ['g', 'Грамм', 1], ['kg', 'Килограмм', 1000], ['t', 'Тонна', 1000000], ['oz', 'Унция', 28.349523125], ['lb', 'Фунт', 453.59237]]
+            },
+            speed: {
+                base: 'm/s',
+                units: [['m/s', 'Метр в секунду', 1], ['km/h', 'Км/ч', 0.2777777778], ['mph', 'Мили/ч', 0.44704], ['kn', 'Узел', 0.5144444444], ['ft/s', 'Фут/с', 0.3048]]
+            },
+            area: {
+                base: 'm2',
+                units: [['mm2', 'мм²', 0.000001], ['cm2', 'см²', 0.0001], ['m2', 'м²', 1], ['km2', 'км²', 1000000], ['ha', 'Гектар', 10000], ['acre', 'Акр', 4046.8564224], ['ft2', 'фут²', 0.09290304]]
+            },
+            volume: {
+                base: 'l',
+                units: [['ml', 'Миллилитр', 0.001], ['cm3', 'см³', 0.001], ['l', 'Литр', 1], ['m3', 'м³', 1000], ['gal', 'Галлон (US)', 3.785411784], ['pt', 'Пинта (US)', 0.473176473], ['floz', 'Жидк. унция (US)', 0.0295735296]]
+            },
+            temperature: {
+                base: 'C',
+                units: [['C', 'Цельсий', 1], ['F', 'Фаренгейт', 1], ['K', 'Кельвин', 1]]
+            }
+        };
+
+        var categoryEl = document.getElementById('category');
+        var fromEl = document.getElementById('fromUnit');
+        var toEl = document.getElementById('toUnit');
+        var inputEl = document.getElementById('inputValue');
+        var resultEl = document.getElementById('resultValue');
+        var metaEl = document.getElementById('resultMeta');
+
+        function fillUnits() {
+            var def = UNITS[categoryEl.value];
+            var options = def.units.map(function (u) {
+                return '<option value="' + u[0] + '">' + u[1] + '</option>';
+            }).join('');
+            fromEl.innerHTML = options;
+            toEl.innerHTML = options;
+            fromEl.value = def.units[0][0];
+            toEl.value = def.units[1] ? def.units[1][0] : def.units[0][0];
+            convert();
+        }
+
+        function factor(cat, code) {
+            var list = UNITS[cat].units;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i][0] === code) return list[i][2];
+            }
+            return 1;
+        }
+
+        function convert() {
+            var cat = categoryEl.value;
+            var value = parseFloat(inputEl.value);
+            if (!isFinite(value)) {
+                resultEl.textContent = '—';
+                metaEl.textContent = 'Введите число';
+                return;
+            }
+            var result;
+            if (cat === 'temperature') {
+                var toC;
+                if (fromEl.value === 'C') toC = value;
+                else if (fromEl.value === 'F') toC = (value - 32) * 5 / 9;
+                else toC = value - 273.15;
+                if (toEl.value === 'C') result = toC;
+                else if (toEl.value === 'F') result = toC * 9 / 5 + 32;
+                else result = toC + 273.15;
+            } else {
+                var baseValue = value * factor(cat, fromEl.value);
+                result = baseValue / factor(cat, toEl.value);
+            }
+            resultEl.textContent = tlFormatNumber(result, 6) + ' ' + (toEl.value === 'C' || toEl.value === 'F' || toEl.value === 'K' ? '°' + (toEl.value === 'K' ? '' : toEl.value) : toEl.value);
+            metaEl.textContent = tlFormatNumber(value, 6) + ' ' + fromEl.value + ' = ' + tlFormatNumber(result, 6) + ' ' + toEl.value;
+        }
+
+        categoryEl.addEventListener('change', fillUnits);
+        fromEl.addEventListener('change', convert);
+        toEl.addEventListener('change', convert);
+        inputEl.addEventListener('input', convert);
+        document.getElementById('swapBtn').addEventListener('click', function () {
+            var tmp = fromEl.value;
+            fromEl.value = toEl.value;
+            toEl.value = tmp;
+            convert();
+        });
+
+        fillUnits();
+    </script>
+</body>
+</html>

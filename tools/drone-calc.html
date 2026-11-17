@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор БПЛА — время полёта и тяговооружённость — ThunderLight</title>
+    <meta name="description" content="Калькулятор дрона: расчёт времени полёта по аккумулятору и току, энергии в Вт·ч и тяговооружённости по массе и тяге моторов.">
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="stylesheet" href="/tools/tools.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/tools/" class="active">Инструменты</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles/">Academy</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <div class="page-head">
+            <div class="breadcrumbs"><a href="/">Главная</a> / <a href="/tools/">Инструменты</a> / Калькулятор БПЛА</div>
+            <h1>Калькулятор БПЛА</h1>
+            <p>Оцените время полёта и тяговооружённость аппарата до сборки. Всё считается локально в браузере.</p>
+        </div>
+
+        <div class="card">
+            <h2>Время полёта</h2>
+            <p class="hint">По ёмкости и напряжению аккумулятора, а также среднему току нагрузки.</p>
+            <div class="grid-2">
+                <div class="field">
+                    <label for="capacity">Ёмкость АКБ, мА·ч</label>
+                    <input type="number" id="capacity" value="1500" min="0" step="any">
+                </div>
+                <div class="field">
+                    <label for="voltage">Напряжение, В</label>
+                    <input type="number" id="voltage" value="11.1" min="0" step="any">
+                </div>
+                <div class="field">
+                    <label for="usable">Используемая ёмкость, %</label>
+                    <input type="number" id="usable" value="80" min="1" max="100" step="1">
+                </div>
+                <div class="field">
+                    <label for="current">Средний ток, А</label>
+                    <input type="number" id="current" value="15" min="0" step="any">
+                </div>
+            </div>
+            <div class="result">
+                <div class="value" id="flightTime">— мин</div>
+                <div class="meta" id="energyMeta">—</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Тяговооружённость</h2>
+            <p class="hint">Отношение суммарной тяги моторов к весу аппарата. Для уверенного полёта обычно нужно больше 1,5.</p>
+            <div class="grid-2">
+                <div class="field">
+                    <label for="weight">Масса аппарата, г</label>
+                    <input type="number" id="weight" value="500" min="0" step="any">
+                </div>
+                <div class="field">
+                    <label for="motors">Количество моторов</label>
+                    <input type="number" id="motors" value="4" min="1" step="1">
+                </div>
+                <div class="field">
+                    <label for="thrust">Тяга одного мотора, г</label>
+                    <input type="number" id="thrust" value="400" min="0" step="any">
+                </div>
+            </div>
+            <div class="result">
+                <div class="value" id="ratioValue">—</div>
+                <div class="meta" id="ratioMeta">—</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Формулы</h2>
+            <p class="hint mt-0">
+                Время полёта = (ёмкость мА·ч × доля использования / 1000) / ток × 60.<br>
+                Энергия, Вт·ч = ёмкость мА·ч × напряжение / 1000.<br>
+                Тяговооружённость = (тяга одного мотора × число моторов) / масса аппарата.
+            </p>
+            <p class="small">Расчёт оценочный: реальное время зависит от стиля полёта, ветра, КПД винтов и температуры.</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+                <p>Открытая экосистема инженерных проектов и инструментов.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Инструменты</h4>
+                <ul>
+                    <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/units.html">Конвертер единиц</a></li>
+                    <li><a href="/tools/resistor.html">Резисторы</a></li>
+                    <li><a href="/tools/json.html">JSON и Base64</a></li>
+                    <li><a href="/tools/qr.html">QR-генератор</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Проекты и обучение</h4>
+                <ul>
+                    <li><a href="/uav-project.html">БПЛА «Стрижик»</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderCam" target="_blank" rel="noopener">ThunderCam</a></li>
+                    <li><a href="/projects.html">Все проекты</a></li>
+                    <li><a href="/articles/">Academy</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 ThunderLight. Открытый исходный код.</span>
+            <span><a href="https://t.me/thunderlight_online" target="_blank" rel="noopener">Telegram</a> · <a href="https://github.com/LightRain-K" target="_blank" rel="noopener">GitHub</a></span>
+        </div>
+    </footer>
+
+    <script src="/tools/tools.js"></script>
+    <script>
+        function $(id) { return document.getElementById(id); }
+
+        function calcFlight() {
+            var capacity = parseFloat($('capacity').value);
+            var voltage = parseFloat($('voltage').value);
+            var usable = parseFloat($('usable').value);
+            var current = parseFloat($('current').value);
+
+            if (!isFinite(capacity) || !isFinite(usable) || !isFinite(current) || current <= 0) {
+                $('flightTime').textContent = '— мин';
+                $('energyMeta').textContent = 'Заполните поля корректно';
+                return;
+            }
+            var usableAh = (capacity * usable / 100) / 1000;
+            var minutes = usableAh / current * 60;
+            $('flightTime').textContent = tlFormatNumber(minutes, 1) + ' мин';
+            var energy = isFinite(voltage) ? (capacity * voltage / 1000) : null;
+            $('energyMeta').textContent = 'Полезная ёмкость: ' + tlFormatNumber(usableAh, 3) + ' А·ч' +
+                (energy !== null ? ' · энергия: ' + tlFormatNumber(energy, 1) + ' Вт·ч' : '');
+        }
+
+        function calcRatio() {
+            var weight = parseFloat($('weight').value);
+            var motors = parseFloat($('motors').value);
+            var thrust = parseFloat($('thrust').value);
+
+            if (!isFinite(weight) || weight <= 0 || !isFinite(motors) || motors <= 0 || !isFinite(thrust) || thrust <= 0) {
+                $('ratioValue').textContent = '—';
+                $('ratioMeta').textContent = 'Заполните поля корректно';
+                return;
+            }
+            var total = motors * thrust;
+            var ratio = total / weight;
+            $('ratioValue').textContent = tlFormatNumber(ratio, 2) + ' : 1';
+            var verdict;
+            if (ratio < 1) verdict = 'Не взлетит: тяги меньше веса';
+            else if (ratio < 1.5) verdict = 'Слабо: тяжёлый взлёт, мало запаса';
+            else if (ratio < 2) verdict = 'Нормально для спокойного полёта';
+            else if (ratio < 3) verdict = 'Хорошо: уверенный манёвр';
+            else verdict = 'Очень высокая: для спорта и акробатики';
+            $('ratioMeta').textContent = 'Суммарная тяга: ' + tlFormatNumber(total, 0) + ' г · ' + verdict;
+        }
+
+        ['capacity', 'voltage', 'usable', 'current'].forEach(function (id) {
+            $(id).addEventListener('input', calcFlight);
+        });
+        ['weight', 'motors', 'thrust'].forEach(function (id) {
+            $(id).addEventListener('input', calcRatio);
+        });
+
+        calcFlight();
+        calcRatio();
+    </script>
+</body>
+</html>

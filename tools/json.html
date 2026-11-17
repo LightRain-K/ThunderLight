@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON, Base64 и URL-кодирование — ThunderLight</title>
+    <meta name="description" content="Форматирование и проверка JSON, кодирование и декодирование Base64 и URL. Работает в браузере, данные не отправляются на сервер.">
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="stylesheet" href="/tools/tools.css">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/tools/" class="active">Инструменты</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles/">Academy</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <div class="page-head">
+            <div class="breadcrumbs"><a href="/">Главная</a> / <a href="/tools/">Инструменты</a> / JSON и Base64</div>
+            <h1>JSON, Base64 и URL</h1>
+            <p>Форматирование и проверка JSON, кодирование Base64 и URL в обе стороны. Всё выполняется локально.</p>
+        </div>
+
+        <div class="card">
+            <h2>Ввод</h2>
+            <div class="field">
+                <label for="ioText">Текст</label>
+                <textarea id="ioText" placeholder='Вставьте JSON, текст или строку для кодирования'>{"name":"ThunderLight","tools":6,"active":true}</textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-primary" id="prettyBtn" type="button">Форматировать JSON</button>
+                <button class="btn btn-outline" id="minifyBtn" type="button">Сжать JSON</button>
+                <button class="btn btn-outline" id="b64encBtn" type="button">Base64 →</button>
+                <button class="btn btn-outline" id="b64decBtn" type="button">← Base64</button>
+                <button class="btn btn-outline" id="urlencBtn" type="button">URL-кодировать</button>
+                <button class="btn btn-outline" id="urldecBtn" type="button">URL-декодировать</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Результат</h2>
+            <div class="field">
+                <label for="ioResult">Итог</label>
+                <textarea id="ioResult" readonly></textarea>
+            </div>
+            <div class="btn-row">
+                <button class="btn btn-outline" id="copyResultBtn" type="button">Скопировать</button>
+                <button class="btn btn-outline" id="toInputBtn" type="button">В поле ввода</button>
+            </div>
+            <p class="small" id="statusText"></p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+                <p>Открытая экосистема инженерных проектов и инструментов.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Инструменты</h4>
+                <ul>
+                    <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/units.html">Конвертер единиц</a></li>
+                    <li><a href="/tools/drone-calc.html">Калькулятор БПЛА</a></li>
+                    <li><a href="/tools/resistor.html">Резисторы</a></li>
+                    <li><a href="/tools/qr.html">QR-генератор</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Проекты и обучение</h4>
+                <ul>
+                    <li><a href="/uav-project.html">БПЛА «Стрижик»</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderCam" target="_blank" rel="noopener">ThunderCam</a></li>
+                    <li><a href="/projects.html">Все проекты</a></li>
+                    <li><a href="/articles/">Academy</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 ThunderLight. Открытый исходный код.</span>
+            <span><a href="https://t.me/thunderlight_online" target="_blank" rel="noopener">Telegram</a> · <a href="https://github.com/LightRain-K" target="_blank" rel="noopener">GitHub</a></span>
+        </div>
+    </footer>
+
+    <script src="/tools/tools.js"></script>
+    <script>
+        function $(id) { return document.getElementById(id); }
+
+        function setResult(text, status) {
+            $('ioResult').value = text;
+            $('statusText').textContent = status || '';
+        }
+
+        function prettyJson() {
+            try {
+                var parsed = JSON.parse($('ioText').value);
+                setResult(JSON.stringify(parsed, null, 2), 'JSON валиден');
+            } catch (e) {
+                setResult('', 'Ошибка JSON: ' + e.message);
+            }
+        }
+
+        function minifyJson() {
+            try {
+                var parsed = JSON.parse($('ioText').value);
+                setResult(JSON.stringify(parsed), 'JSON сжат');
+            } catch (e) {
+                setResult('', 'Ошибка JSON: ' + e.message);
+            }
+        }
+
+        function utf8ToBase64(str) {
+            var bytes = new TextEncoder().encode(str);
+            var binary = '';
+            for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+            return btoa(binary);
+        }
+
+        function base64ToUtf8(b64) {
+            var binary = atob(b64.trim());
+            var bytes = new Uint8Array(binary.length);
+            for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return new TextDecoder().decode(bytes);
+        }
+
+        $('prettyBtn').addEventListener('click', prettyJson);
+        $('minifyBtn').addEventListener('click', minifyJson);
+        $('b64encBtn').addEventListener('click', function () {
+            try { setResult(utf8ToBase64($('ioText').value), 'Base64 готов'); }
+            catch (e) { setResult('', 'Ошибка кодирования: ' + e.message); }
+        });
+        $('b64decBtn').addEventListener('click', function () {
+            try { setResult(base64ToUtf8($('ioText').value), 'Base64 декодирован'); }
+            catch (e) { setResult('', 'Ошибка Base64: ' + e.message); }
+        });
+        $('urlencBtn').addEventListener('click', function () {
+            setResult(encodeURIComponent($('ioText').value), 'URL-кодировано');
+        });
+        $('urldecBtn').addEventListener('click', function () {
+            try { setResult(decodeURIComponent($('ioText').value), 'URL-декодировано'); }
+            catch (e) { setResult('', 'Ошибка URL: ' + e.message); }
+        });
+        $('copyResultBtn').addEventListener('click', function () {
+            tlCopy($('ioResult').value, 'Результат скопирован');
+        });
+        $('toInputBtn').addEventListener('click', function () {
+            $('ioText').value = $('ioResult').value;
+            $('statusText').textContent = 'Результат перенесён в поле ввода';
+        });
+    </script>
+</body>
+</html>

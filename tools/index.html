@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Инструменты — ThunderLight</title>
+    <meta name="description" content="Бесплатные инструменты ThunderLight: конвертер единиц, калькулятор БПЛА, цветовой код резисторов, генератор паролей, JSON и Base64, QR-генератор. Работают в браузере без регистрации.">
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <link rel="stylesheet" href="/tools/tools.css">
+    <style>
+        .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 24px; }
+        .tool-tile {
+            display: flex; flex-direction: column; gap: 9px; padding: 22px; border-radius: var(--radius);
+            background: linear-gradient(180deg, rgba(30,41,59,0.72), rgba(15,23,42,0.9));
+            border: 1px solid var(--border); text-decoration: none; color: var(--light); transition: var(--transition);
+        }
+        .tool-tile:hover { transform: translateY(-4px); border-color: rgba(129,140,248,0.55); box-shadow: 0 18px 44px rgba(2,6,23,0.6); }
+        .tool-tile .icon { font-size: 1.8rem; }
+        .tool-tile .name { font-size: 1.06rem; font-weight: 700; }
+        .tool-tile .desc { color: var(--gray-light); font-size: 0.9rem; line-height: 1.55; flex: 1; }
+        .tool-tile .tag { align-self: flex-start; font-size: 0.71rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: rgba(6,182,212,0.12); color: #67e8f9; border: 1px solid rgba(6,182,212,0.3); }
+        .search-row { margin-top: 8px; }
+        .empty { color: var(--gray); padding: 28px 0; display: none; }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="nav-content">
+            <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="/">Главная</a></li>
+                <li><a href="/tools/" class="active">Инструменты</a></li>
+                <li><a href="/projects.html">Проекты</a></li>
+                <li><a href="/articles/">Academy</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
+                <li><a href="/uav-project.html">БПЛА</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <div class="page-head">
+            <div class="breadcrumbs"><a href="/">Главная</a> / Инструменты</div>
+            <h1>Инструменты ThunderLight</h1>
+            <p>Бесплатные утилиты и калькуляторы, которые работают прямо в браузере. Ничего не отправляется на сервер, регистрация не нужна.</p>
+            <div class="search-row">
+                <input type="text" id="toolSearch" placeholder="Поиск инструмента, например: резистор, QR, единицы">
+            </div>
+        </div>
+
+        <div class="tool-grid" id="toolGrid">
+            <a href="/tools/units.html" class="tool-tile" data-name="конвертер единиц длина масса скорость площадь объём температура перевод">
+                <span class="icon">📐</span>
+                <span class="name">Конвертер единиц</span>
+                <span class="desc">Длина, масса, скорость, площадь, объём и температура — перевод в реальном времени.</span>
+                <span class="tag">Быстро</span>
+            </a>
+            <a href="/tools/drone-calc.html" class="tool-tile" data-name="калькулятор бпла дрон время полёта тяговооружённость аккумулятор моторы батарея">
+                <span class="icon">🛸</span>
+                <span class="name">Калькулятор БПЛА</span>
+                <span class="desc">Время полёта, тяговооружённость и запас хода по параметрам аккумулятора и моторов.</span>
+                <span class="tag">Инженерия</span>
+            </a>
+            <a href="/tools/resistor.html" class="tool-tile" data-name="резистор цветовой код полоски smd сопротивление номинал электроника">
+                <span class="icon">🎛️</span>
+                <span class="name">Цветовой код резисторов</span>
+                <span class="desc">Определи номинал по полоскам или собери код по значению. SMD-коды.</span>
+                <span class="tag">Электроника</span>
+            </a>
+            <a href="/tools/password.html" class="tool-tile" data-name="генератор паролей пароль sha-256 хэш безопасность крипто">
+                <span class="icon">🔐</span>
+                <span class="name">Генератор паролей</span>
+                <span class="desc">Стойкие пароли и SHA-256 хэши. Всё создаётся на вашем устройстве.</span>
+                <span class="tag">Приватность</span>
+            </a>
+            <a href="/tools/json.html" class="tool-tile" data-name="json base64 url encode декодер форматирование разработка">
+                <span class="icon">🧾</span>
+                <span class="name">JSON и Base64</span>
+                <span class="desc">Форматирование и проверка JSON, Base64 и URL-кодирование туда и обратно.</span>
+                <span class="tag">Разработка</span>
+            </a>
+            <a href="/tools/qr.html" class="tool-tile" data-name="qr генератор код ссылка текст wi-fi контакт png">
+                <span class="icon">🔳</span>
+                <span class="name">QR-генератор</span>
+                <span class="desc">Ссылки, текст, контакты и Wi-Fi в QR-код. Скачивание в PNG.</span>
+                <span class="tag">Медиа</span>
+            </a>
+        </div>
+        <p class="empty" id="emptyState">Ничего не найдено. Попробуйте другое слово.</p>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col footer-brand">
+                <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+                <p>Открытая экосистема инженерных проектов и инструментов.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Инструменты</h4>
+                <ul>
+                    <li><a href="/tools/units.html">Конвертер единиц</a></li>
+                    <li><a href="/tools/drone-calc.html">Калькулятор БПЛА</a></li>
+                    <li><a href="/tools/resistor.html">Резисторы</a></li>
+                    <li><a href="/tools/json.html">JSON и Base64</a></li>
+                    <li><a href="/tools/qr.html">QR-генератор</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Проекты и обучение</h4>
+                <ul>
+                    <li><a href="/uav-project.html">БПЛА «Стрижик»</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderCam" target="_blank" rel="noopener">ThunderCam</a></li>
+                    <li><a href="/projects.html">Все проекты</a></li>
+                    <li><a href="/articles/">Academy</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 ThunderLight. Открытый исходный код.</span>
+            <span><a href="https://t.me/thunderlight_online" target="_blank" rel="noopener">Telegram</a> · <a href="https://github.com/LightRain-K" target="_blank" rel="noopener">GitHub</a></span>
+        </div>
+    </footer>
+
+    <script src="/tools/tools.js"></script>
+    <script>
+        (function () {
+            var input = document.getElementById('toolSearch');
+            var grid = document.getElementById('toolGrid');
+            var empty = document.getElementById('emptyState');
+            if (!input || !grid) return;
+            var tiles = Array.prototype.slice.call(grid.querySelectorAll('.tool-tile'));
+            input.addEventListener('input', function () {
+                var query = input.value.trim().toLowerCase();
+                var visible = 0;
+                tiles.forEach(function (tile) {
+                    var haystack = (tile.getAttribute('data-name') || '') + ' ' + tile.textContent.toLowerCase();
+                    var match = !query || haystack.indexOf(query) !== -1;
+                    tile.style.display = match ? '' : 'none';
+                    if (match) visible++;
+                });
+                if (empty) empty.style.display = visible === 0 ? 'block' : 'none';
+            });
+        })();
+    </script>
+</body>
+</html>

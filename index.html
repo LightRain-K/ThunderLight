@@ -3,300 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThunderLight — инженерная экосистема: БПЛА, симуляторы, обучение</title>
-    <meta name="description" content="ThunderLight — открытая инженерная экосистема: конструктор БПЛА, ПИД-симулятор, лаборатория полёта, симулятор программирования дронов, курсы и документация. Всё бесплатно и в браузере.">
-    <meta name="keywords" content="БПЛА, дрон, конструктор дрона, ПИД-регулятор, симулятор полёта, обучение дронам, Arduino, Python, инженерия">
+    <title>ThunderLight — экосистема инженерных проектов и инструментов</title>
+    <meta name="description" content="ThunderLight — открытая экосистема: конструктор БПЛА, ThunderCam, вычислительная камера, симуляторы, лаборатории, калькуляторы и бесплатные инструменты прямо в браузере.">
+    <meta name="keywords" content="БПЛА, дрон, ThunderCam, камера, симулятор, калькулятор, резисторы, JSON, QR, инженерия, обучение">
     <meta name="theme-color" content="#0f172a">
-    <meta property="og:title" content="ThunderLight — инженерная экосистема">
-    <meta property="og:description" content="Конструктор БПЛА, симуляторы, лаборатории и курсы — всё в браузере и бесплатно.">
+    <meta property="og:title" content="ThunderLight — экосистема проектов и инструментов">
+    <meta property="og:description" content="Открытые проекты и полезные инструменты: БПЛА, камера, симуляторы, калькуляторы — всё в браузере.">
     <meta property="og:image" content="https://thuderlight.online/logocircle.ico">
     <meta property="og:url" content="https://thuderlight.online/">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/x-icon" href="/logocircle.ico">
-    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/tools/tools.css">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --secondary: #7c3aed;
-            --accent: #06b6d4;
-            --dark: #0f172a;
-            --darker: #020617;
-            --light: #f8fafc;
-            --gray: #64748b;
-            --gray-light: #94a3b8;
-            --border: rgba(255,255,255,0.08);
-            --radius: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        * { box-sizing: border-box; }
-        body {
-            background: var(--darker);
-            color: var(--light);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-        }
-        .navbar {
-            position: sticky; top: 0; z-index: 50;
-            background: rgba(2,6,23,0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-        }
-        .nav-content {
-            max-width: 1200px; margin: 0 auto; padding: 0 20px;
-            height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 16px;
-        }
-        .nav-logo {
-            display: flex; align-items: center; gap: 8px;
-            font-weight: 800; font-size: 1.15rem; color: var(--light); text-decoration: none; white-space: nowrap;
-        }
-        .nav-logo-icon {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 32px; height: 32px; border-radius: 10px;
-            background: linear-gradient(135deg, #818cf8, #c084fc);
-            font-size: 1rem;
-        }
-        .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; }
-        .nav-links a {
-            color: var(--gray-light); text-decoration: none; font-size: 0.9rem;
-            padding: 8px 10px; border-radius: 8px; transition: var(--transition); white-space: nowrap;
-        }
-        .nav-links a:hover, .nav-links a.active { color: var(--light); background: rgba(99,102,241,0.15); }
-        .mobile-menu-btn { display: none; background: none; border: 1px solid var(--border); color: var(--light); font-size: 1.2rem; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
         .hero {
-            position: relative; padding: 88px 20px 64px; text-align: center; overflow: hidden;
+            position: relative; padding: 80px 20px 56px; text-align: center; overflow: hidden;
             background:
-                radial-gradient(ellipse 60% 50% at 20% 0%, rgba(79,70,229,0.28), transparent),
-                radial-gradient(ellipse 50% 45% at 85% 10%, rgba(6,182,212,0.18), transparent);
+                radial-gradient(ellipse 60% 55% at 22% 0%, rgba(79,70,229,0.30), transparent),
+                radial-gradient(ellipse 50% 45% at 84% 8%, rgba(6,182,212,0.18), transparent);
             border-bottom: 1px solid var(--border);
         }
         .hero-badge {
-            display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px;
+            display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px;
             padding: 6px 16px; border-radius: 999px; font-size: 0.82rem;
             background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.35); color: #67e8f9;
         }
-        .hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.12; margin: 0 0 20px; font-weight: 800; }
+        .hero h1 { font-size: clamp(2rem, 5vw, 3.3rem); line-height: 1.12; margin: 0 0 18px; font-weight: 800; }
         .hero-gradient { background: linear-gradient(135deg, #818cf8, #c084fc 55%, #22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
-        .hero p { max-width: 720px; margin: 0 auto 32px; color: var(--gray-light); font-size: 1.08rem; line-height: 1.7; }
-        .hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-        .btn {
-            display: inline-flex; align-items: center; gap: 9px; padding: 13px 26px; border-radius: 12px;
-            font-weight: 700; font-size: 0.98rem; text-decoration: none; transition: var(--transition);
-            border: 1px solid transparent; cursor: pointer;
-        }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; box-shadow: 0 10px 30px rgba(79,70,229,0.35); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(79,70,229,0.5); }
-        .btn-outline { border-color: rgba(148,163,184,0.4); color: var(--light); background: rgba(15,23,42,0.5); }
-        .btn-outline:hover { border-color: var(--accent); color: #67e8f9; transform: translateY(-2px); }
-        .section { max-width: 1200px; margin: 0 auto; padding: 64px 20px; }
-        .section-head { text-align: center; margin-bottom: 40px; }
-        .section-label { display: inline-flex; align-items: center; gap: 8px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-        .section-title { font-size: clamp(1.6rem, 3.2vw, 2.3rem); margin: 0 0 12px; font-weight: 800; }
-        .section-sub { color: var(--gray-light); max-width: 680px; margin: 0 auto; line-height: 1.65; }
-        .grid-tools { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
-        .tool-card {
-            display: flex; flex-direction: column; gap: 10px; padding: 24px; border-radius: var(--radius);
-            background: linear-gradient(180deg, rgba(30,41,59,0.75), rgba(15,23,42,0.9));
+        .hero p { max-width: 720px; margin: 0 auto 30px; color: var(--gray-light); font-size: 1.06rem; line-height: 1.7; }
+        .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .section { max-width: 1080px; margin: 0 auto; padding: 52px 20px; }
+        .section-head { margin-bottom: 30px; }
+        .section-head.center { text-align: center; }
+        .section-label { display: inline-flex; align-items: center; gap: 8px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+        .section-title { font-size: clamp(1.45rem, 3.2vw, 2.1rem); margin: 0 0 10px; font-weight: 800; }
+        .section-sub { color: var(--gray-light); max-width: 680px; margin: 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+        .tile {
+            display: flex; flex-direction: column; gap: 9px; padding: 22px; border-radius: var(--radius);
+            background: linear-gradient(180deg, rgba(30,41,59,0.72), rgba(15,23,42,0.9));
             border: 1px solid var(--border); text-decoration: none; color: var(--light);
             transition: var(--transition); position: relative; overflow: hidden;
         }
-        .tool-card::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(99,102,241,0.14), transparent 60%); opacity: 0; transition: var(--transition); }
-        .tool-card:hover { transform: translateY(-4px); border-color: rgba(129,140,248,0.55); box-shadow: 0 18px 44px rgba(2,6,23,0.6); }
-        .tool-card:hover::before { opacity: 1; }
-        .tool-icon { font-size: 1.9rem; }
-        .tool-name { font-size: 1.12rem; font-weight: 700; }
-        .tool-desc { color: var(--gray-light); font-size: 0.92rem; line-height: 1.55; flex: 1; }
-        .tool-tag { align-self: flex-start; font-size: 0.72rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: rgba(6,182,212,0.12); color: #67e8f9; border: 1px solid rgba(6,182,212,0.3); }
-        .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
-        .step { padding: 24px; border-radius: var(--radius); background: rgba(15,23,42,0.65); border: 1px solid var(--border); }
-        .step-num { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 12px; background: rgba(79,70,229,0.2); color: #a5b4fc; font-weight: 800; margin-bottom: 14px; }
-        .news-grid { display: grid; gap: 16px; }
-        .news-card { display: block; text-decoration: none; color: var(--light); padding: 22px; border-radius: var(--radius); background: rgba(15,23,42,0.7); border: 1px solid var(--border); transition: var(--transition); }
-        .news-card:hover { border-color: rgba(129,140,248,0.5); transform: translateY(-2px); }
-        .news-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-        .news-badge { font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
-        .news-date { font-size: 0.8rem; color: var(--gray); }
-        .news-title { font-size: 1.05rem; font-weight: 700; margin: 0 0 8px; }
-        .news-text { color: var(--gray-light); font-size: 0.9rem; line-height: 1.6; margin: 0; }
+        .tile:hover { transform: translateY(-4px); border-color: rgba(129,140,248,0.55); box-shadow: 0 18px 44px rgba(2,6,23,0.6); }
+        .tile-icon { font-size: 1.8rem; }
+        .tile-name { font-size: 1.08rem; font-weight: 700; }
+        .tile-desc { color: var(--gray-light); font-size: 0.9rem; line-height: 1.55; flex: 1; }
+        .tile-tag { align-self: flex-start; font-size: 0.71rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: rgba(6,182,212,0.12); color: #67e8f9; border: 1px solid rgba(6,182,212,0.3); }
+        .tile.project { background: linear-gradient(160deg, rgba(79,70,229,0.18), rgba(15,23,42,0.92)); }
+        .more-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; color: var(--accent); text-decoration: none; font-weight: 700; }
+        .more-link:hover { color: #67e8f9; }
         .cta {
-            margin: 0 auto; max-width: 900px; text-align: center; padding: 48px 28px; border-radius: 22px;
+            margin: 0 auto; max-width: 860px; text-align: center; padding: 44px 26px; border-radius: 22px;
             background: linear-gradient(135deg, rgba(79,70,229,0.22), rgba(6,182,212,0.12));
             border: 1px solid rgba(129,140,248,0.35);
         }
-        .cta h2 { font-size: clamp(1.5rem, 3vw, 2rem); margin: 0 0 12px; }
-        .cta p { color: var(--gray-light); margin: 0 0 26px; }
-        .footer { border-top: 1px solid var(--border); background: rgba(2,6,23,0.9); padding: 48px 20px 28px; }
-        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 32px; }
-        .footer-col h4 { margin: 0 0 14px; font-size: 0.95rem; }
-        .footer-col ul { list-style: none; margin: 0; padding: 0; }
-        .footer-col li { margin-bottom: 9px; }
-        .footer-col a { color: var(--gray-light); text-decoration: none; font-size: 0.9rem; transition: var(--transition); }
-        .footer-col a:hover { color: var(--light); }
-        .footer-brand p { color: var(--gray); font-size: 0.9rem; line-height: 1.65; margin: 14px 0 0; }
-        .footer-bottom { max-width: 1200px; margin: 36px auto 0; padding-top: 22px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; color: var(--gray); font-size: 0.85rem; }
-        .footer-social { display: flex; gap: 10px; }
-        .footer-social a { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: rgba(148,163,184,0.12); color: var(--gray-light); transition: var(--transition); }
-        .footer-social a:hover { background: rgba(99,102,241,0.25); color: #fff; }
-        @media (max-width: 900px) {
-            .nav-links {
-                display: none; position: absolute; top: 64px; left: 0; right: 0;
-                flex-direction: column; align-items: stretch; gap: 2px; padding: 12px 16px 18px;
-                background: rgba(2,6,23,0.98); border-bottom: 1px solid var(--border);
-            }
-            .nav-links.open { display: flex; }
-            .mobile-menu-btn { display: block; }
-            .footer-grid { grid-template-columns: 1fr; }
-        }
+        .cta h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); margin: 0 0 10px; }
+        .cta p { color: var(--gray-light); margin: 0 0 22px; }
     </style>
 </head>
 <body>
     <nav class="navbar" id="navbar">
         <div class="nav-content">
-            <a href="/" class="nav-logo">
-                <span class="nav-logo-icon">⚡</span>
-                ThunderLight
-            </a>
+            <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
             <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Меню">☰</button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="/" class="active">Главная</a></li>
+                <li><a href="/tools/">Инструменты</a></li>
                 <li><a href="/projects.html">Проекты</a></li>
-                <li><a href="/articles.html">Статьи</a></li>
                 <li><a href="/articles/">Academy</a></li>
+                <li><a href="/articles.html">Статьи</a></li>
                 <li><a href="/uav-project.html">БПЛА</a></li>
-                <li><a href="/builder.html">Builder</a></li>
-                <li><a href="/simulator.html">Simulator</a></li>
-                <li><a href="/lab.html">Lab</a></li>
-                <li><a href="/drone-sim.html">Drone Sim</a></li>
-                <li><a href="/docs.html">Документация</a></li>
             </ul>
         </div>
     </nav>
 
     <header class="hero">
-        <span class="hero-badge"><i class="fa-solid fa-bolt"></i> Открытая инженерная экосистема</span>
-        <h1>Собирай. Считай.<br><span class="hero-gradient">Запускай в полёт.</span></h1>
-        <p>ThunderLight — это набор бесплатных инструментов для тех, кто хочет разобраться в дронах и инженерии: конструктор БПЛА, ПИД-симулятор, лаборатория полёта, симулятор программирования и курсы. Всё работает прямо в браузере, без установки.</p>
+        <span class="hero-badge"><i class="fa-solid fa-bolt"></i> Открытая экосистема</span>
+        <h1>Проекты и инструменты,<br><span class="hero-gradient">которые работают в браузере</span></h1>
+        <p>ThunderLight объединяет инженерные проекты и практические инструменты: конструктор БПЛА, вычислительную камеру, симуляторы, калькуляторы и утилиты. Всё бесплатно, без регистрации и без отправки данных на сервер.</p>
         <div class="hero-actions">
-            <a href="/builder.html" class="btn btn-primary"><i class="fa-solid fa-screwdriver-wrench"></i> Открыть конструктор</a>
-            <a href="/simulator.html" class="btn btn-outline"><i class="fa-solid fa-chart-line"></i> Попробовать симулятор</a>
-            <a href="/articles/" class="btn btn-outline"><i class="fa-solid fa-graduation-cap"></i> Начать обучение</a>
+            <a href="/tools/" class="btn btn-primary"><i class="fa-solid fa-toolbox"></i> Открыть инструменты</a>
+            <a href="/projects.html" class="btn btn-outline"><i class="fa-solid fa-diagram-project"></i> Все проекты</a>
         </div>
     </header>
 
-    <section class="section">
-        <div class="section-head">
+    <section class="section" id="projects">
+        <div class="section-head center">
+            <span class="section-label"><i class="fa-solid fa-diagram-project"></i> Экосистема</span>
+            <h2 class="section-title">Проекты ThunderLight</h2>
+            <p class="section-sub">Открытые разработки, которые развиваются вместе.</p>
+        </div>
+        <div class="grid">
+            <a href="/uav-project.html" class="tile project">
+                <span class="tile-icon">🛸</span>
+                <span class="tile-name">БПЛА «Стрижик»</span>
+                <span class="tile-desc">Учебный конструктор дрона: рама, моторы, полётный контроллер, прошивка и документация по сборке.</span>
+                <span class="tile-tag">Проект</span>
+            </a>
+            <a href="https://github.com/LightRain-K/ThunderCam" target="_blank" rel="noopener" class="tile project">
+                <span class="tile-icon">📸</span>
+                <span class="tile-name">ThunderCam</span>
+                <span class="tile-desc">Открытая вычислительная камера для бюджетных телефонов: HDR, зум с ИИ-апскейлом и обработка снимков.</span>
+                <span class="tile-tag">Android</span>
+            </a>
+            <a href="/docs.html" class="tile project">
+                <span class="tile-icon">🚀</span>
+                <span class="tile-name">VRD Flight Controller</span>
+                <span class="tile-desc">Полётный контроллер для воздушно-реактивного ускорителя: гибридная архитектура, телеметрия и управление.</span>
+                <span class="tile-tag">Hardware</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="section" id="tools" style="padding-top:0;">
+        <div class="section-head center">
             <span class="section-label"><i class="fa-solid fa-toolbox"></i> Инструменты</span>
-            <h2 class="section-title">Чем можно воспользоваться прямо сейчас</h2>
-            <p class="section-sub">Каждый инструмент решает свою задачу — от подбора компонентов до проверки регуляторов и программирования полёта.</p>
+            <h2 class="section-title">Полезное на каждый день</h2>
+            <p class="section-sub">Быстрые инструменты, которые работают прямо в браузере. Ничего не отправляется на сервер.</p>
         </div>
-        <div class="grid-tools">
-            <a href="/builder.html" class="tool-card">
-                <span class="tool-icon">🛠️</span>
-                <span class="tool-name">Конструктор БПЛА</span>
-                <span class="tool-desc">Собери квадрокоптер или самолёт: рама, моторы, ESC, полётный контроллер, аккумулятор, винты и нагрузка. Расчёт массы, тяги и стоимости.</span>
-                <span class="tool-tag">Пошаговая сборка</span>
+        <div class="grid">
+            <a href="/tools/units.html" class="tile">
+                <span class="tile-icon">📐</span>
+                <span class="tile-name">Конвертер единиц</span>
+                <span class="tile-desc">Длина, масса, скорость, площадь, объём и температура — мгновенный перевод.</span>
+                <span class="tile-tag">Быстро</span>
             </a>
-            <a href="/simulator.html" class="tool-card">
-                <span class="tool-icon">📈</span>
-                <span class="tool-name">ПИД-симулятор</span>
-                <span class="tool-desc">Настрой регуляторы вживую: меняй коэффициенты, смотри переходный процесс и добейся стабильного отклика без перерегулирования.</span>
-                <span class="tool-tag">Интерактив</span>
+            <a href="/tools/drone-calc.html" class="tile">
+                <span class="tile-icon">🛸</span>
+                <span class="tile-name">Калькулятор БПЛА</span>
+                <span class="tile-desc">Время полёта, тяговооружённость и запас хода по параметрам аккумулятора и моторов.</span>
+                <span class="tile-tag">Инженерия</span>
             </a>
-            <a href="/lab.html" class="tool-card">
-                <span class="tool-icon">🧪</span>
-                <span class="tool-name">Лаборатория полёта</span>
-                <span class="tool-desc">Экспериментируй с параметрами аппарата и смотри, как меняются устойчивость, расход и поведение в воздухе.</span>
-                <span class="tool-tag">Эксперименты</span>
+            <a href="/tools/resistor.html" class="tile">
+                <span class="tile-icon">🎛️</span>
+                <span class="tile-name">Цветовой код резисторов</span>
+                <span class="tile-desc">Определи номинал по полоскам или собери код по значению. С SMD-кодами.</span>
+                <span class="tile-tag">Электроника</span>
             </a>
-            <a href="/drone-sim.html" class="tool-card">
-                <span class="tool-icon">✈️</span>
-                <span class="tool-name">Drone Sim</span>
-                <span class="tool-desc">Программируй поведение дрона простым кодом и запускай его в симуляторе: взлёт, полёт по точкам, посадка.</span>
-                <span class="tool-tag">Программирование</span>
+            <a href="/tools/password.html" class="tile">
+                <span class="tile-icon">🔐</span>
+                <span class="tile-name">Генератор паролей</span>
+                <span class="tile-desc">Стойкие пароли и SHA-256 хэши. Генерация на вашем устройстве.</span>
+                <span class="tile-tag">Приватность</span>
             </a>
-            <a href="/articles/" class="tool-card">
-                <span class="tool-icon">🎓</span>
-                <span class="tool-name">Academy</span>
-                <span class="tool-desc">Курсы по БПЛА, электронике, Arduino, Python и ПИД-регуляторам. Теория, разбитая на короткие уроки с практикой.</span>
-                <span class="tool-tag">Обучение</span>
+            <a href="/tools/json.html" class="tile">
+                <span class="tile-icon">🧾</span>
+                <span class="tile-name">JSON и Base64</span>
+                <span class="tile-desc">Форматирование, проверка JSON, Base64 и URL-кодирование.</span>
+                <span class="tile-tag">Разработка</span>
             </a>
-            <a href="/docs.html" class="tool-card">
-                <span class="tool-icon">📚</span>
-                <span class="tool-name">Документация</span>
-                <span class="tool-desc">Сборка, настройка и эксплуатация: схемы, калибровка датчиков, подключение модулей и разбор типичных ошибок.</span>
-                <span class="tool-tag">Справочник</span>
+            <a href="/tools/qr.html" class="tile">
+                <span class="tile-icon">🔳</span>
+                <span class="tile-name">QR-генератор</span>
+                <span class="tile-desc">Ссылки, текст, контакты и Wi-Fi в QR-код. Скачивание в PNG.</span>
+                <span class="tile-tag">Медиа</span>
             </a>
-            <a href="/projects.html" class="tool-card">
-                <span class="tool-icon">🧩</span>
-                <span class="tool-name">Проекты</span>
-                <span class="tool-desc">Все открытые проекты экосистемы в одном месте: исходный код, описания и ссылки на репозитории.</span>
-                <span class="tool-tag">Open Source</span>
+        </div>
+        <div style="text-align:center;">
+            <a href="/tools/" class="more-link">Все инструменты <i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </section>
+
+    <section class="section" id="learn" style="padding-top:0;">
+        <div class="section-head center">
+            <span class="section-label"><i class="fa-solid fa-graduation-cap"></i> Учиться</span>
+            <h2 class="section-title">Разобраться в инженерии</h2>
+            <p class="section-sub">Теория и практика без покупки железа — начните с любого шага.</p>
+        </div>
+        <div class="grid">
+            <a href="/articles/" class="tile">
+                <span class="tile-icon">🎓</span>
+                <span class="tile-name">Academy</span>
+                <span class="tile-desc">Курсы по БПЛА, электронике, Arduino, Python и ПИД-регуляторам.</span>
+                <span class="tile-tag">Обучение</span>
             </a>
-            <a href="https://github.com/LightRain-K/ThunderCam" target="_blank" rel="noopener" class="tool-card">
-                <span class="tool-icon">📸</span>
-                <span class="tool-name">ThunderCam</span>
-                <span class="tool-desc">Открытая вычислительная камера для бюджетных телефонов: HDR, зум с ИИ-апскейлом и обработка снимков.</span>
-                <span class="tool-tag">Android</span>
+            <a href="/builder.html" class="tile">
+                <span class="tile-icon">🛠️</span>
+                <span class="tile-name">Конструктор БПЛА</span>
+                <span class="tile-desc">Подбери раму, моторы и аккумулятор — расчёт массы, тяги и стоимости.</span>
+                <span class="tile-tag">Практика</span>
+            </a>
+            <a href="/simulator.html" class="tile">
+                <span class="tile-icon">📈</span>
+                <span class="tile-name">ПИД-симулятор</span>
+                <span class="tile-desc">Настрой регуляторы вживую и наблюдай переходный процесс.</span>
+                <span class="tile-tag">Интерактив</span>
+            </a>
+            <a href="/lab.html" class="tile">
+                <span class="tile-icon">🧪</span>
+                <span class="tile-name">Лаборатория полёта</span>
+                <span class="tile-desc">Экспериментируй с параметрами аппарата и смотри результат.</span>
+                <span class="tile-tag">Эксперименты</span>
+            </a>
+            <a href="/drone-sim.html" class="tile">
+                <span class="tile-icon">✈️</span>
+                <span class="tile-name">Drone Sim</span>
+                <span class="tile-desc">Программируй поведение дрона и запускай в симуляторе.</span>
+                <span class="tile-tag">Код</span>
+            </a>
+            <a href="/docs.html" class="tile">
+                <span class="tile-icon">📚</span>
+                <span class="tile-name">Документация</span>
+                <span class="tile-desc">Сборка, калибровка и разбор типичных ошибок.</span>
+                <span class="tile-tag">Справочник</span>
             </a>
         </div>
     </section>
 
-    <section class="section" style="padding-top:0;">
-        <div class="section-head">
-            <span class="section-label"><i class="fa-solid fa-route"></i> С чего начать</span>
-            <h2 class="section-title">Три шага до первого аппарата</h2>
-            <p class="section-sub">Не нужно ничего покупать, чтобы попробовать. Начни с теории или сразу собери модель.</p>
-        </div>
-        <div class="steps">
-            <div class="step">
-                <span class="step-num">1</span>
-                <h3 style="margin:0 0 8px;font-size:1.05rem;">Разберись в основах</h3>
-                <p style="margin:0;color:var(--gray-light);font-size:0.92rem;line-height:1.6;">Пройди вводный курс Academy: из чего состоит дрон и за что отвечает каждый компонент.</p>
-            </div>
-            <div class="step">
-                <span class="step-num">2</span>
-                <h3 style="margin:0 0 8px;font-size:1.05rem;">Собери конфигурацию</h3>
-                <p style="margin:0;color:var(--gray-light);font-size:0.92rem;line-height:1.6;">Открой Builder и подбери раму, моторы и аккумулятор. Сразу увидишь массу, тягу и стоимость.</p>
-            </div>
-            <div class="step">
-                <span class="step-num">3</span>
-                <h3 style="margin:0 0 8px;font-size:1.05rem;">Проверь в симуляторе</h3>
-                <p style="margin:0;color:var(--gray-light);font-size:0.92rem;line-height:1.6;">Настрой ПИД-регуляторы и проверь полёт до того, как что-то паять и запускать.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="section" style="padding-top:0;">
-        <div class="section-head">
+    <section class="section" id="news" style="padding-top:0;">
+        <div class="section-head center">
             <span class="section-label"><i class="fa-regular fa-newspaper"></i> Новости</span>
             <h2 class="section-title">Что нового</h2>
-            <p class="section-sub">Обновления инструментов, новые материалы и релизы проектов.</p>
         </div>
-        <div class="news-grid">
-            <a href="https://github.com/LightRain-K/ThunderCam/releases" target="_blank" rel="noopener" class="news-card">
-                <div class="news-top">
-                    <span class="news-badge">Новый продукт</span>
-                    <span class="news-date">30 сентября 2026</span>
-                </div>
-                <h3 class="news-title">📸 ThunderCam — вычислительная камера для бюджетных телефонов, v1</h3>
-                <p class="news-text">Первый релиз открытой камеры, которая вытягивает фото с бюджетного смартфона: P0-обработка, HDR, зум с ИИ-апскейлом, трекинг фокуса и галерея «Улучшить».</p>
+        <div class="grid">
+            <a href="https://github.com/LightRain-K/ThunderCam/releases" target="_blank" rel="noopener" class="tile">
+                <span class="tile-tag">Новый продукт</span>
+                <span class="tile-name">📸 ThunderCam v1</span>
+                <span class="tile-desc">Первый релиз открытой камеры для бюджетных телефонов: P0-обработка, HDR, зум с ИИ-апскейлом.</span>
             </a>
-            <a href="/articles.html" class="news-card">
-                <div class="news-top">
-                    <span class="news-badge">Обновление сайта</span>
-                    <span class="news-date">31 августа 2026</span>
-                </div>
-                <h3 class="news-title">🧩 Новые разделы: проекты и статьи</h3>
-                <p class="news-text">Добавлен раздел с проектами экосистемы ThunderLight и раздел полезных статей по разработке.</p>
+            <a href="/articles.html" class="tile">
+                <span class="tile-tag">Обновление сайта</span>
+                <span class="tile-name">🧩 Новые разделы</span>
+                <span class="tile-desc">Добавлены проекты экосистемы и раздел полезных статей.</span>
             </a>
-            <a href="/articles.html" class="news-card">
-                <div class="news-top">
-                    <span class="news-badge">Дизайн</span>
-                    <span class="news-date">5 августа 2026</span>
-                </div>
-                <h3 class="news-title">🎨 Новый дизайн сайта</h3>
-                <p class="news-text">Обновили оформление и навигацию, чтобы инструментами было удобнее пользоваться с телефона и компьютера.</p>
+            <a href="/tools/" class="tile">
+                <span class="tile-tag">Инструменты</span>
+                <span class="tile-name">🧰 Запущен ThunderLight Tools</span>
+                <span class="tile-desc">Шесть бесплатных инструментов, которые работают в браузере без регистрации.</span>
             </a>
         </div>
     </section>
@@ -304,10 +238,10 @@
     <section class="section" style="padding-top:0;">
         <div class="cta">
             <h2>Есть идея или вопрос?</h2>
-            <p>Экосистема открытая. Предложи улучшение, сообщи об ошибке или просто расскажи, что хотелось бы видеть.</p>
+            <p>Экосистема открытая. Предложи улучшение, сообщи об ошибке или расскажи, какой инструмент был бы полезен.</p>
             <div class="hero-actions">
-                <a href="https://t.me/thunderlight_online" target="_blank" rel="noopener" class="btn btn-primary"><i class="fa-brands fa-telegram"></i> Telegram-канал</a>
-                <a href="mailto:thunderlight@internet.ru" class="btn btn-outline"><i class="fa-regular fa-envelope"></i> Написать</a>
+                <a href="https://t.me/thunderlight_online" target="_blank" rel="noopener" class="btn btn-primary">Telegram-канал</a>
+                <a href="mailto:thunderlight@internet.ru" class="btn btn-outline">Написать</a>
             </div>
         </div>
     </section>
@@ -315,55 +249,36 @@
     <footer class="footer">
         <div class="footer-grid">
             <div class="footer-col footer-brand">
-                <a href="/" class="nav-logo">
-                    <span class="nav-logo-icon">⚡</span>
-                    ThunderLight
-                </a>
-                <p>Открытая инженерная экосистема. Проектируй, собирай, программируй и летай.</p>
+                <a href="/" class="nav-logo"><span class="nav-logo-icon">⚡</span> ThunderLight</a>
+                <p>Открытая экосистема инженерных проектов и инструментов.</p>
             </div>
             <div class="footer-col">
                 <h4>Инструменты</h4>
                 <ul>
-                    <li><a href="/builder.html">Конструктор БПЛА</a></li>
-                    <li><a href="/simulator.html">ПИД-симулятор</a></li>
-                    <li><a href="/lab.html">Лаборатория</a></li>
-                    <li><a href="/drone-sim.html">Drone Sim</a></li>
-                    <li><a href="/docs.html">Документация</a></li>
+                    <li><a href="/tools/">Все инструменты</a></li>
+                    <li><a href="/tools/units.html">Конвертер единиц</a></li>
+                    <li><a href="/tools/drone-calc.html">Калькулятор БПЛА</a></li>
+                    <li><a href="/tools/resistor.html">Резисторы</a></li>
+                    <li><a href="/tools/json.html">JSON и Base64</a></li>
                 </ul>
             </div>
             <div class="footer-col">
-                <h4>Сообщество</h4>
+                <h4>Проекты и обучение</h4>
                 <ul>
+                    <li><a href="/uav-project.html">БПЛА «Стрижик»</a></li>
+                    <li><a href="https://github.com/LightRain-K/ThunderCam" target="_blank" rel="noopener">ThunderCam</a></li>
+                    <li><a href="/projects.html">Все проекты</a></li>
                     <li><a href="/articles/">Academy</a></li>
-                    <li><a href="/articles.html">Статьи</a></li>
-                    <li><a href="/projects.html">Проекты</a></li>
-                    <li><a href="https://t.me/thunderlight_online" target="_blank" rel="noopener">Telegram</a></li>
-                    <li><a href="mailto:thunderlight@internet.ru">Почта</a></li>
+                    <li><a href="/docs.html">Документация</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
             <span>&copy; 2026 ThunderLight. Открытый исходный код.</span>
-            <div class="footer-social">
-                <a href="https://t.me/thunderlight_online" target="_blank" rel="noopener" aria-label="Telegram"><i class="fa-brands fa-telegram"></i></a>
-                <a href="https://github.com/LightRain-K" target="_blank" rel="noopener" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-            </div>
+            <span><a href="https://t.me/thunderlight_online" target="_blank" rel="noopener">Telegram</a> · <a href="https://github.com/LightRain-K" target="_blank" rel="noopener">GitHub</a></span>
         </div>
     </footer>
 
-    <script>
-        (function () {
-            var btn = document.getElementById('mobileMenuBtn');
-            var links = document.getElementById('navLinks');
-            if (btn && links) {
-                btn.addEventListener('click', function () {
-                    links.classList.toggle('open');
-                });
-                links.addEventListener('click', function (event) {
-                    if (event.target.tagName === 'A') links.classList.remove('open');
-                });
-            }
-        })();
-    </script>
+    <script src="/tools/tools.js"></script>
 </body>
 </html>
