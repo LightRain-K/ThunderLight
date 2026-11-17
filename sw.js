@@ -5,6 +5,7 @@ var CORE_ASSETS = [
   '/tools/tools.css',
   '/tools/tools.js',
   '/tools/image.html',
+  '/tools/pdf.html',
   '/tools/units.html',
   '/tools/drone-calc.html',
   '/tools/resistor.html',
