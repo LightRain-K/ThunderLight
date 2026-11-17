@@ -194,7 +194,7 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="/tools/vendor/qrcode-generator.js"></script>
     <script src="/tools/tools.js"></script>
     <script>
         function $(id) { return document.getElementById(id); }
@@ -236,32 +236,59 @@
             return $('textValue').value;
         }
 
+        function makeSvg(payload) {
+            var size = parseInt($('qrSize').value, 10);
+            var margin = parseInt($('qrMargin').value, 10);
+            var ecc = $('qrEcc').value;
+            var qr = qrcode(0, ecc);
+            qr.addData(payload);
+            qr.make();
+            var svg = qr.createSvgTag({ cellSize: 4, margin: margin, scalable: true });
+            svg = svg.replace('fill="white"', 'fill="' + $('qrLight').value + '"');
+            svg = svg.replace('fill="black"', 'fill="' + $('qrDark').value + '"');
+            svg = svg.replace('<svg ', '<svg width="' + size + '" height="' + size + '" ');
+            return svg;
+        }
+
+        function renderSvgToCanvas(svg, canvas, callback) {
+            var size = parseInt($('qrSize').value, 10);
+            var blob = new Blob([svg], { type: 'image/svg+xml' });
+            var url = URL.createObjectURL(blob);
+            var img = new Image();
+            img.onload = function () {
+                canvas.width = size;
+                canvas.height = size;
+                var ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, size, size);
+                ctx.drawImage(img, 0, 0, size, size);
+                URL.revokeObjectURL(url);
+                if (callback) callback();
+            };
+            img.onerror = function () {
+                URL.revokeObjectURL(url);
+                $('qrStatus').textContent = 'Ошибка отрисовки QR';
+            };
+            img.src = url;
+        }
+
         function renderQr() {
             var canvas = $('qrCanvas');
             var payload = buildPayload();
             if (!payload) {
+                canvas.width = 512;
+                canvas.height = 512;
                 var ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#ffffff';
+                ctx.fillStyle = $('qrLight').value;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 $('qrStatus').textContent = 'Введите данные';
                 return;
             }
-            if (typeof QRCode === 'undefined') {
-                $('qrStatus').textContent = 'Не удалось загрузить библиотеку QR. Проверьте интернет.';
+            if (typeof qrcode === 'undefined') {
+                $('qrStatus').textContent = 'Библиотека QR не загрузилась (/tools/vendor/qrcode-generator.js).';
                 return;
             }
             var size = parseInt($('qrSize').value, 10);
-            var options = {
-                width: size,
-                margin: parseInt($('qrMargin').value, 10),
-                errorCorrectionLevel: $('qrEcc').value,
-                color: { dark: $('qrDark').value, light: $('qrLight').value }
-            };
-            QRCode.toCanvas(canvas, payload, options, function (error) {
-                if (error) {
-                    $('qrStatus').textContent = 'Ошибка: ' + error.message;
-                    return;
-                }
+            renderSvgToCanvas(makeSvg(payload), canvas, function () {
                 if (logoImage) drawLogo(canvas, size);
                 $('qrStatus').textContent = 'Символов: ' + payload.length + ' · ' + size + '×' + size;
             });
@@ -326,17 +353,11 @@
         });
 
         $('dlPng').addEventListener('click', function () {
+            var payload = buildPayload();
+            if (!payload) { tlToast('Введите данные'); return; }
             var size = parseInt($('qrSize').value, 10);
             var canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            QRCode.toCanvas(canvas, buildPayload(), {
-                width: size,
-                margin: parseInt($('qrMargin').value, 10),
-                errorCorrectionLevel: $('qrEcc').value,
-                color: { dark: $('qrDark').value, light: $('qrLight').value }
-            }, function (error) {
-                if (error) { tlToast('Ошибка генерации'); return; }
+            renderSvgToCanvas(makeSvg(payload), canvas, function () {
                 if (logoImage) drawLogo(canvas, size);
                 var link = document.createElement('a');
                 link.download = 'thunderlight-qr.png';
@@ -349,24 +370,18 @@
         });
 
         $('dlSvg').addEventListener('click', function () {
-            QRCode.toString(buildPayload(), {
-                type: 'svg',
-                margin: parseInt($('qrMargin').value, 10),
-                errorCorrectionLevel: $('qrEcc').value,
-                color: { dark: $('qrDark').value, light: $('qrLight').value }
-            }, function (error, svg) {
-                if (error) { tlToast('Ошибка генерации SVG'); return; }
-                var blob = new Blob([svg], { type: 'image/svg+xml' });
-                var url = URL.createObjectURL(blob);
-                var link = document.createElement('a');
-                link.download = 'thunderlight-qr.svg';
-                link.href = url;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-                tlToast('SVG скачан');
-            });
+            var payload = buildPayload();
+            if (!payload) { tlToast('Введите данные'); return; }
+            var blob = new Blob([makeSvg(payload)], { type: 'image/svg+xml' });
+            var url = URL.createObjectURL(blob);
+            var link = document.createElement('a');
+            link.download = 'thunderlight-qr.svg';
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+            tlToast('SVG скачан');
         });
 
         renderQr();

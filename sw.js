@@ -1,9 +1,10 @@
-var CACHE_NAME = 'thunderlight-v2';
+var CACHE_NAME = 'thunderlight-v3';
 var CORE_ASSETS = [
   '/',
   '/tools/',
   '/tools/tools.css',
   '/tools/tools.js',
+  '/tools/vendor/qrcode-generator.js',
   '/tools/image.html',
   '/tools/pdf.html',
   '/tools/units.html',
