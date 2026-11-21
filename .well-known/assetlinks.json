@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.example.thunderlight2",
+      "sha256_cert_fingerprints": [
+        "E7:7F:12:CC:0D:82:57:DE:AD:80:62:EC:C4:04:27:E7:20:5D:4E:18:A4:87:A0:08:6F:87:A4:BE:BB:4C:CA:63"
+      ]
+    }
+  }
+]

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Открыть в ThunderLight</title>
+    <meta name="theme-color" content="#020617">
+    <link rel="icon" type="image/x-icon" href="/logocircle.ico">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: radial-gradient(ellipse at top, #1e1b4b 0%, var(--darker) 60%);
+            color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            width: 100%;
+            max-width: 440px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px 24px;
+            text-align: center;
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(18px);
+        }
+        .logo {
+            width: 84px;
+            height: 84px;
+            border-radius: 22px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 12px 40px rgba(79, 70, 229, 0.45);
+        }
+        h1 { font-size: 22px; margin-bottom: 8px; }
+        .subtitle { color: var(--gray); font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
+        .target {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 22px;
+            font-size: 14px;
+            color: #c7d2fe;
+            word-break: break-all;
+        }
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 15px 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.35);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 40px rgba(79, 70, 229, 0.5); }
+        .btn-secondary {
+            margin-top: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--light);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.09); }
+        .hint { margin-top: 18px; font-size: 12px; color: var(--gray); line-height: 1.6; }
+        .status { margin-top: 14px; font-size: 13px; color: #a5b4fc; min-height: 18px; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">⚡</div>
+    <h1 id="title">Открываем ThunderLight</h1>
+    <p class="subtitle" id="subtitle">Сейчас попробуем открыть ссылку в приложении.</p>
+    <div class="target" id="target"></div>
+
+    <a id="open-app" class="btn btn-primary" href="#">Открыть в приложении</a>
+    <a id="download" class="btn btn-secondary" href="/download/">Скачать ThunderLight</a>
+
+    <div class="status" id="status"></div>
+    <p class="hint">
+        Если приложение не установлено, через несколько секунд мы откроем страницу загрузки.
+        На Android разрешите открытие ссылок в ThunderLight.
+    </p>
+</div>
+
+<script>
+(function () {
+    var path = decodeURIComponent(window.location.pathname || "");
+    var match = path.match(/^\/(u|g|c|i)\/(.+)$/);
+    var title = document.getElementById("title");
+    var subtitle = document.getElementById("subtitle");
+    var target = document.getElementById("target");
+    var statusEl = document.getElementById("status");
+    var openBtn = document.getElementById("open-app");
+    var downloadBtn = document.getElementById("download");
+
+    var params = new URLSearchParams(window.location.search || "");
+    var noAuto = params.get("noauto") === "1";
+
+    var deepLink = null;
+    var label = "";
+
+    if (match) {
+        var kind = match[1];
+        var value = match[2].replace(/\/+$/, "");
+        var kindName = kind === "u" ? "профиль"
+            : kind === "g" ? "группу"
+            : kind === "c" ? "канал"
+            : "приглашение";
+        label = (kind === "u" ? "@" : "") + value;
+        deepLink = "thunderlight://" + kind + "/" + value;
+        title.textContent = "Открываем " + kindName;
+        subtitle.textContent = "Если ThunderLight установлен, ссылка откроется в приложении.";
+        target.textContent = label;
+        openBtn.href = deepLink;
+    } else {
+        title.textContent = "Страница не найдена";
+        subtitle.textContent = "Возможно, ссылка устарела. Откройте приложение или скачайте его.";
+        target.classList.add("hidden");
+        openBtn.classList.add("hidden");
+    }
+
+    var left = false;
+    function tryDeepLink() {
+        if (!deepLink) return;
+        left = true;
+        window.location.href = deepLink;
+    }
+
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            // Приложение открылось — отменяем авто-переход на загрузку
+            left = true;
+        }
+    });
+    window.addEventListener("pagehide", function () { left = true; });
+
+    if (deepLink && !noAuto) {
+        statusEl.textContent = "Пытаемся открыть приложение…";
+        setTimeout(tryDeepLink, 350);
+
+        setTimeout(function () {
+            if (left || document.hidden) return;
+            statusEl.textContent = "Приложение не найдено — открываем страницу загрузки…";
+            setTimeout(function () {
+                if (!left && !document.hidden) {
+                    window.location.href = "/download/?from=link";
+                }
+            }, 1200);
+        }, 2600);
+    }
+
+    openBtn.addEventListener("click", function (e) {
+        if (!deepLink) return;
+        e.preventDefault();
+        statusEl.textContent = "Открываем приложение…";
+        tryDeepLink();
+    });
+})();
+</script>
+</body>
+</html>

@@ -1,1 +1,13 @@
-
+{
+  "version_name": "1.1",
+  "version_code": 1,
+  "url": "https://thuderlight.online/download/thunderlight.apk",
+  "mandatory": false,
+  "changelog": [
+    "Голосовые сообщения, закреплённые и исчезающие сообщения",
+    "«Избранное» и пересылка в один клик",
+    "Экспорт и импорт ключей по PIN",
+    "Ссылки на профили, группы и каналы",
+    "Обновление приложения прямо из ThunderLight"
+  ]
+}
