@@ -6,7 +6,6 @@
     var params = new URLSearchParams(window.location.search || "");
     var id = params.get("id") || "";
 
-    // Поддержка и /u/?id=name, и /u/name (если nginx сделает rewrite)
     if (!id) {
         var parts = window.location.pathname.split("/").filter(Boolean);
         var last = parts.length ? parts[parts.length - 1] : "";
@@ -35,8 +34,20 @@
     }
 
     var deepLink = "thunderlight://" + type + "/" + encodeURIComponent(id);
+    var downloadUrl = "/download/?from=link";
+    var isAndroid = /Android/i.test(navigator.userAgent || "");
+    var isChrome = /Chrome|CriOS/i.test(navigator.userAgent || "");
+
+    // Chrome понимает intent:// и сам откроет приложение,
+    // а при его отсутствии перейдёт по browser_fallback_url.
+    var intentUrl = "intent://" + type + "/" + encodeURIComponent(id) +
+        "#Intent;scheme=thunderlight;package=com.example.thunderlight2;" +
+        "S.browser_fallback_url=" + encodeURIComponent(downloadUrl) + ";end";
+
+    var launchUrl = isAndroid ? intentUrl : deepLink;
+
     target.textContent = (type === "u" ? "@" : "") + id;
-    openBtn.href = deepLink;
+    openBtn.href = launchUrl;
     subtitle.textContent = "Если ThunderLight установлен, ссылка откроется в приложении.";
 
     var left = false;
@@ -45,28 +56,34 @@
     });
     window.addEventListener("pagehide", function () { left = true; });
 
-    function tryDeepLink() {
+    function tryLaunch() {
         left = true;
-        window.location.href = deepLink;
+        window.location.href = launchUrl;
     }
 
+    // Автопопытка. В Chrome без жеста может быть заблокирована —
+    // тогда остаётся кнопка и ссылка на загрузку.
     statusEl.textContent = "Пытаемся открыть приложение…";
-    setTimeout(tryDeepLink, 300);
+    setTimeout(tryLaunch, 350);
 
-    // Если приложение не открылось — через пару секунд ведём на загрузку
     setTimeout(function () {
         if (left || document.hidden) return;
-        statusEl.textContent = "Приложение не найдено — открываем страницу загрузки…";
-        setTimeout(function () {
-            if (!left && !document.hidden) {
-                window.location.href = "/download/?from=link";
-            }
-        }, 1300);
+        statusEl.textContent = "Не открылось? Нажмите «Открыть в приложении» или скачайте ThunderLight.";
     }, 2600);
 
     openBtn.addEventListener("click", function (e) {
         e.preventDefault();
         statusEl.textContent = "Открываем приложение…";
-        tryDeepLink();
+        window.location.href = launchUrl;
     });
+
+    // В не-Chrome браузерах intent:// не поддерживается — уводим на загрузку,
+    // если приложение так и не открылось.
+    if (!isChrome) {
+        setTimeout(function () {
+            if (!left && !document.hidden) {
+                window.location.href = downloadUrl;
+            }
+        }, 4500);
+    }
 })();
